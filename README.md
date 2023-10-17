@@ -36,8 +36,9 @@ Este juego está dirigido a jugadores de todas las edades, pero se centra princi
 
 El juego estará disponible en PC a través de navegadores web y de forma local, de tal forma que los jugadores puedan elegir entre jugar en ordenadores distintos a través de una red, o en el mismo ordenador de manera local.
 
+### Modelo de negocio
 
-### Modelo de negocio y región
+El juego seguirá un modelo de negocio “free to play”, es decir, será gratuito para jugar, pero incluirá microtransacciones, compras dentro de la aplicación para obtener distintos recursos, mejoras o ventajas competitivas. De esta forma, los jugadores interesados en el juego en sí podrán acceder a él sin necesidad de una inversión, mientras que los jugadores que deseen mejorar su experiencia, pueden gastar dinero en dichas compras opcionales.
 
 ## Jugabilidad
 
@@ -47,8 +48,10 @@ El juego se divide en varios niveles. Cada nivel representa una provincia que fo
 
 Cada nivel contiene un mapa de varias ciudades —o nodos— con un número de población/guarnición. Estos nodos pueden ser conquistados o reconquistados por ambos jugadores.
 
+![Gameplay State io](https://github.com/edwardeveloping/Coquestio/assets/131657047/1e1fdf19-5cd0-4c0d-9184-3d24a0bcd9f1)
+![Selección de niveles State io](https://github.com/edwardeveloping/Coquestio/assets/131657047/e58d04f2-4c66-4562-8c08-f5b7fa3a191d)
 
-IMAGEN
+*State.io Nivel (varios nodos/ciudades)* | *State.io Selector de niveles (varios niveles/provincias)*
 
 Al inicio del nivel cada participante controla un nodo, el resto permanecen neutrales con una población fija. Los nodos controlados por jugadores generan progresivamente unidades en su interior.
 
@@ -86,11 +89,14 @@ Entre las funcionalidades que queremos incluir en nuestro producto (ordenadas se
 
 Como se mencionó anteriormente, ‘Tiny Troops Tactics’ será un juego 2D. Presentará gráficos planos y minimalistas generados de forma vectorial, utilizando colores vívidos y formas geométricas para crear una estética atractiva pero sin detalles complejos. Tomaremos referencias de juegos como Mini Metro o A good snowman is hard to build.
 
+![MiniMetro](https://github.com/edwardeveloping/Coquestio/assets/131657047/1135d42f-0e9e-4636-8c81-04ff3f0f3485)  ![A good snowman is had to build](https://github.com/edwardeveloping/Coquestio/assets/131657047/59550bcd-51ae-4fb1-a6f2-3c4fdb9bef9b) 
+
 ### Diseño de interfaces
 
-La interfaz será clara y sin distracciones, con elementos visuales nítidos y legibles para fomentar una jugabilidad con la que el usuario se familiarice pronto, permitiendo una experiencia de juego relajada que recuerda a títulos como Alto’s adventure. 
+La interfaz será clara y sin distracciones, con elementos visuales nítidos y legibles para fomentar una jugabilidad con la que el usuario se familiarice pronto, permitiendo una experiencia de juego relajada que recuerda a títulos como Alto’s adventure.
 
-IMAGEN
+![Alto's adventure](https://github.com/edwardeveloping/Coquestio/assets/131657047/b86013a6-1d14-49d0-a897-aab2d758b669)
+![Alto's adventure gameplay](https://github.com/edwardeveloping/Coquestio/assets/131657047/3e34ce92-2dfb-4ee1-9028-639e120b1bff)
 
 Constará de contadores que lleven el recuento de tropas en los terrenos y pequeños indicadores visuales que le otorguen feedback al usuario durante el progreso de la partida como que un terreno se tiña del tono del jugador que lo conquista.
 
@@ -98,13 +104,15 @@ Constará de contadores que lleven el recuento de tropas en los terrenos y peque
 
 Herramientas como Azgaar's Fantasy Map nos facilitarán el trabajo a la hora de generar los mapas necesarios para el desarrollo de nuestro juego. Una vez elegido un diseño que se adapte a nuestra idea de nivel, utilizaremos Adobe Illustrator para crear nuestro mapa definitivo.
 
-IMAGEN
+![Mapa de azgaard](https://github.com/edwardeveloping/Coquestio/assets/131657047/b7642d3f-ceba-4fe0-abe3-fedb241fcbd3)
+![Mapa propio](https://github.com/edwardeveloping/Coquestio/assets/131657047/c6f18574-4448-412f-aff1-eee8f5caaea9)
+
 
 ### Soldados
 
 De la misma forma que la interfaz y el mapa, las tropas adoptarán un estilo minimalista que recordará a juegos con estética cartoon como Dumb ways to die.
 
-IMAGEN
+![Dumb ways to die](https://github.com/edwardeveloping/Coquestio/assets/131657047/04739584-4d42-4e92-8ed8-0ac5c06fd3b5)
 
 ### Sonido
 
