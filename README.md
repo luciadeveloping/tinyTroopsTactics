@@ -36,9 +36,12 @@ Este juego está dirigido a jugadores de todas las edades, pero se centra princi
 
 El juego estará disponible en PC a través de navegadores web y de forma local, de tal forma que los jugadores puedan elegir entre jugar en ordenadores distintos a través de una red, o en el mismo ordenador de manera local.
 
-### Modelo de negocio
+### Modelo de negocio y región
 
 El juego seguirá un modelo de negocio “free to play”, es decir, será gratuito para jugar, pero incluirá microtransacciones, compras dentro de la aplicación para obtener distintos recursos, mejoras o ventajas competitivas. De esta forma, los jugadores interesados en el juego en sí podrán acceder a él sin necesidad de una inversión, mientras que los jugadores que deseen mejorar su experiencia, pueden gastar dinero en dichas compras opcionales.
+
+Para este juego nos hemos decidido adscribir a la normativa PEGI (Pan European Game Information), un sistema de clasificación, dentro de la región europea, sobre el contenido de los videojuegos.
+
 
 ## Jugabilidad
 
