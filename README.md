@@ -2,7 +2,7 @@
 
 **Desarrolladores - Grupo 7:**
 
-- Ana Ordoñez Gragera - a.ordonez.2021@alumnos.urjc.es - https://github.com/anaxrdonez 
+- Ana Ordóñez Gragera - a.ordonez.2021@alumnos.urjc.es - https://github.com/anaxrdonez 
 
 - Eduardo Sánchez Abril - e.sancheza.2021@alumnos.urjc.es  - https://github.com/edwardeveloping  
 
