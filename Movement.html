@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>TINY TROOPS TACTICS</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var player1;
+var player2;
+var cursors;
+var keys;
+
+var game = new Phaser.Game(config);
+
+function preload() {
+    this.load.image('sky', 'assets/sky.png');
+    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+}
+
+function create() {
+    this.add.image(400, 300, 'sky');
+
+    player1 = this.physics.add.sprite(100, 450, 'dude');
+    player1.setCollideWorldBounds(true);
+    player1.body.allowGravity = false;
+
+    player2 = this.physics.add.sprite(200, 450, 'dude'); // Cambiado la posición inicial para diferenciarlos visualmente
+    player2.setCollideWorldBounds(true);
+    player2.body.allowGravity = false;
+
+    this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'turn',
+        frames: [{ key: 'dude', frame: 4 }],
+        frameRate: 20
+    });
+
+    this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    cursors = this.input.keyboard.createCursorKeys();
+    
+    // Objeto de teclas para el primer jugador
+    keys = this.input.keyboard.addKeys({
+        'up': Phaser.Input.Keyboard.KeyCodes.W,
+        'down': Phaser.Input.Keyboard.KeyCodes.S,
+        'left': Phaser.Input.Keyboard.KeyCodes.A,
+        'right': Phaser.Input.Keyboard.KeyCodes.D
+    });
+}
+
+function update() {
+    // PLAYER 1 (wasd)
+    if (keys.left.isDown) {
+        player1.setVelocityX(-160);
+        player1.anims.play('left', true);
+    } else if (keys.right.isDown) {
+        player1.setVelocityX(160);
+        player1.anims.play('right', true);
+    } else {
+        player1.setVelocityX(0);
+        player1.anims.play('turn');
+    }
+
+    if (keys.up.isDown) {
+        player1.setVelocityY(-160);
+    } else if (keys.down.isDown) {
+        player1.setVelocityY(160);
+    } else {
+        player1.setVelocityY(0);
+    }
+
+    // PLAYER 2 (flechas)
+    if (cursors.left.isDown) {
+        player2.setVelocityX(-160);
+        player2.anims.play('left', true);
+    } else if (cursors.right.isDown) {
+        player2.setVelocityX(160);
+        player2.anims.play('right', true);
+    } else {
+        player2.setVelocityX(0);
+        player2.anims.play('turn');
+    }
+
+    if (cursors.up.isDown) {
+        player2.setVelocityY(-160);
+    } else if (cursors.down.isDown) {
+        player2.setVelocityY(160);
+    } else {
+        player2.setVelocityY(0);
+    }
+}
+
+</script>
+
+</body>
+</html>
+
+
