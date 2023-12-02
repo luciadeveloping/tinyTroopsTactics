@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <title>TINY TROOPS TACTICS</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
-    <script type="text/javascript" src="StartScene.js"></script>
-    <script type="text/javascript" src="GameScene.js"></script>
-    <script type="text/javascript" src="SettingScene.js"></script>
-    <script type="text/javascript" src="WinScene.js"></script>
-    <script type="text/javascript" src="GameOverScene.js"></script>
-    <script type="text/javascript" src="CreditsScene.js"></script>
+    <script type="text/javascript" src="Scenes/StartScene.js"></script>
+    <script type="text/javascript" src="Scenes/GameScene.js"></script>
+    <script type="text/javascript" src="Scenes/SettingsScene.js"></script>
+    <script type="text/javascript" src="Scenes/WinScene.js"></script>
+    <script type="text/javascript" src="Scenes/GameOverScene.js"></script>
+    <script type="text/javascript" src="Scenes/CreditsScene.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -31,19 +31,11 @@
                 debug: false
             }
         },
-        scene: [EscenaInicio, EscenaJuego, EscenaAjustes, EscenaCreditos]
+        scene: [StartScene, GameScene, SettingsScene, CreditsScene]
     };
 
     var game = new Phaser.Game (config);
-
-    var player1;
-    var player2;
-    var text;
-
-    var cursors;
-    var keys;
-    var PLAYER_RANGE = 200;
-    var STARTING_NODE_TROOPS = 10;
+    game.scene.start('GameScene');
 
     </script>
 </body>

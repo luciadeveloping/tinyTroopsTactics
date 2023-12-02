@@ -1,119 +1,124 @@
-/////////////////////////////////////////////////////// CLASSES ///////////////////////////////////////////////////////
+var player1;
+var player2;
+var node1; // Nuevo
+var node2; // Nuevo
+var text;
 
-class GameScene { // Parent class for characters and nodes
-    constructor(phaserGO){
-        this.phaserGO = phaserGO; // Phaser Game Object
-        player.setCollideWorldBounds(true);
-        player.body.allowGravity = false;
+var cursors;
+var keys;
+var PLAYER_RANGE = 200;
+var STARTING_NODE_TROOPS = 10;
+
+class SceneObject {
+    constructor(phaserGO) {
+        this.phaserGO = phaserGO;
+
+        // para ver si es un objeto fisico
+        if (this.phaserGO.body) {
+            this.phaserGO.setCollideWorldBounds(true);
+            this.phaserGO.body.allowGravity = false;
+        }
+
         this.troops = 0;
     }
 
-    get x(){
+    get x() {
         return this.phaserGO.x;
     }
-    get y(){
+    get y() {
         return this.phaserGO.y;
     }
 }
 
-class Player extends GameScene {
-    constructor(phaserGO){
+class Player extends SceneObject {
+    constructor(phaserGO) {
         super(phaserGO);
         this.range = PLAYER_RANGE;
     }
 
-    isInRange(GameScene){
+    isInRange(sceneObject) {
         var distance = Math.sqrt(
-            Math.pow(GameScene.x - this.x, 2) +
-            Math.pow(GameScene.y - this.y, 2)
+            Math.pow(sceneObject.x - this.x, 2) +
+            Math.pow(sceneObject.y - this.y, 2)
         );
         return distance <= this.range;
     }
 }
 
-class Node extends GameScene {
-    constructor(phaserGO){
+class Node extends SceneObject {
+    constructor(phaserGO) {
         super(phaserGO);
         this.troops = STARTING_NODE_TROOPS;
     }
 }
 
-/////////////////////////////////////////////////////// PHASER GAME ///////////////////////////////////////////////////////
-
-var game = new Phaser.Game(config);
-
-function preload() {
-    this.load.image('sky', 'assets/sky.png');
-
-    this.load.image('nodeTeam1', 'assets/crystal_01b.png')
-    this.load.image('nodeTeam1', 'assets/crystal_01j.png')
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-}
-
-function create() {
-    this.add.image(400, 300, 'sky');
-
-    player = this.physics.add.sprite(100, 450, 'dude');
-    player1 = new Player(player);
-
-    player = this.physics.add.sprite(200, 450, 'dude');
-    player2 = new Player(player);
-
-    node = this.add.image(300, 300, 'nodeTeam1');
-    node1 = new Node(node);
-
-    //var style = { font: "65px Arial", fill: "#ffffff", align: "center" };
-
-    //var text = this.add.text(game.world.centerX, this.world.centerY, "- phaser -\nwith a sprinkle of\npixi dust", style);
-
-    //text.anchor.set(0.5);
-    
-    cursors = this.input.keyboard.createCursorKeys();
-    keys = this.input.keyboard.addKeys({
-        'up': Phaser.Input.Keyboard.KeyCodes.W,
-        'down': Phaser.Input.Keyboard.KeyCodes.S,
-        'left': Phaser.Input.Keyboard.KeyCodes.A,
-        'right': Phaser.Input.Keyboard.KeyCodes.D
-    });
-}
-
-function update() {
-    playerMovement();
-}
-
-
-function playerMovement(){
-    // PLAYER 1 (wasd)
-    if (keys.left.isDown) {
-        player1.phaserGO.setVelocityX(-160);
-    } else if (keys.right.isDown) {
-        player1.phaserGO.setVelocityX(160);
-    } else {
-        player1.phaserGO.setVelocityX(0);
+class GameScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'GameScene' });
     }
 
-    if (keys.up.isDown) {
-        player1.phaserGO.setVelocityY(-160);
-    } else if (keys.down.isDown) {
-        player1.phaserGO.setVelocityY(160);
-    } else {
-        player1.phaserGO.setVelocityY(0);
+    preload() {
+        this.load.image('sky', 'assets/sky.png');
+        this.load.image('nodeTeam1', 'assets/crystal_01b.png');
+        this.load.image('nodeTeam2', 'assets/crystal_01j.png');
+        this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     }
 
-    // PLAYER 2 (flechas)
-    if (cursors.left.isDown) {
-        player2.phaserGO.setVelocityX(-160);
-    } else if (cursors.right.isDown) {
-        player2.phaserGO.setVelocityX(160);
-    } else {
-        player2.phaserGO.setVelocityX(0);
+    create() {
+        this.add.image(400, 300, 'sky');
+
+        player1 = new Player(this.physics.add.sprite(100, 450, 'dude'));
+        player2 = new Player(this.physics.add.sprite(200, 450, 'dude'));
+
+        node1 = new Node(this.physics.add.sprite(300, 300, 'nodeTeam1')); // Cambiado a physics.add.sprite
+        node2 = new Node(this.physics.add.sprite(500, 300, 'nodeTeam2')); // Cambiado a physics.add.sprite
+
+        cursors = this.input.keyboard.createCursorKeys();
+        keys = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.W,
+            'down': Phaser.Input.Keyboard.KeyCodes.S,
+            'left': Phaser.Input.Keyboard.KeyCodes.A,
+            'right': Phaser.Input.Keyboard.KeyCodes.D
+        });
     }
 
-    if (cursors.up.isDown) {
-        player2.phaserGO.setVelocityY(-160);
-    } else if (cursors.down.isDown) {
-        player2.phaserGO.setVelocityY(160);
-    } else {
-        player2.phaserGO.setVelocityY(0);
+    update() {
+        this.playerMovement();
+    }
+
+    playerMovement() {
+        // PLAYER 1 (wasd)
+        if (keys.left.isDown) {
+            player1.phaserGO.setVelocityX(-160);
+        } else if (keys.right.isDown) {
+            player1.phaserGO.setVelocityX(160);
+        } else {
+            player1.phaserGO.setVelocityX(0);
+        }
+
+        if (keys.up.isDown) {
+            player1.phaserGO.setVelocityY(-160);
+        } else if (keys.down.isDown) {
+            player1.phaserGO.setVelocityY(160);
+        } else {
+            player1.phaserGO.setVelocityY(0);
+        }
+
+        // PLAYER 2 (flechas)
+        if (cursors.left.isDown) {
+            player2.phaserGO.setVelocityX(-160);
+        } else if (cursors.right.isDown) {
+            player2.phaserGO.setVelocityX(160);
+        } else {
+            player2.phaserGO.setVelocityX(0);
+        }
+
+        if (cursors.up.isDown) {
+            player2.phaserGO.setVelocityY(-160);
+        } else if (cursors.down.isDown) {
+            player2.phaserGO.setVelocityY(160);
+        } else {
+            player2.phaserGO.setVelocityY(0);
+        }
     }
 }
