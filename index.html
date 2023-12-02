@@ -1,14 +1,51 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <script type="text/javascript" src="phaser.min.js"></script>
-        <script type="text/javascript" src="EscenaInicio.js"></script>
-        <script type="text/javascript" src="EscenaJuego.js"></script>
-        <script type="text/javascript" src="EscenaAjustes.js"></script>
-        <script type="text/javascript" src="EscenaCreditos.js"></script>
-        <script type="text/javascript" src="game.js"></script>
-    </head>
-    <body>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>TINY TROOPS TACTICS</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <script type="text/javascript" src="phaser.min.js"></script>
+    <script type="text/javascript" src="EscenaInicio.js"></script>
+    <script type="text/javascript" src="EscenaJuego.js"></script>
+    <script type="text/javascript" src="EscenaAjustes.js"></script>
+    <script type="text/javascript" src="EscenaGanar.js"></script>
+    <script type="text/javascript" src="EscenaPerder.js"></script>
+    <script type="text/javascript" src="EscenaCreditos.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
 
-    </body>
+    <script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 },
+                debug: false
+            }
+        },
+        scene: [EscenaInicio, EscenaJuego, EscenaAjustes, EscenaCreditos]
+    };
+
+    var game = new Phaser.Game (config);
+
+    var player1;
+    var player2;
+    var text;
+
+    var cursors;
+    var keys;
+    var PLAYER_RANGE = 200;
+    var STARTING_NODE_TROOPS = 10;
+
+    </script>
+</body>
 </html>

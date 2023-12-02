@@ -8,7 +8,7 @@ class EscenaAjustes extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(20, 20, "Settings");
+
     }
 
     update(time, delta) {
