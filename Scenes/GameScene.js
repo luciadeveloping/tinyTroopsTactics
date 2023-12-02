@@ -13,7 +13,7 @@ class GameScene extends Phaser.Scene{
 
             /////////////////////////////////////////////////////// CLASSES ///////////////////////////////////////////////////////
 
-            // THIS IS THE SECOND TEST
+            // THIS IS THE SECOND TEST JDAÑS
             
             class GameScene { // Parent class for characters and nodes
                 constructor(phaserGO){
