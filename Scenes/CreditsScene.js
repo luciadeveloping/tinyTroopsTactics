@@ -5,6 +5,7 @@ class CreditsScene extends Phaser.Scene {
 
     preload() {
  /////qddqadc
+ /////qwedjf
     }
 
     create() {
