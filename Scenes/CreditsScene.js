@@ -1,6 +1,6 @@
-class EscenaAjustes extends Phaser.Scene {
+class CreditsScene extends Phaser.Scene {
     constructor () {
-        super({key: EscenaAjustes});
+        super({key: CreditsScene});
     }
 
     preload() {

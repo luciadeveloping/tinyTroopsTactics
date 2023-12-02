@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////// CLASSES ///////////////////////////////////////////////////////
 
-class EscenaJuego { // Parent class for characters and nodes
+class GameScene { // Parent class for characters and nodes
     constructor(phaserGO){
         this.phaserGO = phaserGO; // Phaser Game Object
         player.setCollideWorldBounds(true);
@@ -16,22 +16,22 @@ class EscenaJuego { // Parent class for characters and nodes
     }
 }
 
-class Player extends EscenaJuego {
+class Player extends GameScene {
     constructor(phaserGO){
         super(phaserGO);
         this.range = PLAYER_RANGE;
     }
 
-    isInRange(EscenaJuego){
+    isInRange(GameScene){
         var distance = Math.sqrt(
-            Math.pow(EscenaJuego.x - this.x, 2) +
-            Math.pow(EscenaJuego.y - this.y, 2)
+            Math.pow(GameScene.x - this.x, 2) +
+            Math.pow(GameScene.y - this.y, 2)
         );
         return distance <= this.range;
     }
 }
 
-class Node extends EscenaJuego {
+class Node extends GameScene {
     constructor(phaserGO){
         super(phaserGO);
         this.troops = STARTING_NODE_TROOPS;

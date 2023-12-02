@@ -1,6 +1,6 @@
-class EscenaGanar extends Phaser.Scene {
+class WinScene extends Phaser.Scene {
     constructor () {
-        super({key: EscenaGanar});
+        super({key: WinScene});
     }
 
     preload() {
