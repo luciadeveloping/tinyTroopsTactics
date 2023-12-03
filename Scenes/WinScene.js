@@ -1,4 +1,4 @@
-class WinScene extends Phaser.Scene {
+export default class WinScene extends Phaser.Scene {
     constructor () {
         super({key: WinScene});
     }
