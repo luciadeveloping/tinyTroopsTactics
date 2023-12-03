@@ -3,6 +3,7 @@ var player2;
 var node1; // Nuevo
 var node2; // Nuevo
 var text;
+var mapZones;
 
 var cursors;
 var keys;
@@ -58,21 +59,69 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('sky', 'assets/sky.png');
+        //MAPA
+        this.load.image('map', 'assets/mapa.png');
+        this.load.image('mapZone0', 'assets/mapZone0.png');
+        this.load.image('mapZone1', 'assets/mapZone1.png');
+        this.load.image('mapZone2', 'assets/mapZone2.png');
+        this.load.image('mapZone3', 'assets/mapZone3.png');
+        this.load.image('mapZone4', 'assets/mapZone4.png');
+        this.load.image('mapZone5', 'assets/mapZone5.png');
+        this.load.image('mapZone6', 'assets/mapZone6.png');
+        this.load.image('mapZone7', 'assets/mapZone7.png');
+        this.load.image('mapZone8', 'assets/mapZone8.png');
+        this.load.image('mapZone9', 'assets/mapZone9.png');
+
+        //DEMÁS
         this.load.image('nodeTeam1', 'assets/crystal_01b.png');
         this.load.image('nodeTeam2', 'assets/crystal_01j.png');
         this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     }
 
     create() {
-        this.add.image(400, 300, 'sky');
 
+        //MAPA
+        this.cameras.main.setBackgroundColor('#add8e6'); // Código azul claro
+        this.add.image(600, 300, 'map'); //mapa entero
+
+        mapZones = this.physics.add.group();
+        // Agrega las zonas del mapa al grupo
+        var zone0 = this.physics.add.sprite(96, 146, 'mapZone0');
+        var zone1 = this.physics.add.sprite(185, 129, 'mapZone1');
+        var zone2 = this.physics.add.sprite(247, 160, 'mapZone2');
+        var zone3 = this.physics.add.sprite(247, 209, 'mapZone3');
+        var zone4 = this.physics.add.sprite(181, 278, 'mapZone4');
+        var zone5 = this.physics.add.sprite(285, 271, 'mapZone5');
+        var zone6 = this.physics.add.sprite(275, 357, 'mapZone6');
+        var zone7 = this.physics.add.sprite(250, 405, 'mapZone7');
+        var zone8 = this.physics.add.sprite(195, 365, 'mapZone8');
+        var zone9 = this.physics.add.sprite(258, 459, 'mapZone9');
+
+        mapZones.addMultiple([zone0, zone1, zone2, zone3 ,zone4 ,
+        zone5, zone6, zone7, zone8, zone9]);
+        
+        mapZones.children.iterate(function (zone) {
+            zone.setImmovable(true); //así no se mueven
+            zone.body.allowGravity = false; // para q no haya gravedad, sino se caen
+            zone.setCollideWorldBounds(true);
+        });
+
+        //JUGADORES
         player1 = new Player(this.physics.add.sprite(100, 450, 'dude'));
         player2 = new Player(this.physics.add.sprite(200, 450, 'dude'));
+        //-->para que los jugadores estén por encima de las zonas
+        player1.phaserGO.setDepth(1);
+        player2.phaserGO.setDepth(1);
 
         node1 = new Node(this.physics.add.sprite(300, 300, 'nodeTeam1')); // Cambiado a physics.add.sprite
         node2 = new Node(this.physics.add.sprite(500, 300, 'nodeTeam2')); // Cambiado a physics.add.sprite
 
+        //prueba zonas con overlap
+        this.physics.add.overlap(player1.phaserGO, mapZones, this.handleZoneOverlap, null, this);
+        this.physics.add.overlap(player2.phaserGO, mapZones, this.handleZoneOverlap, null, this);
+        
+
+        //KEYBOARD INPUTS
         cursors = this.input.keyboard.createCursorKeys();
         keys = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
@@ -86,6 +135,15 @@ class GameScene extends Phaser.Scene {
         this.playerMovement();
     }
 
+    //prueba color
+    handleZoneOverlap(player, zone) {
+        if (player === player1.phaserGO) {
+            zone.setTint(0xFFA500); // Naranja para el jugador 1
+        } else if (player === player2.phaserGO) {
+            zone.setTint(0x800080); // Lila para el jugador 2
+        }
+    }
+    
     playerMovement() {
         // PLAYER 1 (wasd)
         if (keys.left.isDown) {
