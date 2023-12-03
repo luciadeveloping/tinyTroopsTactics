@@ -1,14 +1,14 @@
 class StartScene extends Phaser.Scene {
     constructor () {
-        super({key: StartScene});
+        super({key: 'StartScene'});
     }
 
     preload() {
-
+    
     }
 
     create() {
-
+   
     }
 
     update(time, delta) {
