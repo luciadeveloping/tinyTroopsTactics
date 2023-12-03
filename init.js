@@ -15,8 +15,8 @@ const config = {
             debug: false
         }
     },
-    scene: [StartScene, GameScene, SettingsScene, CreditsScene]
+    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
 };
 
 var game = new Phaser.Game (config);
-game.scene.start('CreditsScene');
+game.scene.start('StartScene');

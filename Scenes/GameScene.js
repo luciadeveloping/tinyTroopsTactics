@@ -60,7 +60,7 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         //MAPA
-        this.load.image('map', 'assets/map/mapa.png');
+        this.load.image('map', 'assets/map/map_lvl1.png');
         this.load.image('mapZone0', 'assets/map/mapZone0.png');
         this.load.image('mapZone1', 'assets/map/mapZone1.png');
         this.load.image('mapZone2', 'assets/map/mapZone2.png');
@@ -85,17 +85,17 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(600, 300, 'map'); //mapa entero
 
         mapZones = this.physics.add.group();
-        // Agrega las zonas del mapa al grupo
-        var zone0 = this.physics.add.sprite(96, 146, 'mapZone0');
-        var zone1 = this.physics.add.sprite(185, 129, 'mapZone1');
-        var zone2 = this.physics.add.sprite(247, 160, 'mapZone2');
-        var zone3 = this.physics.add.sprite(247, 209, 'mapZone3');
-        var zone4 = this.physics.add.sprite(181, 278, 'mapZone4');
-        var zone5 = this.physics.add.sprite(285, 271, 'mapZone5');
-        var zone6 = this.physics.add.sprite(275, 357, 'mapZone6');
-        var zone7 = this.physics.add.sprite(250, 405, 'mapZone7');
-        var zone8 = this.physics.add.sprite(195, 365, 'mapZone8');
-        var zone9 = this.physics.add.sprite(258, 459, 'mapZone9');
+        // Agrega las zonas del mapa al grupod
+        var zone0 = this.physics.add.sprite(465, 112, 'mapZone0');
+        var zone1 = this.physics.add.sprite(587, 89, 'mapZone1');
+        var zone2 = this.physics.add.sprite(670, 130, 'mapZone2');
+        var zone3 = this.physics.add.sprite(671, 198, 'mapZone3');
+        var zone4 = this.physics.add.sprite(581, 291, 'mapZone4');
+        var zone5 = this.physics.add.sprite(722, 282, 'mapZone5');
+        var zone6 = this.physics.add.sprite(599, 410, 'mapZone6');
+        var zone7 = this.physics.add.sprite(709, 400, 'mapZone7');
+        var zone8 = this.physics.add.sprite(675, 466, 'mapZone8');
+        var zone9 = this.physics.add.sprite(686, 538, 'mapZone9');
 
         mapZones.addMultiple([zone0, zone1, zone2, zone3 ,zone4 ,
         zone5, zone6, zone7, zone8, zone9]);
