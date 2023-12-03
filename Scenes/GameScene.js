@@ -60,17 +60,17 @@ class GameScene extends Phaser.Scene {
 
     preload() {
         //MAPA
-        this.load.image('map', 'assets/mapa.png');
-        this.load.image('mapZone0', 'assets/mapZone0.png');
-        this.load.image('mapZone1', 'assets/mapZone1.png');
-        this.load.image('mapZone2', 'assets/mapZone2.png');
-        this.load.image('mapZone3', 'assets/mapZone3.png');
-        this.load.image('mapZone4', 'assets/mapZone4.png');
-        this.load.image('mapZone5', 'assets/mapZone5.png');
-        this.load.image('mapZone6', 'assets/mapZone6.png');
-        this.load.image('mapZone7', 'assets/mapZone7.png');
-        this.load.image('mapZone8', 'assets/mapZone8.png');
-        this.load.image('mapZone9', 'assets/mapZone9.png');
+        this.load.image('map', 'assets/map/mapa.png');
+        this.load.image('mapZone0', 'assets/map/mapZone0.png');
+        this.load.image('mapZone1', 'assets/map/mapZone1.png');
+        this.load.image('mapZone2', 'assets/map/mapZone2.png');
+        this.load.image('mapZone3', 'assets/map/mapZone3.png');
+        this.load.image('mapZone4', 'assets/map/mapZone4.png');
+        this.load.image('mapZone5', 'assets/map/mapZone5.png');
+        this.load.image('mapZone6', 'assets/map/mapZone6.png');
+        this.load.image('mapZone7', 'assets/map/mapZone7.png');
+        this.load.image('mapZone8', 'assets/map/mapZone8.png');
+        this.load.image('mapZone9', 'assets/map/mapZone9.png');
 
         //DEMÁS
         this.load.image('nodeTeam1', 'assets/crystal_01b.png');
