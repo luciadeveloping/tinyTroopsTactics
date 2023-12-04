@@ -19,4 +19,4 @@ const config = {
 };
 
 var game = new Phaser.Game (config);
-game.scene.start('CreditsScene');
+game.scene.start('GameScene');
