@@ -8,6 +8,7 @@ const config = {
     width: 1200,
     height: 600,
     parent: "display",
+    backgroundColor: '#3498db',
     physics: {
         default: 'arcade',
         arcade: {
@@ -15,8 +16,7 @@ const config = {
             debug: false
         }
     },
-    scene: [StartScene, GameScene, SettingsScene, CreditsScene]
+    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
 };
 
 var game = new Phaser.Game (config);
-game.scene.start('GameScene');
