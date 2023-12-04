@@ -1,3 +1,4 @@
+var game;
 var player1;
 var player2;
 var node1; // Nuevo
@@ -11,20 +12,25 @@ var cursors;
 var keys;
 const PLAYER_RANGE = 200;
 const PLAYER_MOVEMENT_SPEED = 200;
+const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const NODE_STARTING_SOLDIERS = 5;
+const Factions = {
+    Neutral: "Neutral",
+    One: "One",
+    Two: "Two"
+}
 
-const DRAFTING_COOLDOWN = 1; 
+const DRAFTING_COOLDOWN = 500; // Miliseconds
 var initTimeDraftPlayer1 = 0;
 
 class SceneObject {
-    constructor(phaserGO) {
-        this.phaserGO = phaserGO; // Phaser Game Object.
+    // This class uses 'game' which is a Phaser object that needs to be initialize in the 'create' method !!!!!
+    constructor(xPos, yPos, sprite) {
+        this.phaserGO = game.physics.add.sprite(xPos, yPos, sprite); // Phaser Game Object.
         if (this.phaserGO.body) {
             this.phaserGO.setCollideWorldBounds(true);
             this.phaserGO.body.allowGravity = false;
         }
-
-        this.soldiers = 0;
     }
 
     get x() {
@@ -43,25 +49,32 @@ class SceneObject {
 }
 
 class Player extends SceneObject {
-    constructor(phaserGO) {
-        super(phaserGO);
+    constructor(xPos, yPos, sprite) {
+        super(xPos, yPos, sprite);
+        this.phaserGO.setDepth(1);
         this.soldiers = 0;
+        this.soldiersDisplay = game.add.text(xPos, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
+        this.updateSoldiersDisplay();
         this.range = PLAYER_RANGE;
-        this.nodesInRange = new Array(); // Contains all nodes in range.
+        this.nodesInRange = new Array();
         this.selectedNode = undefined;
     }
 
     moveDown(){
         this.phaserGO.setVelocityY(PLAYER_MOVEMENT_SPEED);
+        this.updateSoldiersDisplayPosition();
     }
     moveUp(){
         this.phaserGO.setVelocityY(-PLAYER_MOVEMENT_SPEED);
+        this.updateSoldiersDisplayPosition();
     }
     moveRight(){
         this.phaserGO.setVelocityX(PLAYER_MOVEMENT_SPEED);
+        this.updateSoldiersDisplayPosition();
     }
     moveLeft(){
         this.phaserGO.setVelocityX(-PLAYER_MOVEMENT_SPEED);
+        this.updateSoldiersDisplayPosition();
     }
     stopHorizontal(){
         this.phaserGO.setVelocityX(0);
@@ -69,6 +82,13 @@ class Player extends SceneObject {
     stopVertical(){
         this.phaserGO.setVelocityY(0);
     }
+    updateSoldiersDisplayPosition(){
+        this.soldiersDisplay.x = this.phaserGO.x;
+        this.soldiersDisplay.y = this.phaserGO.y - SOLDIER_DISPLAY_VERTICAL_ANCHOR;
+    }
+    updateSoldiersDisplay(){
+        this.soldiersDisplay.setText(this.soldiers);
+    }    
 
     isInRange(sceneObject) { // Checks if a given Scene Object is in range.
         return this.distanceTo(sceneObject) <= this.range;
@@ -81,6 +101,7 @@ class Player extends SceneObject {
                 this.nodesInRange.push(node);
             }
         });
+        //console.log("Nodes in range:" + this.nodesInRange.length);
     }
 
     selectClosestNode(){
@@ -109,13 +130,12 @@ class Player extends SceneObject {
         // Select the closest node.
         closestNode.select(); 
         this.selectedNode = closestNode;
-        
-        return closestNode;
     }
 
     draftSoldierFromSelectedNode(){
         if(this.selectedNode != undefined){ // If a node is selected.
             if(this.selectedNode.draftSoldier()) this.soldiers = this.soldiers + 1; // If there are enough soldiers in selected node draft them.
+            this.updateSoldiersDisplay()
             return true;
         }
         return false;
@@ -123,14 +143,19 @@ class Player extends SceneObject {
 }
 
 class Node extends SceneObject {
-    constructor(phaserGO) {
-        super(phaserGO);
+    constructor(xPos, yPos) {
+        super(xPos, yPos, 'nodeTeam1');
         this.soldiers = NODE_STARTING_SOLDIERS;
+        this.soldiersDisplay = game.add.text(xPos - 7, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
+        this.updateSoldiersDisplay();
+        this.region = game.add.sprite(xPos, yPos);
+        this.faction = Factions.Neutral;
     }
 
     draftSoldier(){
         if(this.soldiers > 0){
             this.soldiers = this.soldiers - 1;
+            this.updateSoldiersDisplay();
             return true;
         }
         console.log("This node is empty!");
@@ -140,10 +165,30 @@ class Node extends SceneObject {
     select(){
         this.phaserGO.setTint(100);
     }
-
     unselect(){
         this.phaserGO.clearTint();
     }
+    updateSoldiersDisplay(){
+        this.soldiersDisplay.setText(this.soldiers);
+    }  
+
+    changeFaction(faction){
+        switch(faction){
+            case Factions.Neutral:
+                // Cambiar el color de region al color neutral
+                break;
+            case Factions.One:
+                // region con color equipo 1...
+                break;
+            case Factions.Two:
+
+                break;
+            default:
+                break;
+        }
+        this.faction = faction;
+    }
+
 }
 
 export default class GameScene extends Phaser.Scene {
@@ -172,26 +217,24 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        
+        game = this;
+
         // Map.
         this.cameras.main.setBackgroundColor('#add8e6');
         //this.add.image(600, 300, 'map'); 
 
         // Players.
-        player1 = new Player(this.physics.add.sprite(100, 450, 'dude'));
-        player2 = new Player(this.physics.add.sprite(200, 450, 'dude'));
-
-        
-
-        player1.phaserGO.setDepth(1);
-        player2.phaserGO.setDepth(1);
+        player1 = new Player(100, 500, 'dude');
+        player2 = new Player(200, 500, 'dude');
 
         nodeList = [
-            new Node(this.physics.add.sprite(300, 300, 'nodeTeam1')),
-            new Node(this.physics.add.sprite(500, 300, 'nodeTeam2'))
+            new Node(300, 300),
+            new Node(500, 300)
         ]
 
-        //nodeList[0].select();
+        //regArr = [
+        //    this.add.sprite()
+        //]
 
         //KEYBOARD INPUTS
         cursors = this.input.keyboard.createCursorKeys();
@@ -238,16 +281,15 @@ export default class GameScene extends Phaser.Scene {
 
         // Interaction Player 1.
         if(keys.interact.isDown){
+            // Cooldown implementation.
             var time = new Date();
-            var timeElapsed = (time.getMinutes() * 60 + time.getSeconds()) - initTimeDraftPlayer1;
-
-            //console.log("time elapsed = " + timeElapsed + " te = " + timeElapsed + ", initTime = " + initTimeDraftPlayer1);
+            var timeElapsed = (time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftPlayer1;
+            //console.log(" te = " + timeElapsed + ", initTime = " + initTimeDraftPlayer1);
 
             if(timeElapsed >= DRAFTING_COOLDOWN){
                 player1.draftSoldierFromSelectedNode();
-                console.log("Player1 soldiers: " + player1.soldiers);
-                initTimeDraftPlayer1 = time.getMinutes() * 60 + time.getSeconds();
-                //console.log("time elapsed = " + timeElapsed);
+                initTimeDraftPlayer1 = time.getSeconds() * 1000 + time.getMilliseconds();
+                //console.log("Player1 soldiers: " + player1.soldiers);
             }
         }
 
