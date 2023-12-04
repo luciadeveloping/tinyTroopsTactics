@@ -1,6 +1,6 @@
 export default class SettingsScene extends Phaser.Scene {
     constructor () {
-        super({key: SettingsScene});
+        super({key: 'SettingsScene'});
     }
 
     preload() {
