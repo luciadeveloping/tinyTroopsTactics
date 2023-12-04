@@ -4,7 +4,7 @@ export default class StartScene extends Phaser.Scene {
     }
 
     preload() {
-        //this.load.image('mapStart', 'assets/map/mapa.png');
+        this.load.image('mapStart', 'assets/map/mapa_blur.png');
         //TITULO
         this.load.image('title', 'assets/ui/title.png');
 
@@ -26,7 +26,7 @@ export default class StartScene extends Phaser.Scene {
 
         // MAPA
         this.cameras.main.setBackgroundColor('#add8e6'); // Código azul claro
-        //const map = this.add.image(600, 300, 'mapStart');
+        const map = this.add.image(600, 300, 'mapStart');
 
         // SONIDO
         this.clickSound = this.sound.add('clickSound');
@@ -44,7 +44,16 @@ export default class StartScene extends Phaser.Scene {
         startButton.on('pointerout', () => startButton.setTexture('start_default'));
         startButton.on('pointerdown', () =>  {
             this.clickSound.play();
-            this.scene.start('GameScene');
+            // Transición suave
+            const transitionConfig = {
+                target: 'GameScene',  // Nombre de la escena a la que quieres transicionar
+                duration: 1000,       // Duración de la transición en milisegundos
+                sleep: true,          // Hacer que la escena actual duerma durante la transición
+                onUpdate: null,
+                onComplete: null
+            };
+
+            this.scene.transition(transitionConfig);
         });
 
         // Botón Settings
