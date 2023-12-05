@@ -1,3 +1,8 @@
+var cursors;
+var keys;
+var player1;
+var player2;
+
 export default class StartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'StartScene' });
@@ -16,17 +21,30 @@ export default class StartScene extends Phaser.Scene {
         this.load.image('settings_hover', 'assets/ui/settings_Hover.png');
         this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
 
+        this.load.image('player1', 'assets/player1.png');
+        this.load.image('player2', 'assets/player2.png');
     }
 
     create() {
-        const gameConfig = this.sys.game.config; // Use this.sys.game.config
+        const gameConfig = this.sys.game.config;
         const centerX = gameConfig.width / 2;
+        const centerY = gameConfig.height / 2;
 
-    //IMAGES
+        // KEYBOARD INPUTS
+        cursors = this.input.keyboard.createCursorKeys();
+        keys = {
+            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            interact: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
+        };
+
+        // IMAGES
         const map = this.add.image(centerX, 300, 'mapStart');
         const title = this.add.image(centerX, 100, 'title');
 
-    //BUTTONS
+        // BUTTONS
         //Start
         const startButton = this.add.image(centerX, 195, 'start_default').setInteractive();
         startButton.on('pointerover', () => startButton.setTexture('start_hover'));
@@ -68,6 +86,45 @@ export default class StartScene extends Phaser.Scene {
         exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
         //exitButton.on('pointerdown', () => this.sys.game.destroy(true));
 
+
+        // PLAYERS (usando sprites y activando físicas)
+        player1 = this.physics.add.image(200, centerY, 'player1');
+        player2 = this.physics.add.image(1000, centerY, 'player2');
+    }
+
+    update() {
+        // Movement Player 1 (wasd).
+        if (keys.left.isDown) {
+            player1.setVelocityX(-100);
+        } else if (keys.right.isDown) {
+            player1.setVelocityX(100);
+        } else {
+            player1.setVelocityX(0);
+        }
+
+        if (keys.up.isDown) {
+            player1.setVelocityY(-100);
+        } else if (keys.down.isDown) {
+            player1.setVelocityY(100);
+        } else {
+            player1.setVelocityY(0);
+        }
+
+        // Movement Player 2 (arrows).
+        if (cursors.left.isDown) {
+            player2.setVelocityX(-100);
+        } else if (cursors.right.isDown) {
+            player2.setVelocityX(100);
+        } else {
+            player2.setVelocityX(0);
+        }
+
+        if (cursors.up.isDown) {
+            player2.setVelocityY(-100);
+        } else if (cursors.down.isDown) {
+            player2.setVelocityY(100);
+        } else {
+            player2.setVelocityY(0);
+        }
     }
 }
-

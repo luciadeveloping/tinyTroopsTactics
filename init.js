@@ -8,7 +8,9 @@ var audioConfig = {
     click: new Audio('audio/click.mp3'),
 };
 
-audioConfig.music.play();
+/*audioConfig.music.addEventListener('canplaythrough', function () {
+    audioConfig.music.play();
+});*/
 
 var config = {
     //Canvas
@@ -33,5 +35,4 @@ var config = {
     scene: [StartScene, GameScene, SettingsScene, CreditsScene],
 
 };
-
 var game = new Phaser.Game(config);
