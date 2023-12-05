@@ -16,37 +16,11 @@ export default class StartScene extends Phaser.Scene {
         this.load.image('settings_hover', 'assets/ui/settings_Hover.png');
         this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
 
-        //Audio
-        this.load.audio('clickSound', 'audio/click.mp3');
-        this.load.audio('music', 'audio/marching_music.mp3');
     }
 
     create() {
-    //CONSTANTS
-        const gameConfig = this.sys.game.config;// Access the game configuration using the Scene Manager
-        // Get the center coordinates of the canvas
+        const gameConfig = this.sys.game.config; // Use this.sys.game.config
         const centerX = gameConfig.width / 2;
-        const soundManager = this.sys.game.sound;
-
-    //SOUNDS
-        //Click
-        var clickSound = soundManager.add('clickSound');
-
-        //Music
-        var music = soundManager.add('music', {
-            volume: 0.2,
-            loop: true,
-            delay: 0
-        });
-        
-        music.play({mute: gameConfig.audio.musicMuted});
-
-        /* //Starts music if  it's not already playing
-        if (!gameConfig.audio.musicPlaying){
-            music.play({mute: gameConfig.audio.musicMuted});
-            gameConfig.audio.musicPlaying = true;//Music has 
-        } */
-        
 
     //IMAGES
         const map = this.add.image(centerX, 300, 'mapStart');
@@ -58,12 +32,7 @@ export default class StartScene extends Phaser.Scene {
         startButton.on('pointerover', () => startButton.setTexture('start_hover'));
         startButton.on('pointerout', () => startButton.setTexture('start_default'));
         startButton.on('pointerdown', () =>  {
-
-            clickSound.play({mute: gameConfig.audio.effectsMuted});
-            
-            music.stop();//Stops music
-            
-            //Smooth transition to GameScene
+            gameConfig.audio.click.play();
             const transitionConfig = {
                 target: 'GameScene',  // Nombre de la escena a la que quieres transicionar
                 duration: 1000,       // Duración de la transición en milisegundos
@@ -80,16 +49,8 @@ export default class StartScene extends Phaser.Scene {
         settingsButton.on('pointerover', () => settingsButton.setTexture('settings_hover'));
         settingsButton.on('pointerout', () => settingsButton.setTexture('settings_default'));
         settingsButton.on('pointerdown', () => {
-            
-            clickSound.play({mute: gameConfig.audio.effectsMuted});
-            
-            music.stop();//Stops music
-            
-            this.scene.start('SettingsScene', {
-                    musicData : music, //To settings scene: from start scene
-                    clickSoundData : clickSound
-                }
-            );
+            gameConfig.audio.click.play();
+            this.scene.start('SettingsScene');
         });
 
          //Credits
@@ -97,11 +58,7 @@ export default class StartScene extends Phaser.Scene {
          creditsButton.on('pointerover', () => creditsButton.setTexture('credits_hover'));
          creditsButton.on('pointerout', () => creditsButton.setTexture('credits_default'));
          creditsButton.on('pointerdown', () => {
-
-            clickSound.play({mute: gameConfig.audio.effectsMuted});
-            
-            music.stop();//Stops music
-            
+            gameConfig.audio.click.play();
             this.scene.start('CreditsScene');
         });
 

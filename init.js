@@ -3,6 +3,13 @@ import GameScene from "./Scenes/GameScene.js";
 import SettingsScene from "./Scenes/SettingsScene.js";
 import CreditsScene from "./Scenes/CreditsScene.js";
 
+var audioConfig = {
+    music: new Audio('audio/marching_music.mp3'),
+    click: new Audio('audio/click.mp3'),
+};
+
+audioConfig.music.play();
+
 var config = {
     //Canvas
     type: Phaser.AUTO,
@@ -10,6 +17,8 @@ var config = {
     height: 600,
     parent: "display",
     backgroundColor: '#8FC9FF',
+
+    audio: audioConfig,
 
     //Physics
     physics: {
@@ -23,12 +32,6 @@ var config = {
     //Scenes
     scene: [StartScene, GameScene, SettingsScene, CreditsScene],
 
-    //Audio
-    audio: {
-        effectsMuted: false,
-        musicMuted: false,
-        //musicPlaying: false
-    }
 };
 
-var game = new Phaser.Game (config);
+var game = new Phaser.Game(config);

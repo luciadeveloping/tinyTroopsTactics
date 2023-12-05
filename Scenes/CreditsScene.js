@@ -9,9 +9,7 @@ export default class CreditsScene extends Phaser.Scene {
         this.load.image('exit_default', 'assets/ui/exit_Default.png');
         this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
 
-        //Audio
-        this.load.audio('clickSound', 'audio/click.mp3');
-        this.load.audio('music', 'audio/marching_music.mp3');
+        
     }
 
     create() {
@@ -21,24 +19,6 @@ export default class CreditsScene extends Phaser.Scene {
         const centerX = gameConfig.width / 2;
         const centerY = gameConfig.height / 2;
 
-    //SOUNDS
-        //Click
-        this.clickSound = this.sound.add('clickSound');
-
-        //Music
-        var music = this.sound.add('music', {
-            volume: 0.2,
-            loop: true,
-            delay: 0
-        });
-        
-        music.play({mute: gameConfig.audio.musicMuted});
-
-        /* //Starts music if  it's not already playing
-        if (!gameConfig.audio.musicPlaying){
-            music.play({mute: gameConfig.audio.musicMuted});
-            gameConfig.audio.musicPlaying = true;//Music has 
-        } */
         
     //IMAGES
         const logo = this.add.image(centerX-100, 120, "logo");//Logo image
@@ -120,12 +100,9 @@ export default class CreditsScene extends Phaser.Scene {
         exitButton.on('pointerover', () => exitButton.setTexture('exit_hover'));
         exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
         exitButton.on('pointerdown', () => {
-                //Muting of sound is effectsMuted
-                this.clickSound.play({mute: gameConfig.audio.effectsMuted});
-
-                music.stop();//Stops music
-
                 // Switch to the main menu scene
+                gameConfig.audio.click.play();
+		// music.stop(); //Stops music
                 this.scene.start('StartScene');
             }
         );
