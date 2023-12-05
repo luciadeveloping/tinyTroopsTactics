@@ -143,12 +143,16 @@ class Player extends SceneObject {
 }
 
 class Node extends SceneObject {
-    constructor(xPos, yPos) {
-        super(xPos, yPos, 'nodeTeam1');
+    constructor(xPos, yPos, zoneKey) {
+        super(xPos, yPos, 'node');
+        
+        // Create the region
+        this.region = new SceneObject(xPos, yPos, zoneKey);
+        
+        this.phaserGO.setDepth(1); // depth of the node sprite
         this.soldiers = NODE_STARTING_SOLDIERS;
-        this.soldiersDisplay = game.add.text(xPos - 7, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
+        this.soldiersDisplay = game.add.text(xPos - 7, yPos + 30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         this.updateSoldiersDisplay();
-        this.region = game.add.sprite(xPos, yPos);
         this.faction = Factions.Neutral;
     }
 
@@ -176,12 +180,14 @@ class Node extends SceneObject {
         switch(faction){
             case Factions.Neutral:
                 // Cambiar el color de region al color neutral
+                this.region.phaserGO.clearTint(); // Clear tint
                 break;
             case Factions.One:
                 // region con color equipo 1...
+                this.region.phaserGO.setTint(0xFFA500); // Orange tint for player 1
                 break;
             case Factions.Two:
-
+                this.region.phaserGO.setTint(0x800080); // Purple tint for player 2
                 break;
             default:
                 break;
@@ -197,23 +203,17 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        // Map.
-        this.load.image('map', 'assets/map/mapa.png');
-        this.load.image('mapZone0', 'assets/map/mapZone0.png');
-        this.load.image('mapZone1', 'assets/map/mapZone1.png');
-        this.load.image('mapZone2', 'assets/map/mapZone2.png');
-        this.load.image('mapZone3', 'assets/map/mapZone3.png');
-        this.load.image('mapZone4', 'assets/map/mapZone4.png');
-        this.load.image('mapZone5', 'assets/map/mapZone5.png');
-        this.load.image('mapZone6', 'assets/map/mapZone6.png');
-        this.load.image('mapZone7', 'assets/map/mapZone7.png');
-        this.load.image('mapZone8', 'assets/map/mapZone8.png');
-        this.load.image('mapZone9', 'assets/map/mapZone9.png');
+        //Map
+         this.load.image('map', 'assets/map/map_lvl1.png');
+         for (let i = 0; i < 10; i++) {
+             this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
+         }
 
-        // Scene Obects.
-        this.load.image('nodeTeam1', 'assets/crystal_01b.png');
-        this.load.image('nodeTeam2', 'assets/crystal_01j.png');
-        this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+        /// Scene Obects
+        this.load.image('node', 'assets/map/node.png');
+
+        this.load.image('player1', 'assets/player1.png');
+        this.load.image('player2', 'assets/player2.png');
     }
 
     create() {
@@ -221,16 +221,25 @@ export default class GameScene extends Phaser.Scene {
 
         // Map.
         this.cameras.main.setBackgroundColor('#add8e6');
-        //this.add.image(600, 300, 'map'); 
+        this.add.image(600, 300, 'map'); 
 
         // Players.
-        player1 = new Player(100, 500, 'dude');
-        player2 = new Player(200, 500, 'dude');
+        player1 = new Player(100, 500, 'player1');
+        player2 = new Player(200, 500, 'player2');
 
         nodeList = [
-            new Node(300, 300),
-            new Node(500, 300)
+            new Node(469, 113, 'mapZone0'),
+            new Node(591, 90,  'mapZone1'),
+            new Node(674, 131, 'mapZone2'),
+            new Node(675, 199, 'mapZone3'),
+            new Node(585, 292, 'mapZone4'),
+            new Node(726, 283, 'mapZone5'),
+            new Node(602, 411, 'mapZone6'),
+            new Node(712, 401, 'mapZone7'),
+            new Node(678, 467, 'mapZone8'),
+            new Node(690, 539, 'mapZone9'),
         ]
+
 
         //regArr = [
         //    this.add.sprite()
@@ -265,8 +274,10 @@ export default class GameScene extends Phaser.Scene {
         // Movement Player 1 (wasd).
         if (keys.left.isDown) {
             player1.moveLeft();
+            nodeList[0].changeFaction(Factions.One);
         } else if (keys.right.isDown) {
             player1.moveRight();
+            nodeList[0].changeFaction(Factions.Two)
         } else {
             player1.stopHorizontal();
         }
@@ -311,7 +322,7 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    generateMap(){
+   /* generateMap(){
         mapZones = this.physics.add.group();
         // Agrega las zonas del mapa al grupo
         var zone0 = this.physics.add.sprite(96, 146, 'mapZone0');
@@ -337,5 +348,5 @@ export default class GameScene extends Phaser.Scene {
         //prueba zonas con overlap
         this.physics.add.overlap(player1.phaserGO, mapZones, this.handleZoneOverlap, null, this);
         this.physics.add.overlap(player2.phaserGO, mapZones, this.handleZoneOverlap, null, this);
-    }
+    }*/
 }
