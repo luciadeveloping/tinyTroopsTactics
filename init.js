@@ -3,12 +3,15 @@ import GameScene from "./Scenes/GameScene.js";
 import SettingsScene from "./Scenes/SettingsScene.js";
 import CreditsScene from "./Scenes/CreditsScene.js";
 
-const config = {
+var config = {
+    //Canvas
     type: Phaser.AUTO,
     width: 1200,
     height: 600,
     parent: "display",
-    backgroundColor: '#3498db',
+    backgroundColor: '#8FC9FF',
+
+    //Physics
     physics: {
         default: 'arcade',
         arcade: {
@@ -16,7 +19,16 @@ const config = {
             debug: false
         }
     },
-    scene: [GameScene, StartScene, SettingsScene, CreditsScene],
+
+    //Scenes
+    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
+
+    //Audio
+    audio: {
+        effectsMuted: false,
+        musicMuted: false,
+        //musicPlaying: false
+    }
 };
 
 var game = new Phaser.Game (config);

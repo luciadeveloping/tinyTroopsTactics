@@ -4,22 +4,42 @@ export default class CreditsScene extends Phaser.Scene {
     }
 
     preload() {
+        //Images
         this.load.image("logo", "./assets/misc/Logo.png"); //Logo of Spinaca Studio
-        this.load.audio('clickSound', 'audio/click.mp3');
         this.load.image('exit_default', 'assets/ui/exit_Default.png');
         this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
+
+        //Audio
+        this.load.audio('clickSound', 'audio/click.mp3');
+        this.load.audio('music', 'audio/marching_music.mp3');
     }
 
     create() {
     //CONSTANTS
-        const gameConfig = this.sys.game.config;// Access the game configuration using the Scene Manager
+        var gameConfig = this.sys.game.config;// Access the game configuration using the Scene Manager
         // Get the center coordinates of the canvas
         const centerX = gameConfig.width / 2;
         const centerY = gameConfig.height / 2;
 
     //SOUNDS
-        this.clickSound = this.sound.add('clickSound');//Sound when button clicked
+        //Click
+        this.clickSound = this.sound.add('clickSound');
 
+        //Music
+        var music = this.sound.add('music', {
+            volume: 0.2,
+            loop: true,
+            delay: 0
+        });
+        
+        music.play({mute: gameConfig.audio.musicMuted});
+
+        /* //Starts music if  it's not already playing
+        if (!gameConfig.audio.musicPlaying){
+            music.play({mute: gameConfig.audio.musicMuted});
+            gameConfig.audio.musicPlaying = true;//Music has 
+        } */
+        
     //IMAGES
         const logo = this.add.image(centerX-100, 120, "logo");//Logo image
         logo.setScale(0.3);
@@ -29,18 +49,10 @@ export default class CreditsScene extends Phaser.Scene {
     //FIGURES
         //Name credits background
         var graphics = this.add.graphics();
-        graphics.fillStyle(2590530, 0.7); // Set the fill color
+        graphics.fillStyle(1884159, 0.7); // Set the fill color
         graphics.fillRoundedRect(centerX - 200, centerY - 90, 400, 220, 10); // Rectangle dimensions and corner radius
-        
-        //Button background
-        // var button = this.add.graphics();
-        // button.fillStyle(3056593, 1);
-        // button.fillRoundedRect(centerX - 150, centerY+160 , 300, 70, 10);
-
-        //Button hit area
-        //var buttonHitArea = this.add.rectangle()
     
-        //TEXTS
+    //TEXTS
         var studioText = this.add.text(
             centerX+70,
             centerY-180,
@@ -105,46 +117,17 @@ export default class CreditsScene extends Phaser.Scene {
 
     //INTERACTIVITY
         exitButton.setInteractive();
-
         exitButton.on('pointerover', () => exitButton.setTexture('exit_hover'));
-
         exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
+        exitButton.on('pointerdown', () => {
+                //Muting of sound is effectsMuted
+                this.clickSound.play({mute: gameConfig.audio.effectsMuted});
 
-        exitButton.on('pointerdown', () => 
-            {
-                this.scene.start('StartScene'); // Switch to the main menu scene
-                this.clickSound.play();
+                music.stop();//Stops music
+
+                // Switch to the main menu scene
+                this.scene.start('StartScene');
             }
         );
-
-        //button.setInteractive();
-        // //When pointer over changes color
-        // button.on('pointerover', function () 
-        //     { 
-        //         button.fillStyle(7328247, 1);
-        //     }
-        // ,this);
-        // //When pointer not over resets color
-        // button.on('pointerout', function () 
-        //     {
-        //         button.fillStyle(3056593, 1);
-        //     }
-        // ,this);
-        // //When clicked plays sound and returns to start menu
-        // button.on('pointerdown', function ()
-        //     {
-        //         this.clickSound.play();
-        //         this.scene.start('StartScene');
-        //     }
-        // ,this);
-
-        // Handle button click
-        // returnText.setInteractive(button);
-        // returnText.on('pointerdown', function () 
-        //     {
-        //         this.scene.start('StartScene'); // Switch to the main menu scene
-        //         this.clickSound.play();
-        //     }, 
-        // this);
     }
 }
