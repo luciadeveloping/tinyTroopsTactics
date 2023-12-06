@@ -8,9 +8,9 @@ var audioConfig = {
     click: new Audio('audio/click.mp3'),
 };
 
-/*audioConfig.music.addEventListener('canplaythrough', function () {
+function playMusic() {
     audioConfig.music.play();
-});*/
+}
 
 var config = {
     //Canvas
@@ -21,6 +21,14 @@ var config = {
     backgroundColor: '#8FC9FF',
 
     audio: audioConfig,
+    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
+
+    callbacks: {
+        postBoot: function () {
+            // Add a click event listener to play music on user interaction
+            document.addEventListener('keydown', playMusic, { once: true });
+        },
+    },
 
     //Physics
     physics: {
@@ -30,9 +38,6 @@ var config = {
             debug: false
         }
     },
-
-    //Scenes
-    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
-
 };
+
 var game = new Phaser.Game(config);

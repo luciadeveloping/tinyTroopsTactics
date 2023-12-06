@@ -10,7 +10,7 @@ export default class StartScene extends Phaser.Scene {
 
     preload() {
         //Images
-        this.load.image('mapStart', 'assets/map/mapa_blur.png');
+        this.load.image('mapStart', 'assets/map/mapa_1.png');
         this.load.image('title', 'assets/ui/title.png');
         this.load.image('start_default', 'assets/ui/start_Default.png');
         this.load.image('credits_default', 'assets/ui/credits_Default.png');
@@ -37,94 +37,107 @@ export default class StartScene extends Phaser.Scene {
             down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
             right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-            interact: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
+            interactPlayer1: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
+            interactPlayer2: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
         };
 
         // IMAGES
-        const map = this.add.image(centerX, 300, 'mapStart');
-        const title = this.add.image(centerX, 100, 'title');
+        const map = this.add.image(850, centerY, 'mapStart');
+        const title = this.add.image(250, 150, 'title');
 
         // BUTTONS
-        //Start
-        const startButton = this.add.image(centerX, 195, 'start_default').setInteractive();
-        startButton.on('pointerover', () => startButton.setTexture('start_hover'));
-        startButton.on('pointerout', () => startButton.setTexture('start_default'));
-        startButton.on('pointerdown', () =>  {
-            gameConfig.audio.click.play();
-            const transitionConfig = {
-                target: 'GameScene',  // Nombre de la escena a la que quieres transicionar
-                duration: 1000,       // Duración de la transición en milisegundos
-                sleep: true,          // Hacer que la escena actual duerma durante la transición
-                onUpdate: null,
-                onComplete: null
-            };
-
-            this.scene.transition(transitionConfig);
-        });
+        // Start
+        this.startButton = this.add.image(250, 230, 'start_default').setInteractive();
 
         //Settings
-        const settingsButton = this.add.image(centerX, 260, 'settings_default').setInteractive();
-        settingsButton.on('pointerover', () => settingsButton.setTexture('settings_hover'));
-        settingsButton.on('pointerout', () => settingsButton.setTexture('settings_default'));
-        settingsButton.on('pointerdown', () => {
-            gameConfig.audio.click.play();
-            this.scene.start('SettingsScene');
-        });
+        this.settingsButton = this.add.image(250, 310, 'settings_default').setInteractive();
 
-         //Credits
-         const creditsButton = this.add.image(centerX, 325, 'credits_default').setInteractive();
-         creditsButton.on('pointerover', () => creditsButton.setTexture('credits_hover'));
-         creditsButton.on('pointerout', () => creditsButton.setTexture('credits_default'));
-         creditsButton.on('pointerdown', () => {
-            gameConfig.audio.click.play();
-            this.scene.start('CreditsScene');
-        });
+        //Credits
+        this.creditsButton = this.add.image(250, 390, 'credits_default').setInteractive();
 
         //Exit
-        const exitButton = this.add.image(centerX, 390, 'exit_default').setInteractive();
-        exitButton.on('pointerover', () => exitButton.setTexture('exit_hover'));
-        exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
-        //exitButton.on('pointerdown', () => this.sys.game.destroy(true));
+        this.exitButton = this.add.image(250, 470, 'exit_default').setInteractive();
 
+        player1 = this.physics.add.image(900, 200, 'player1').setInteractive();
+        player2 = this.physics.add.image(1000, centerY, 'player2').setInteractive();
 
-        // PLAYERS (usando sprites y activando físicas)
-        player1 = this.physics.add.image(200, centerY, 'player1');
-        player2 = this.physics.add.image(1000, centerY, 'player2');
+        this.resetKeys();
+        
     }
 
     update() {
-        // Movement Player 1 (wasd).
-        if (keys.left.isDown) {
-            player1.setVelocityX(-100);
-        } else if (keys.right.isDown) {
-            player1.setVelocityX(100);
+    // Movement Player 1 (wasd).
+    this.handlePlayerMovement(player1, keys);
+
+    // Movement Player 2 (arrows).
+    this.handlePlayerMovement(player2, cursors);
+
+    this.handleButtonInteraction(this.startButton, 'GameScene', keys.interactPlayer1);
+    this.handleButtonInteraction(this.startButton, 'GameScene', keys.interactPlayer2);
+
+    this.handleButtonInteraction(this.settingsButton, 'SettingsScene', keys.interactPlayer1);
+    this.handleButtonInteraction(this.settingsButton, 'SettingsScene', keys.interactPlayer2);
+
+    this.handleButtonInteraction(this.creditsButton, 'CreditsScene', keys.interactPlayer1);
+    this.handleButtonInteraction(this.creditsButton, 'CreditsScene', keys.interactPlayer2);
+
+    // No target scene for exitButton
+    this.handleButtonInteraction(this.exitButton, null, keys.interactPlayer1);
+    this.handleButtonInteraction(this.exitButton, null, keys.interactPlayer2);
+    
+    }
+
+    handleButtonInteraction(button, targetScene, interactKey) {
+        const player1Bounds = player1.getBounds();
+        const player2Bounds = player2.getBounds();
+        const buttonBounds = button.getBounds();
+
+        if (
+        Phaser.Geom.Intersects.RectangleToRectangle(player1Bounds, buttonBounds) ||
+        Phaser.Geom.Intersects.RectangleToRectangle(player2Bounds, buttonBounds)
+        ) {
+            button.setTexture(`${button.texture.key.replace('_default', '_hover')}`);
+            if (interactKey.isDown) {
+            this.handleButtonClick(targetScene);
+            }
         } else {
-            player1.setVelocityX(0);
+        button.setTexture(button.texture.key.replace('_hover', '_default'));
+        }
+    }
+
+    handlePlayerMovement(player, input) {
+        if (input.left.isDown) {
+            player.setVelocityX(-200);
+        } else if (input.right.isDown) {
+            player.setVelocityX(200);
+        } else {
+            player.setVelocityX(0);
         }
 
-        if (keys.up.isDown) {
-            player1.setVelocityY(-100);
-        } else if (keys.down.isDown) {
-            player1.setVelocityY(100);
+        if (input.up.isDown) {
+            player.setVelocityY(-200);
+        } else if (input.down.isDown) {
+            player.setVelocityY(200);
         } else {
-            player1.setVelocityY(0);
+            player.setVelocityY(0);
         }
+    }
 
-        // Movement Player 2 (arrows).
-        if (cursors.left.isDown) {
-            player2.setVelocityX(-100);
-        } else if (cursors.right.isDown) {
-            player2.setVelocityX(100);
+    handleButtonClick(targetScene) {
+        if (targetScene) {
+            this.scene.start(targetScene);
         } else {
-            player2.setVelocityX(0);
-        }
+            // If no target scene is provided
+        }   
 
-        if (cursors.up.isDown) {
-            player2.setVelocityY(-100);
-        } else if (cursors.down.isDown) {
-            player2.setVelocityY(100);
-        } else {
-            player2.setVelocityY(0);
-        }
+    }
+
+    resetKeys() {
+        keys.up.reset();
+        keys.down.reset();
+        keys.left.reset();
+        keys.right.reset();
+        keys.interactPlayer1.reset();
+        keys.interactPlayer2.reset();
     }
 }

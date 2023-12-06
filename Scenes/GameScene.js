@@ -1,10 +1,6 @@
 var game;
 var player1;
 var player2;
-var node1; // Nuevo
-var node2; // Nuevo
-var text;
-var mapZones;
 
 var nodeList;
 
@@ -220,7 +216,6 @@ export default class GameScene extends Phaser.Scene {
         game = this;
 
         // Map.
-        this.cameras.main.setBackgroundColor('#add8e6');
         this.add.image(600, 300, 'map'); 
 
         // Players.
