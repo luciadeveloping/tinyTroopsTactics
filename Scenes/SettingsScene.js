@@ -3,12 +3,6 @@ export default class SettingsScene extends Phaser.Scene {
         super({ key: 'SettingsScene' });
     }
 
-    preload() {
-        // Images
-        this.load.image('exit_default', 'assets/ui/exit_Default.png');
-        this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
-    }
-
     create() {
         // CONSTANTS
         const gameConfig = this.sys.game.config; // Game configuration
@@ -137,6 +131,11 @@ export default class SettingsScene extends Phaser.Scene {
     musicButton.on('pointerover', () => musicButton.setTint('12094720'));
     musicButton.on('pointerout', () => musicButton.clearTint());
     musicButton.on('pointerdown', () => {
+        //Plays click sound if not muted
+        if (gameConfig.audio.click.mute == false){
+            gameConfig.audio.click.play();
+        }
+        
         // Toggles music
         gameConfig.audio.music.mute = !gameConfig.audio.music.mute;
 
@@ -165,6 +164,11 @@ export default class SettingsScene extends Phaser.Scene {
     // Toggles effects
         gameConfig.audio.click.mute = !gameConfig.audio.click.mute;
 
+        //Plays click sound if not muted
+        if (gameConfig.audio.click.mute == false){
+            gameConfig.audio.click.play();
+        }
+
     // Changes text and color
         if (!gameConfig.audio.click.mute) {
             effectsButton.setText('On');
@@ -180,8 +184,10 @@ export default class SettingsScene extends Phaser.Scene {
     exitButton.on('pointerover', () => exitButton.setTexture('exit_hover'));
     exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
     exitButton.on('pointerdown', () => {
-    // Muting of sound is effectsMuted
-        gameConfig.audio.click.play({ mute: gameConfig.audio.click.mute });
+        //Plays click sound if not muted
+        if (gameConfig.audio.click.mute == false){
+            gameConfig.audio.click.play();
+        }
 
     // Stop music (if it's playing)
         if (gameConfig.audio.music.isPlaying) {

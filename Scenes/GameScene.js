@@ -10,17 +10,20 @@ const PLAYER_RANGE = 200;
 const PLAYER_MOVEMENT_SPEED = 200;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const NODE_STARTING_SOLDIERS = 5;
-const Factions = {
+const PLAYER_STARTING_SOLDIERS = 10;
+const SOLDIER_GENERATION_INTERVAL = 1000;// Milliseconds
+
+const Faction = {
     Neutral: "Neutral",
     One: "One",
     Two: "Two"
 }
 
-const DRAFTING_COOLDOWN = 500; // Miliseconds
+const DRAFTING_COOLDOWN = 500; // Milliseconds
 var initTimeDraftPlayer1 = 0;
 
 class SceneObject {
-    // This class uses 'game' which is a Phaser object that needs to be initialize in the 'create' method !!!!!
+    // This class uses a global variable 'game' which is a Phaser object that needs to be initialize in the 'create' method !!!!!
     constructor(xPos, yPos, sprite) {
         this.phaserGO = game.physics.add.sprite(xPos, yPos, sprite); // Phaser Game Object.
         if (this.phaserGO.body) {
@@ -45,10 +48,12 @@ class SceneObject {
 }
 
 class Player extends SceneObject {
-    constructor(xPos, yPos, sprite) {
+    constructor(xPos, yPos, sprite, faction) {
         super(xPos, yPos, sprite);
         this.phaserGO.setDepth(1);
-        this.soldiers = 0;
+
+        this.faction = faction;
+        this.soldiers = PLAYER_STARTING_SOLDIERS;
         this.soldiersDisplay = game.add.text(xPos, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
         this.updateSoldiersDisplay();
         this.range = PLAYER_RANGE;
@@ -56,6 +61,7 @@ class Player extends SceneObject {
         this.selectedNode = undefined;
     }
 
+    // Movement:
     moveDown(){
         this.phaserGO.setVelocityY(PLAYER_MOVEMENT_SPEED);
         this.updateSoldiersDisplayPosition();
@@ -86,10 +92,17 @@ class Player extends SceneObject {
         this.soldiersDisplay.setText(this.soldiers);
     }    
 
-    isInRange(sceneObject) { // Checks if a given Scene Object is in range.
-        return this.distanceTo(sceneObject) <= this.range;
+    //Mechaics:
+    addSoldiers(nSoldiers){
+        if((this.soldiers + nSoldiers) < 0 ){ // Can't go negative.
+            this.soldiers = 0;
+        }else{
+            this.soldiers = this.soldiers + nSoldiers;
+        }
+        this.updateSoldiersDisplay();
     }
 
+    // Node selection:
     checkForNodesInRange(){ // Fills up nodesInRange.
         this.nodesInRange.splice(0, this.nodesInRange.length); // Empty array.
         nodeList.forEach(node => {
@@ -128,13 +141,38 @@ class Player extends SceneObject {
         this.selectedNode = closestNode;
     }
 
+    isInRange(sceneObject) { // Checks if a given Scene Object is in range.
+        return this.distanceTo(sceneObject) <= this.range;
+    }
+
+    // Node interaction:
+    interactWithSelectedNode(){
+        if(this.selectedNode == undefined) { return false; }
+        
+        if(this.selectedNode.faction == this.faction){ // Friendly node.
+            this.draftSoldierFromSelectedNode();
+        }else{ // Enemy/Neutral node.
+            this.attackSelectedNode();
+        }
+        return true;
+    }
+
     draftSoldierFromSelectedNode(){
         if(this.selectedNode != undefined){ // If a node is selected.
-            if(this.selectedNode.draftSoldier()) this.soldiers = this.soldiers + 1; // If there are enough soldiers in selected node draft them.
-            this.updateSoldiersDisplay()
+
+            if(this.selectedNode.draftSoldier()){ // If there are enough soldiers in selected node draft them.
+                console.log("Drafting...");
+                this.addSoldiers(1);
+            }
             return true;
         }
         return false;
+    }
+    attackSelectedNode(){
+        if(this.soldiers > 0){
+            this.selectedNode.takeDamage(this);
+            this.addSoldiers(-1);
+        }
     }
 }
 
@@ -149,17 +187,8 @@ class Node extends SceneObject {
         this.soldiers = NODE_STARTING_SOLDIERS;
         this.soldiersDisplay = game.add.text(xPos - 7, yPos + 30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         this.updateSoldiersDisplay();
-        this.faction = Factions.Neutral;
-    }
-
-    draftSoldier(){
-        if(this.soldiers > 0){
-            this.soldiers = this.soldiers - 1;
-            this.updateSoldiersDisplay();
-            return true;
-        }
-        console.log("This node is empty!");
-        return false;
+        this.faction = Faction.Neutral;
+        this.soldiersGenerationTimer;
     }
 
     select(){
@@ -172,18 +201,61 @@ class Node extends SceneObject {
         this.soldiersDisplay.setText(this.soldiers);
     }  
 
+    // Mechanics:
+
+    startSoldierGeneration(){
+        this.soldiersGenerationTimer = setInterval(this.addSoldiers.bind(this), SOLDIER_GENERATION_INTERVAL, 1);
+    }
+    stopSoldierGeneratio(){
+        clearInterval(this.soldiersGenerationTimer);
+    }
+
+    // Interaction:
+    addSoldiers(nSoldiers){
+        if((this.soldiers + nSoldiers) < 0 ){ // Can't go negative.
+            this.soldiers = 0;
+        }else{
+            this.soldiers = this.soldiers + nSoldiers;
+        }
+        this.updateSoldiersDisplay();
+    }
+
+    takeDamage(player){
+        if(this.soldiers > 0){
+            this.addSoldiers(-1);
+            if(this.soldiers == 0){ // Turn neutral if soldiers reach 0.
+                this.changeFaction(Faction.Neutral);
+            }
+
+        }else{
+            this.addSoldiers(+1);
+            this.changeFaction(player.faction);
+        }
+        
+    }
+
+    draftSoldier(){
+        if(this.soldiers > 0){
+            this.addSoldiers(-1);
+            return true;
+        }
+        console.log("This node is empty!");
+        return false;
+    }
+
     changeFaction(faction){
         switch(faction){
-            case Factions.Neutral:
-                // Cambiar el color de region al color neutral
+            case Faction.Neutral:
                 this.region.phaserGO.clearTint(); // Clear tint
+                this.stopSoldierGeneratio()
                 break;
-            case Factions.One:
-                // region con color equipo 1...
+            case Faction.One:
                 this.region.phaserGO.setTint(0xFFA500); // Orange tint for player 1
+                this.startSoldierGeneration();
                 break;
-            case Factions.Two:
+            case Faction.Two:
                 this.region.phaserGO.setTint(0x800080); // Purple tint for player 2
+                this.startSoldierGeneration();
                 break;
             default:
                 break;
@@ -200,10 +272,10 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         //Map
-         this.load.image('map', 'assets/map/map_lvl1.png');
-         for (let i = 0; i < 10; i++) {
-             this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
-         }
+        this.load.image('map', 'assets/map/map_lvl1.png');
+        for (let i = 0; i < 10; i++) {
+            this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
+        }
 
         /// Scene Obects
         this.load.image('node', 'assets/map/node.png');
@@ -216,11 +288,12 @@ export default class GameScene extends Phaser.Scene {
         game = this;
 
         // Map.
+        this.cameras.main.setBackgroundColor('#add8e6');
         this.add.image(600, 300, 'map'); 
 
         // Players.
-        player1 = new Player(100, 500, 'player1');
-        player2 = new Player(200, 500, 'player2');
+        player1 = new Player(100, 500, 'player1', Faction.One);
+        player2 = new Player(200, 500, 'player2', Faction.Two);
 
         nodeList = [
             new Node(469, 113, 'mapZone0'),
@@ -234,12 +307,6 @@ export default class GameScene extends Phaser.Scene {
             new Node(678, 467, 'mapZone8'),
             new Node(690, 539, 'mapZone9'),
         ]
-
-
-        //regArr = [
-        //    this.add.sprite()
-        //]
-
         //KEYBOARD INPUTS
         cursors = this.input.keyboard.createCursorKeys();
         keys = this.input.keyboard.addKeys({
@@ -247,7 +314,7 @@ export default class GameScene extends Phaser.Scene {
             'down': Phaser.Input.Keyboard.KeyCodes.S,
             'left': Phaser.Input.Keyboard.KeyCodes.A,
             'right': Phaser.Input.Keyboard.KeyCodes.D,
-            'interact': Phaser.Input.Keyboard.KeyCodes.CTRL
+            'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
     }
 
@@ -269,10 +336,8 @@ export default class GameScene extends Phaser.Scene {
         // Movement Player 1 (wasd).
         if (keys.left.isDown) {
             player1.moveLeft();
-            nodeList[0].changeFaction(Factions.One);
         } else if (keys.right.isDown) {
             player1.moveRight();
-            nodeList[0].changeFaction(Factions.Two)
         } else {
             player1.stopHorizontal();
         }
@@ -293,7 +358,7 @@ export default class GameScene extends Phaser.Scene {
             //console.log(" te = " + timeElapsed + ", initTime = " + initTimeDraftPlayer1);
 
             if(timeElapsed >= DRAFTING_COOLDOWN){
-                player1.draftSoldierFromSelectedNode();
+                player1.interactWithSelectedNode();
                 initTimeDraftPlayer1 = time.getSeconds() * 1000 + time.getMilliseconds();
                 //console.log("Player1 soldiers: " + player1.soldiers);
             }
@@ -316,32 +381,4 @@ export default class GameScene extends Phaser.Scene {
             player2.stopVertical();
         }
     }
-
-   /* generateMap(){
-        mapZones = this.physics.add.group();
-        // Agrega las zonas del mapa al grupo
-        var zone0 = this.physics.add.sprite(96, 146, 'mapZone0');
-        var zone1 = this.physics.add.sprite(185, 129, 'mapZone1');
-        var zone2 = this.physics.add.sprite(247, 160, 'mapZone2');
-        var zone3 = this.physics.add.sprite(247, 209, 'mapZone3');
-        var zone4 = this.physics.add.sprite(181, 278, 'mapZone4');
-        var zone5 = this.physics.add.sprite(285, 271, 'mapZone5');
-        var zone6 = this.physics.add.sprite(275, 357, 'mapZone6');
-        var zone7 = this.physics.add.sprite(250, 405, 'mapZone7');
-        var zone8 = this.physics.add.sprite(195, 365, 'mapZone8');
-        var zone9 = this.physics.add.sprite(258, 459, 'mapZone9');
-
-        mapZones.addMultiple([zone0, zone1, zone2, zone3 ,zone4 ,
-        zone5, zone6, zone7, zone8, zone9]);
-        
-        mapZones.children.iterate(function (zone) {
-            zone.setImmovable(true); //así no se mueven
-            zone.body.allowGravity = false; // para q no haya gravedad, sino se caen
-            zone.setCollideWorldBounds(true);
-        });
-
-        //prueba zonas con overlap
-        this.physics.add.overlap(player1.phaserGO, mapZones, this.handleZoneOverlap, null, this);
-        this.physics.add.overlap(player2.phaserGO, mapZones, this.handleZoneOverlap, null, this);
-    }*/
 }

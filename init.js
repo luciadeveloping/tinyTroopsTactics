@@ -1,36 +1,45 @@
+import Bootloader from "./Scenes/Bootloader.js";
 import StartScene from "./Scenes/StartScene.js";
 import GameScene from "./Scenes/GameScene.js";
 import SettingsScene from "./Scenes/SettingsScene.js";
 import CreditsScene from "./Scenes/CreditsScene.js";
 
-var audioConfig = {
+
+//Audio global configuration
+var audio = {
     music: new Audio('audio/marching_music.mp3'),
-    click: new Audio('audio/click.mp3'),
+    click: new Audio('audio/click.mp3')
 };
 
 function playMusic() {
-    audioConfig.music.play();
+    audio.music.play({
+        volume: 0.2,
+        loop: true
+    });
 }
 
+//Game config
 var config = {
-    //Canvas
+    //Canvas settings
     type: Phaser.AUTO,
     width: 1200,
     height: 600,
-    parent: "display",
+    parent: "display", //Hosting container
     backgroundColor: '#8FC9FF',
 
-    audio: audioConfig,
-    scene: [StartScene, GameScene, SettingsScene, CreditsScene],
+    audio: audio,
+
+    scene: [Bootloader, StartScene, GameScene, SettingsScene, CreditsScene],
+
 
     callbacks: {
         postBoot: function () {
-            // Add a click event listener to play music on user interaction
+            //Plays music when keyboard input detected
             document.addEventListener('keydown', playMusic, { once: true });
         },
     },
 
-    //Physics
+    //Game behaviour
     physics: {
         default: 'arcade',
         arcade: {
@@ -40,4 +49,4 @@ var config = {
     },
 };
 
-var game = new Phaser.Game(config);
+var game = new Phaser.Game(config); //New game is created

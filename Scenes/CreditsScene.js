@@ -3,15 +3,6 @@ export default class CreditsScene extends Phaser.Scene {
         super({key: 'CreditsScene'});
     }
 
-    preload() {
-        //Images
-        this.load.image("logo", "./assets/misc/Logo.png"); //Logo of Spinaca Studio
-        this.load.image('exit_default', 'assets/ui/exit_Default.png');
-        this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
-
-        
-    }
-
     create() {
     //CONSTANTS
         var gameConfig = this.sys.game.config;// Access the game configuration using the Scene Manager
