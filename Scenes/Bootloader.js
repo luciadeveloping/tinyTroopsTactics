@@ -6,7 +6,7 @@ export default class Bootloader extends Phaser.Scene {
     preload(){
         //Start startScene when everything is loaded
         this.load.on("complete", () => {
-            this.scene.start("StartScene");
+            this.scene.start("SettingsScene");
         })
 
         //Buttons

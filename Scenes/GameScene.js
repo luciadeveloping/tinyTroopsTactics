@@ -4,14 +4,17 @@ var player2;
 
 var nodeList;
 
-var cursors;
-var keys;
+var player1Controller;
+var player2Controller;
+
 const PLAYER_RANGE = 200;
 const PLAYER_MOVEMENT_SPEED = 200;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const NODE_STARTING_SOLDIERS = 5;
 const PLAYER_STARTING_SOLDIERS = 10;
-const SOLDIER_GENERATION_INTERVAL = 1000;// Milliseconds
+const SOLDIER_GENERATION_INTERVAL = 2000;// Milliseconds
+const DRAFTING_COOLDOWN = 500; // Milliseconds
+var initTimeDraftPlayer1 = 0;
 
 const Faction = {
     Neutral: "Neutral",
@@ -19,8 +22,15 @@ const Faction = {
     Two: "Two"
 }
 
-const DRAFTING_COOLDOWN = 500; // Milliseconds
-var initTimeDraftPlayer1 = 0;
+const Movement = {
+    None: "None",
+    StopVertial: "Stopvertical",
+    StopHorizontal: "StopHorizotal",
+    Up: "Up",
+    Down: "Down",
+    Right: "Right",
+    Left: "Left"
+}
 
 class SceneObject {
     // This class uses a global variable 'game' which is a Phaser object that needs to be initialize in the 'create' method !!!!!
@@ -59,31 +69,43 @@ class Player extends SceneObject {
         this.range = PLAYER_RANGE;
         this.nodesInRange = new Array();
         this.selectedNode = undefined;
+        this.initTimeDraft = 0;
     }
 
     // Movement:
-    moveDown(){
-        this.phaserGO.setVelocityY(PLAYER_MOVEMENT_SPEED);
+    move(movement){
+        switch(movement){
+            case Movement.Up:
+                this.phaserGO.setVelocityY(-PLAYER_MOVEMENT_SPEED);
+                break;
+            case Movement.Down:
+                this.phaserGO.setVelocityY(PLAYER_MOVEMENT_SPEED);
+                break;
+            case Movement.Right:
+                this.phaserGO.setVelocityX(PLAYER_MOVEMENT_SPEED);
+                break;
+            case Movement.Left:
+                this.phaserGO.setVelocityX(-PLAYER_MOVEMENT_SPEED);
+                break;
+            case Movement.None:
+                this.phaserGO.setVelocityX(0);
+                this.phaserGO.setVelocityY(0);
+                break;
+            case Movement.StopHorizontal:
+                this.phaserGO.setVelocityX(0);
+                break;
+            case Movement.StopVertial:
+                this.phaserGO.setVelocityY(0);
+                break;
+            default:
+                console.log("No movement valid parameter");
+                break;
+        }
+
         this.updateSoldiersDisplayPosition();
+        this.selectClosestNode(); // Each time player changes position check for the closest node to select.
     }
-    moveUp(){
-        this.phaserGO.setVelocityY(-PLAYER_MOVEMENT_SPEED);
-        this.updateSoldiersDisplayPosition();
-    }
-    moveRight(){
-        this.phaserGO.setVelocityX(PLAYER_MOVEMENT_SPEED);
-        this.updateSoldiersDisplayPosition();
-    }
-    moveLeft(){
-        this.phaserGO.setVelocityX(-PLAYER_MOVEMENT_SPEED);
-        this.updateSoldiersDisplayPosition();
-    }
-    stopHorizontal(){
-        this.phaserGO.setVelocityX(0);
-    }
-    stopVertical(){
-        this.phaserGO.setVelocityY(0);
-    }
+
     updateSoldiersDisplayPosition(){
         this.soldiersDisplay.x = this.phaserGO.x;
         this.soldiersDisplay.y = this.phaserGO.y - SOLDIER_DISPLAY_VERTICAL_ANCHOR;
@@ -93,7 +115,7 @@ class Player extends SceneObject {
     }    
 
     //Mechaics:
-    addSoldiers(nSoldiers){
+    addSoldiers(nSoldiers){ // Can also be used to substract soldiers.
         if((this.soldiers + nSoldiers) < 0 ){ // Can't go negative.
             this.soldiers = 0;
         }else{
@@ -118,7 +140,7 @@ class Player extends SceneObject {
 
         if(this.nodesInRange.length == 0){ // If there are no nodes in range.
             if(this.selectedNode != undefined){ // If there was one previously selected, unselect it.
-                this.selectedNode.unselect();
+                this.selectedNode.unselect(this.faction);
                 this.selectedNode = undefined;
             }
             return undefined;
@@ -133,11 +155,11 @@ class Player extends SceneObject {
         });
 
         if(this.selectedNode != undefined){ // If there was a previously selected node...
-            if(this.selectedNode != closestNode) this.selectedNode.unselect(); // ...and its no longer the closest one, unselect the previous one.
+            if(this.selectedNode != closestNode) this.selectedNode.unselect(this.faction); // ...and its no longer the closest one, unselect the previous one.
         }
         
         // Select the closest node.
-        closestNode.select(); 
+        closestNode.select(this.faction); 
         this.selectedNode = closestNode;
     }
 
@@ -146,9 +168,23 @@ class Player extends SceneObject {
     }
 
     // Node interaction:
+    interact(){ // Tries to interact with the scene selected object, cooldown is applied.
+
+        // Cooldown implementation.
+        var time = new Date();
+        var timeElapsed = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - this.initTimeDraft;
+        //console.log(" te = " + timeElapsed + ", initTime = " + this.initTimeDraft + " interacting:");
+
+        if(timeElapsed >= DRAFTING_COOLDOWN){
+            this.interactWithSelectedNode();
+            this.initTimeDraft = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
+        }
+    }
+
     interactWithSelectedNode(){
         if(this.selectedNode == undefined) { return false; }
         
+        //console.log("Iteracting...");
         if(this.selectedNode.faction == this.faction){ // Friendly node.
             this.draftSoldierFromSelectedNode();
         }else{ // Enemy/Neutral node.
@@ -161,13 +197,14 @@ class Player extends SceneObject {
         if(this.selectedNode != undefined){ // If a node is selected.
 
             if(this.selectedNode.draftSoldier()){ // If there are enough soldiers in selected node draft them.
-                console.log("Drafting...");
+                //console.log("Drafting...");
                 this.addSoldiers(1);
             }
             return true;
         }
         return false;
     }
+
     attackSelectedNode(){
         if(this.soldiers > 0){
             this.selectedNode.takeDamage(this);
@@ -183,7 +220,7 @@ class Node extends SceneObject {
         // Create the region
         this.region = new SceneObject(xPos, yPos, zoneKey);
         
-        this.phaserGO.setDepth(1); // depth of the node sprite
+        this.phaserGO.setDepth(1);
         this.soldiers = NODE_STARTING_SOLDIERS;
         this.soldiersDisplay = game.add.text(xPos - 7, yPos + 30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         this.updateSoldiersDisplay();
@@ -191,18 +228,40 @@ class Node extends SceneObject {
         this.soldiersGenerationTimer;
     }
 
-    select(){
-        this.phaserGO.setTint(100);
-    }
-    unselect(){
-        this.phaserGO.clearTint();
-    }
     updateSoldiersDisplay(){
         this.soldiersDisplay.setText(this.soldiers);
     }  
 
-    // Mechanics:
+    // Node selection:
+    select(faction){
+        switch(faction){
+            case Faction.One:
+                // Highlight node for player 1
+                this.phaserGO.setTint(100);
+                break;
+            case Faction.Two:
+                // Highlight node for player 1
+                this.phaserGO.setTint(100);
+                break;
+        }
+        
+    }
+    unselect(faction){
+        switch(faction){
+            case Faction.One:
+                // Stop selection node for player 1
+                this.phaserGO.clearTint();
+                break;
+            case Faction.Two:
+                // Stop selecting node for player 1
+                this.phaserGO.clearTint();
+                break;
+        }
+        
+    }
+   
 
+    // Mechanics:
     startSoldierGeneration(){
         this.soldiersGenerationTimer = setInterval(this.addSoldiers.bind(this), SOLDIER_GENERATION_INTERVAL, 1);
     }
@@ -271,21 +330,20 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        //Map
+        //Map.
         this.load.image('map', 'assets/map/map_lvl1.png');
         for (let i = 0; i < 10; i++) {
             this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
         }
 
-        /// Scene Obects
+        // Scene Obects.
         this.load.image('node', 'assets/map/node.png');
-
         this.load.image('player1', 'assets/player1.png');
         this.load.image('player2', 'assets/player2.png');
     }
 
     create() {
-        game = this;
+        game = this; // Store "game" object for SceneObject class.
 
         // Map.
         this.cameras.main.setBackgroundColor('#add8e6');
@@ -307,20 +365,26 @@ export default class GameScene extends Phaser.Scene {
             new Node(678, 467, 'mapZone8'),
             new Node(690, 539, 'mapZone9'),
         ]
-        //KEYBOARD INPUTS
-        cursors = this.input.keyboard.createCursorKeys();
-        keys = this.input.keyboard.addKeys({
+
+        player1Controller = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
             'down': Phaser.Input.Keyboard.KeyCodes.S,
             'left': Phaser.Input.Keyboard.KeyCodes.A,
             'right': Phaser.Input.Keyboard.KeyCodes.D,
             'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
+
+        player2Controller = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.UP,
+            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
+            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
+            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
+        });
     }
 
     update() {
         this.playerControls();
-        player1.selectClosestNode();
     }
 
     //prueba color
@@ -333,52 +397,49 @@ export default class GameScene extends Phaser.Scene {
     }
     
     playerControls() {
+
         // Movement Player 1 (wasd).
-        if (keys.left.isDown) {
-            player1.moveLeft();
-        } else if (keys.right.isDown) {
-            player1.moveRight();
+        if (player1Controller.left.isDown) { // Horizontal movement.
+            player1.move(Movement.Left);
+        } else if (player1Controller.right.isDown) {
+            player1.move(Movement.Right);
         } else {
-            player1.stopHorizontal();
+            player1.move(Movement.StopHorizontal);
         }
 
-        if (keys.up.isDown) {
-            player1.moveUp();
-        } else if (keys.down.isDown) {
-            player1.moveDown();
+        if (player1Controller.up.isDown) { // Vertical movement.
+            player1.move(Movement.Up);
+        } else if (player1Controller.down.isDown) {
+            player1.move(Movement.Down);
         } else {
-            player1.stopVertical();
+            player1.move(Movement.StopVertial);
         }
 
         // Interaction Player 1.
-        if(keys.interact.isDown){
-            // Cooldown implementation.
-            var time = new Date();
-            var timeElapsed = (time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftPlayer1;
-            //console.log(" te = " + timeElapsed + ", initTime = " + initTimeDraftPlayer1);
-
-            if(timeElapsed >= DRAFTING_COOLDOWN){
-                player1.interactWithSelectedNode();
-                initTimeDraftPlayer1 = time.getSeconds() * 1000 + time.getMilliseconds();
-                //console.log("Player1 soldiers: " + player1.soldiers);
-            }
+        if(player1Controller.interact.isDown){
+            player1.interact();
         }
 
         // Movement Player 2 (Arrows).
-        if (cursors.left.isDown) {
-            player2.moveLeft();
-        } else if (cursors.right.isDown) {
-            player2.moveRight();
+        if (player2Controller.left.isDown) { // Horizontal movement.
+            player2.move(Movement.Left);
+        } else if (player2Controller.right.isDown) {
+            player2.move(Movement.Right);
         } else {
-            player2.stopHorizontal();
+            player2.move(Movement.StopHorizontal);
         }
 
-        if (cursors.up.isDown) {
-            player2.moveUp();
-        } else if (cursors.down.isDown) {
-            player2.moveDown();
+        if (player2Controller.up.isDown) { // Vertical movement.
+            player2.move(Movement.Up);
+        } else if (player2Controller.down.isDown) {
+            player2.move(Movement.Down);
         } else {
-            player2.stopVertical();
+            player2.move(Movement.StopVertial);
+        }
+
+        //Interaction Player 2.
+        if(player2Controller.interact.isDown){
+            player2.interact();
         }
     }
 }
