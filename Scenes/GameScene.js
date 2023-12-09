@@ -226,6 +226,19 @@ class Node extends SceneObject {
         this.updateSoldiersDisplay();
         this.faction = Faction.Neutral;
         this.soldiersGenerationTimer;
+
+
+        // booleans to know if the player has already selected this node
+        this.smallRadius1 =false ; 
+        this.smallRadius2 =false;
+        this.bigRadius1 = false;
+        this.bigRadius2 = false;
+
+
+        // graphics obsjects for circumferences
+        this.circumferencePlayer1 = game.add.graphics();
+        this.circumferencePlayer2 = game.add.graphics();
+
     }
 
     updateSoldiersDisplay(){
@@ -234,32 +247,79 @@ class Node extends SceneObject {
 
     // Node selection:
     select(faction){
-        switch(faction){
-            case Faction.One:
-                // Highlight node for player 1
-                this.phaserGO.setTint(100);
-                break;
-            case Faction.Two:
-                // Highlight node for player 1
-                this.phaserGO.setTint(100);
-                break;
+        const smallRadius = 15;
+        const bigRadius = 20;
+
+        switch (faction) {
+            case Faction.One: //player1 select a node
+                if(this.smallRadius2){ // if the player2 has already selected a node (smallRadius2) --> player1 bigRadius1
+                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, bigRadius);
+                    this.bigRadius1 = true;
+                }else if(!this.bigRadius1 ){ // if theres no node selected yet (no bigRadius1, no smallRadius2..) --> player1 select it (smallRadius1)
+                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, smallRadius);
+                    this.smallRadius1 = true;
+                }
+            break;
+            
+            case Faction.Two: //player2 select a node
+                if(this.smallRadius1){ // if the player1 has already selected a node (smallRadius1) --> player2 bigRadius2
+                    this.drawCircumference(this.circumferencePlayer2, 0x800080, bigRadius);
+                    this.bigRadius2 = true;
+                }else if(!this.bigRadius2){ // if theres no node selected yet (no bigRadius2, no smallRadius1..) --> player2 select it (smallRadius2)
+                    this.drawCircumference(this.circumferencePlayer2, 0x800080, smallRadius);
+                    this.smallRadius2 = true;
+                }
+            break;
         }
-        
-    }
+    }   
+
+
     unselect(faction){
-        switch(faction){
-            case Faction.One:
-                // Stop selection node for player 1
-                this.phaserGO.clearTint();
-                break;
-            case Faction.Two:
-                // Stop selecting node for player 1
-                this.phaserGO.clearTint();
-                break;
+        const smallRadius = 15;
+
+        switch (faction) {
+            case Faction.One: // player1 unselect a node
+                if(this.bigRadius2){ // if the player2 still selecting it (bigRadius2) --> player1 clear all --> draw player2 smallRadius2 
+                    this.circumferencePlayer1.clear();
+                    this.smallRadius1=false;
+                    this.bigRadius1=false;
+
+                    this.circumferencePlayer2.clear();
+                    this.bigRadius2=false;
+
+                    this.drawCircumference(this.circumferencePlayer2, 0x800080, smallRadius);
+                    this.smallRadius2=true;
+                }else{ // else just clear all
+                    this.circumferencePlayer1.clear();
+                    this.smallRadius1=false;
+                    this.bigRadius1=false;
+                }
+           break;
+            case Faction.Two:// player2 unselect a node
+                if(this.bigRadius1){ // if the player1 still selecting it (bigRadius1) --> player2 clear all --> draw player1 smallRadius1 
+                    this.circumferencePlayer2.clear();
+                    this.smallRadius2=false;
+                    this.bigRadius2=false;
+
+                    this.circumferencePlayer1.clear();
+                    this.bigRadius1=false;
+
+                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, smallRadius);
+                    this.smallRadius1=true;
+
+                }else{// else just clear all
+                    this.circumferencePlayer2.clear();
+                    this.smallRadius2=false;
+                    this.bigRadius2=false;
+                }
+           break;
         }
-        
     }
    
+    drawCircumference(graphics, color, radius) {
+        graphics.lineStyle(2, color, 1);
+        graphics.strokeCircle(this.x, this.y, radius);
+    }
 
     // Mechanics:
     startSoldierGeneration(){
@@ -346,7 +406,6 @@ export default class GameScene extends Phaser.Scene {
         game = this; // Store "game" object for SceneObject class.
 
         // Map.
-        this.cameras.main.setBackgroundColor('#add8e6');
         this.add.image(600, 300, 'map'); 
 
         // Players.

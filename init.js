@@ -29,13 +29,13 @@ var config = {
 
     audio: audio,
 
-    scene: [Bootloader, StartScene, GameScene, SettingsScene, CreditsScene],
+    scene: [GameScene, Bootloader, StartScene, SettingsScene, CreditsScene],
 
 
     callbacks: {
         postBoot: function () {
             //Plays music when keyboard input detected
-            document.addEventListener('keydown', playMusic, { once: true });
+            //document.addEventListener('keydown', playMusic, { once: true });
         },
     },
 
