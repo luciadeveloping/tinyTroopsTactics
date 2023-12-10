@@ -1,3 +1,4 @@
+///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
 var game;
 var player1;
 var player2;
@@ -9,6 +10,7 @@ var player2Controller;
 
 const PLAYER_RANGE = 200;
 const PLAYER_MOVEMENT_SPEED = 200;
+const SOLDIER_OBJECT_SPEED = 100;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const NODE_STARTING_SOLDIERS = 5;
 const PLAYER_STARTING_SOLDIERS = 10;
@@ -31,6 +33,8 @@ const Movement = {
     Right: "Right",
     Left: "Left"
 }
+
+///////////////////////////////////////////////// CLASSES /////////////////////////////////////////////////
 
 class SceneObject {
     // This class uses a global variable 'game' which is a Phaser object that needs to be initialize in the 'create' method !!!!!
@@ -177,8 +181,11 @@ class Player extends SceneObject {
 
         if(timeElapsed >= DRAFTING_COOLDOWN){
             this.interactWithSelectedNode();
+            this.sendSoldierToSelectedNode();
             this.initTimeDraft = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
         }
+
+        
     }
 
     interactWithSelectedNode(){
@@ -211,6 +218,12 @@ class Player extends SceneObject {
             this.addSoldiers(-1);
         }
     }
+
+    sendSoldierToSelectedNode(){
+        if(this.selectedNode == undefined) { return false; }
+        new Soldier(this.x, this.y, this.faction, this.selectedNode);
+
+    }
 }
 
 class Node extends SceneObject {
@@ -228,14 +241,14 @@ class Node extends SceneObject {
         this.soldiersGenerationTimer;
 
 
-        // booleans to know if the player has already selected this node
+        // Booleans to know if the player has already selected this node.
         this.smallRadius1 =false ; 
         this.smallRadius2 =false;
         this.bigRadius1 = false;
         this.bigRadius2 = false;
 
 
-        // graphics obsjects for circumferences
+        // Graphics obsjects for circumferences.
         this.circumferencePlayer1 = game.add.graphics();
         this.circumferencePlayer2 = game.add.graphics();
 
@@ -383,6 +396,31 @@ class Node extends SceneObject {
     }
 
 }
+
+class Soldier extends SceneObject{
+    constructor(xPos, yPos, faction, destination){
+        super(xPos, yPos, 'node');
+        // Apply action tint to sprite
+        this.faction = faction;
+
+        this.setTrayectory(destination);
+        
+    }
+
+    setTrayectory(destination){
+        var deltaX = destination.x - this.x;
+        var deltaY = destination.y - this.y;
+        var distanceToDestination = this.distanceTo(destination);
+
+        var xSpeed = (SOLDIER_OBJECT_SPEED * deltaX) / distanceToDestination;
+        var ySpeed = (SOLDIER_OBJECT_SPEED * deltaY) / distanceToDestination;
+        // Set object in motion.
+        this.phaserGO.setVelocityX(xSpeed);
+        this.phaserGO.setVelocityY(ySpeed);
+    }
+}
+
+///////////////////////////////////////////////// GAME /////////////////////////////////////////////////
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
