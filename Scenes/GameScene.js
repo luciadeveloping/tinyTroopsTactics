@@ -8,15 +8,20 @@ var nodeList;
 var player1Controller;
 var player2Controller;
 
-const PLAYER_RANGE = 200;
-const PLAYER_MOVEMENT_SPEED = 200;
-const SOLDIER_OBJECT_SPEED = 100;
-const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
-const NODE_STARTING_SOLDIERS = 5;
 const PLAYER_STARTING_SOLDIERS = 10;
+const PLAYER_RANGE = 200;
+const PLAYER_DRAFTING_RANGE = 30;
+const PLAYER_MOVEMENT_SPEED = 200;
+const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
+
+const SOLDIER_OBJECT_SPEED = 100;
+
+const NODE_STARTING_SOLDIERS = 5;
 const SOLDIER_GENERATION_INTERVAL = 2000;// Milliseconds
+const NODE_MAXIMUN_SOLDIER_CAPACITY = 30;
+
+
 const DRAFTING_COOLDOWN = 500; // Milliseconds
-var initTimeDraftPlayer1 = 0;
 
 const Faction = {
     Neutral: "Neutral",
@@ -59,6 +64,23 @@ class SceneObject {
             Math.pow(sceneObject.y - this.y, 2)
         )
     }
+
+    setTrayectory(destination, speed){
+        var deltaX = destination.x - this.x;
+        var deltaY = destination.y - this.y;
+        var distanceToDestination = this.distanceTo(destination);
+
+        var xSpeed = (speed * deltaX) / distanceToDestination;
+        var ySpeed = (speed * deltaY) / distanceToDestination;
+        // Set object in motion.
+        this.phaserGO.setVelocityX(xSpeed);
+        this.phaserGO.setVelocityY(ySpeed);
+    }
+
+    destroy(){
+        this.phaserGO.destroy();
+        delete this;
+    }
 }
 
 class Player extends SceneObject {
@@ -71,6 +93,7 @@ class Player extends SceneObject {
         this.soldiersDisplay = game.add.text(xPos, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
         this.updateSoldiersDisplay();
         this.range = PLAYER_RANGE;
+        this.draftingRange = PLAYER_DRAFTING_RANGE;
         this.nodesInRange = new Array();
         this.selectedNode = undefined;
         this.initTimeDraft = 0;
@@ -102,7 +125,7 @@ class Player extends SceneObject {
                 this.phaserGO.setVelocityY(0);
                 break;
             default:
-                console.log("No movement valid parameter");
+                console.log("No movement valid parameter.");
                 break;
         }
 
@@ -170,6 +193,9 @@ class Player extends SceneObject {
     isInRange(sceneObject) { // Checks if a given Scene Object is in range.
         return this.distanceTo(sceneObject) <= this.range;
     }
+    isInDraftingRange(sceneObject){
+        return this.distanceTo(sceneObject) <= this.draftingRange;
+    }
 
     // Node interaction:
     interact(){ // Tries to interact with the scene selected object, cooldown is applied.
@@ -181,7 +207,6 @@ class Player extends SceneObject {
 
         if(timeElapsed >= DRAFTING_COOLDOWN){
             this.interactWithSelectedNode();
-            this.sendSoldierToSelectedNode();
             this.initTimeDraft = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
         }
 
@@ -191,11 +216,10 @@ class Player extends SceneObject {
     interactWithSelectedNode(){
         if(this.selectedNode == undefined) { return false; }
         
-        //console.log("Iteracting...");
-        if(this.selectedNode.faction == this.faction){ // Friendly node.
+        if(this.isInDraftingRange(this.selectedNode)){
             this.draftSoldierFromSelectedNode();
-        }else{ // Enemy/Neutral node.
-            this.attackSelectedNode();
+        }else{
+            this.sendSoldierToSelectedNode();
         }
         return true;
     }
@@ -212,24 +236,19 @@ class Player extends SceneObject {
         return false;
     }
 
-    attackSelectedNode(){
-        if(this.soldiers > 0){
-            this.selectedNode.takeDamage(this);
-            this.addSoldiers(-1);
-        }
-    }
-
     sendSoldierToSelectedNode(){
         if(this.selectedNode == undefined) { return false; }
-        new Soldier(this.x, this.y, this.faction, this.selectedNode);
 
+        if(this.soldiers > 0){
+            new Soldier(this.x, this.y, this.faction, this.selectedNode);
+            this.addSoldiers(-1);
+        }
     }
 }
 
 class Node extends SceneObject {
     constructor(xPos, yPos, zoneKey) {
         super(xPos, yPos, 'node');
-        
         // Create the region
         this.region = new SceneObject(xPos, yPos, zoneKey);
         
@@ -256,7 +275,10 @@ class Node extends SceneObject {
 
     updateSoldiersDisplay(){
         this.soldiersDisplay.setText(this.soldiers);
-    }  
+    } 
+    equalsPhaserGO(phaserGO){
+        return this.phaserGO == phaserGO;
+    } 
 
     // Node selection:
     select(faction){
@@ -346,13 +368,15 @@ class Node extends SceneObject {
     addSoldiers(nSoldiers){
         if((this.soldiers + nSoldiers) < 0 ){ // Can't go negative.
             this.soldiers = 0;
+        }else if((this.soldiers + nSoldiers) > NODE_MAXIMUN_SOLDIER_CAPACITY){ // Can't go above maximun.
+            this.soldiers = NODE_MAXIMUN_SOLDIER_CAPACITY;
         }else{
             this.soldiers = this.soldiers + nSoldiers;
         }
         this.updateSoldiersDisplay();
     }
 
-    takeDamage(player){
+    takeDamage(faction){
         if(this.soldiers > 0){
             this.addSoldiers(-1);
             if(this.soldiers == 0){ // Turn neutral if soldiers reach 0.
@@ -361,7 +385,7 @@ class Node extends SceneObject {
 
         }else{
             this.addSoldiers(+1);
-            this.changeFaction(player.faction);
+            this.changeFaction(faction);
         }
         
     }
@@ -400,24 +424,60 @@ class Node extends SceneObject {
 class Soldier extends SceneObject{
     constructor(xPos, yPos, faction, destination){
         super(xPos, yPos, 'node');
-        // Apply action tint to sprite
         this.faction = faction;
 
-        this.setTrayectory(destination);
-        
+        this.setUpTint();
+        this.setUpCollisions();
+
+        this.setTrayectory(destination, SOLDIER_OBJECT_SPEED);
+
     }
 
-    setTrayectory(destination){
-        var deltaX = destination.x - this.x;
-        var deltaY = destination.y - this.y;
-        var distanceToDestination = this.distanceTo(destination);
+    // Initialization.
+    setUpTint(){
+        switch(this.faction){
+            case Faction.One:
 
-        var xSpeed = (SOLDIER_OBJECT_SPEED * deltaX) / distanceToDestination;
-        var ySpeed = (SOLDIER_OBJECT_SPEED * deltaY) / distanceToDestination;
-        // Set object in motion.
-        this.phaserGO.setVelocityX(xSpeed);
-        this.phaserGO.setVelocityY(ySpeed);
+                break;
+            case Faction.Two:
+
+                break;
+            default:
+                break;
+        }
     }
+
+    setUpCollisions(){ // Assigns an overlap event for each node in nodeList.
+        nodeList.forEach(node => {
+            game.physics.add.overlap(this.phaserGO, node.phaserGO, this.onCollision, null, this);
+        });
+    }
+
+    onCollision(soldierGO, nodeGO){
+        this.attackNode(this.searchNode(nodeGO)); // Since we only have the phaserGO we have to look for the corresponding node to call it's methods.
+    }
+
+    searchNode(phaserGO){ // Searchs for a node in nodeList with a matching phaserGO.
+        var foundNode;
+        nodeList.forEach(node => {
+            if(node.equalsPhaserGO(phaserGO)){
+                foundNode = node;
+            }
+        });
+        if(foundNode == undefined){ console.log("No matching node was found."); }
+        return foundNode;
+    }
+
+    // Gameplay.
+    attackNode(node){
+        if(this.faction == node.faction){
+            node.addSoldiers(1);
+        }else{
+            node.takeDamage(this.faction);
+        }
+        this.destroy();
+    }
+
 }
 
 ///////////////////////////////////////////////// GAME /////////////////////////////////////////////////
@@ -482,15 +542,6 @@ export default class GameScene extends Phaser.Scene {
 
     update() {
         this.playerControls();
-    }
-
-    //prueba color
-    handleZoneOverlap(player, zone) {
-        if (player === player1.phaserGO) {
-            zone.setTint(0xFFA500); // Naranja para el jugador 1
-        } else if (player === player2.phaserGO) {
-            zone.setTint(0x800080); // Lila para el jugador 2
-        }
     }
     
     playerControls() {
