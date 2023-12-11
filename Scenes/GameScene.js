@@ -84,7 +84,7 @@ class SceneObject {
 }
 
 class Player extends SceneObject {
-    constructor(xPos, yPos, sprite, faction) {
+    constructor(xPos, yPos, sprite, faction, soldierAsset) {
         super(xPos, yPos, sprite);
         this.phaserGO.setDepth(1);
 
@@ -97,6 +97,8 @@ class Player extends SceneObject {
         this.nodesInRange = new Array();
         this.selectedNode = undefined;
         this.initTimeDraft = 0;
+
+        this.soldierAsset = soldierAsset;
     }
 
     // Movement:
@@ -131,6 +133,10 @@ class Player extends SceneObject {
 
         this.updateSoldiersDisplayPosition();
         this.selectClosestNode(); // Each time player changes position check for the closest node to select.
+    }
+
+    createSoldier(destination) {
+        new Soldier(this.x, this.y, this.faction, destination, this.soldierAsset);
     }
 
     updateSoldiersDisplayPosition(){
@@ -236,11 +242,13 @@ class Player extends SceneObject {
         return false;
     }
 
-    sendSoldierToSelectedNode(){
-        if(this.selectedNode == undefined) { return false; }
+    sendSoldierToSelectedNode() {
+        if (this.selectedNode == undefined) {
+            return false;
+        }
 
-        if(this.soldiers > 0){
-            new Soldier(this.x, this.y, this.faction, this.selectedNode);
+        if (this.soldiers > 0) {
+            this.createSoldier(this.selectedNode);
             this.addSoldiers(-1);
         }
     }
@@ -422,12 +430,15 @@ class Node extends SceneObject {
 }
 
 class Soldier extends SceneObject{
-    constructor(xPos, yPos, faction, destination){
-        super(xPos, yPos, 'node');
+    constructor(xPos, yPos, faction, destination, playerAsset){
+        super(xPos, yPos,  playerAsset);
         this.faction = faction;
 
         this.setUpTint();
         this.setUpCollisions();
+
+        // smaller scale for soldiers
+        this.phaserGO.setScale(0.5);
 
         this.setTrayectory(destination, SOLDIER_OBJECT_SPEED);
 
@@ -498,6 +509,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('node', 'assets/map/node.png');
         this.load.image('player1', 'assets/player1.png');
         this.load.image('player2', 'assets/player2.png');
+
     }
 
     create() {
@@ -507,8 +519,8 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(600, 300, 'map'); 
 
         // Players.
-        player1 = new Player(100, 500, 'player1', Faction.One);
-        player2 = new Player(200, 500, 'player2', Faction.Two);
+        player1 = new Player(100, 500, 'player1', Faction.One, 'player1');
+        player2 = new Player(200, 500, 'player2', Faction.Two, 'player2');
 
         nodeList = [
             new Node(469, 113, 'mapZone0'),
@@ -538,12 +550,15 @@ export default class GameScene extends Phaser.Scene {
             'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
             'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
         });
+
     }
 
     update() {
         this.playerControls();
     }
     
+ 
+
     playerControls() {
 
         // Movement Player 1 (wasd).
