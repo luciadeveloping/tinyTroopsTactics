@@ -1,34 +1,22 @@
-var cursors;
-var keys;
-var player1;
-var player2;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////MAIN MENU ALREADY WITH PLAYER CONTROLS TO SELECT BUTTONS///////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
+let buttonBounds;
+
+/////////////////////////////////////////////////// CLASS ///////////////////////////////////////////////////
 export default class StartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'StartScene' });
     }
 
     create() {
-        const gameConfig = this.sys.game.config;
-        const centerX = gameConfig.width / 2;
-        const centerY = gameConfig.height / 2;
+    // IMAGES
+        const MAP = this.add.image(850, centerY, 'mapStart');
+        const TITLE = this.add.image(250, 150, 'title');
 
-        //KEYBOARD INPUTS
-        cursors = this.input.keyboard.createCursorKeys();
-        keys = {
-            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-            left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-            right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-            interactPlayer1: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
-            interactPlayer2: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
-        };
-
-        // IMAGES
-        const map = this.add.image(850, centerY, 'mapStart');
-        const title = this.add.image(250, 150, 'title');
-
-        // BUTTONS
+    // BUTTONS
         // Start
         this.startButton = this.add.image(250, 230, 'start_default').setInteractive();
 
@@ -39,95 +27,127 @@ export default class StartScene extends Phaser.Scene {
         this.creditsButton = this.add.image(250, 390, 'credits_default').setInteractive();
 
         //Exit
-        this.exitButton = this.add.image(250, 470, 'exit_default').setInteractive();
+        //this.exitButton = this.add.image(250, 470, 'exit_default').setInteractive();
 
-        player1 = this.physics.add.image(900, 200, 'player1').setInteractive();
-        player2 = this.physics.add.image(1000, centerY, 'player2').setInteractive();
+    // PLAYERS CREATION
+        player1 = this.physics.add.image(650, 270, 'player1').setInteractive();
 
-        this.resetKeys();
-        
+        player2 = this.physics.add.image(880, centerY, 'player2').setInteractive();
+
+        // Collision with world bounds
+        player1.setCollideWorldBounds(true);
+        player2.setCollideWorldBounds(true);
+
+    // CONTROLS OF PLAYERS
+        // PLayer 1 is controlled with WASD and interacts with SPACE
+        p1Ctrls = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.W,
+            'down': Phaser.Input.Keyboard.KeyCodes.S,
+            'left': Phaser.Input.Keyboard.KeyCodes.A,
+            'right': Phaser.Input.Keyboard.KeyCodes.D,
+            'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
+        });
+
+        // Player 2 is controlled with arrow keys and interacts with ENTER
+        p2Ctrls = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.UP,
+            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
+            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
+            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
+        });
+
+        // To avoid player 1 automatic movement after returning to this scene 
+        //(because it uses WASD)
+        this.p1ctrlsReset();
     }
 
     update() {
-    // Movement Player 1 (wasd).
-    this.handlePlayerMovement(player1, keys);
 
-    // Movement Player 2 (arrows).
-    this.handlePlayerMovement(player2, cursors);
+        // Assigns p1ctrls as controls for player1
+        this.handlePlayerMovement(player1, p1Ctrls);
+        // Assigns p2ctrls as controls for player2
+        this.handlePlayerMovement(player2, p2Ctrls);
 
-    this.handleButtonInteraction(this.startButton, 'GameScene', keys.interactPlayer1);
-    this.handleButtonInteraction(this.startButton, 'GameScene', keys.interactPlayer2);
+        // Interaction with Start button
+        this.handleButtonInteraction(this.startButton, 'GameScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.startButton, 'GameScene', p2Ctrls.interact);
 
-    this.handleButtonInteraction(this.settingsButton, 'SettingsScene', keys.interactPlayer1);
-    this.handleButtonInteraction(this.settingsButton, 'SettingsScene', keys.interactPlayer2);
+        //Interaction with Settings button
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
 
-    this.handleButtonInteraction(this.creditsButton, 'CreditsScene', keys.interactPlayer1);
-    this.handleButtonInteraction(this.creditsButton, 'CreditsScene', keys.interactPlayer2);
+        //Interaction with Credits button
+        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
 
-    // No target scene for exitButton
-    this.handleButtonInteraction(this.exitButton, null, keys.interactPlayer1);
-    this.handleButtonInteraction(this.exitButton, null, keys.interactPlayer2);
+        // No target scene for exitButton
+        //this.handleButtonInteraction(this.exitButton, null, p2ctrls.interactPlayer1);
+        //this.handleButtonInteraction(this.exitButton, null, p2ctrls.interactPlayer2);
     
     }
 
-    handleButtonInteraction(button, targetScene, interactKey) {
-        const player1Bounds = player1.getBounds();
-        const player2Bounds = player2.getBounds();
-        const buttonBounds = button.getBounds();
-
-        if (
-        Phaser.Geom.Intersects.RectangleToRectangle(player1Bounds, buttonBounds) ||
-        Phaser.Geom.Intersects.RectangleToRectangle(player2Bounds, buttonBounds)
-        ) {
-            button.setTexture(`${button.texture.key.replace('_default', '_hover')}`);
-            if (interactKey.isDown) {
-            this.handleButtonClick(targetScene);
-            }
-        } else {
-        button.setTexture(button.texture.key.replace('_hover', '_default'));
-        }
-    }
-
+    // Detects if key in input is pressed to move player
     handlePlayerMovement(player, input) {
         if (input.left.isDown) {
-            player.setVelocityX(-200);
+            player.setVelocityX(-PLAYER_SPEED);
         } else if (input.right.isDown) {
-            player.setVelocityX(200);
+            player.setVelocityX(PLAYER_SPEED);
         } else {
             player.setVelocityX(0);
         }
 
         if (input.up.isDown) {
-            player.setVelocityY(-200);
+            player.setVelocityY(-PLAYER_SPEED);
         } else if (input.down.isDown) {
-            player.setVelocityY(200);
+            player.setVelocityY(PLAYER_SPEED);
         } else {
             player.setVelocityY(0);
         }
     }
 
-    handleButtonClick(targetScene) {
-        const gameConfig = this.sys.game.config; // Game configuration
+    
+    // Detects if player interacts with the button to start another scene
+    handleButtonInteraction(button, targetScene, interactKey) {
+        p1Bounds = player1.getBounds();
+        p2Bounds = player2.getBounds();
+        buttonBounds = button.getBounds();
 
-        if (targetScene) {
-            //Plays click sound if not muted
-            if (gameConfig.audio.click.mute == false){
-                gameConfig.audio.click.play();
+        //If bounds of any player and the button intersect
+        if (Phaser.Geom.Intersects.RectangleToRectangle(p1Bounds, buttonBounds) ||
+            Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
+            
+            //Changes button texture to hover
+            button.setTexture(`${button.texture.key.replace('_default', '_hover')}`);
+                
+            //Changes scene if key dow
+            if (interactKey.isDown) {
+                this.sceneChange(targetScene);
             }
-
-            this.scene.start(targetScene);
         } else {
-            // If no target scene is provided
-        }   
-
+            //Maintains normal texture of button
+            button.setTexture(button.texture.key.replace('_hover', '_default'));
+        }
     }
 
-    resetKeys() {
-        keys.up.reset();
-        keys.down.reset();
-        keys.left.reset();
-        keys.right.reset();
-        keys.interactPlayer1.reset();
-        keys.interactPlayer2.reset();
+    // Starts another scene
+    sceneChange(targetScene) {
+
+        // DOESN'T WORK
+        // //Plays click sound if not muted
+        // if (gameConfig.audio.click.mute == false){
+        //     gameConfig.audio.click.play();
+        // }
+
+        this.scene.start(targetScene);
+    }
+
+    // Resets controls of player 1
+    p1ctrlsReset() {
+        p1Ctrls.up.reset();
+        p1Ctrls.down.reset();
+        p1Ctrls.left.reset();
+        p1Ctrls.right.reset();
+        p1Ctrls.interact.reset();
     }
 }

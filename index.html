@@ -11,8 +11,30 @@
     <!-- Style of this webpage -->
     <link rel="stylesheet" href="indexStyle.css"/>
 
+    <!-- Global variables and constants -->
+    <script> 
+        const PLAYER_SPEED = 200;//Movement speed of players
+
+        //Defined in init.js
+        let game,
+        gameConfig, //Game configuration
+        centerX, //Center of canvas in X
+        centerY, //Center of canvas in Y
+
+        //Defined in every scene as needed
+        player1,
+        p1Ctrls, //Player 1 controls
+        p1Bounds, //Player 1 bounds
+        player2,
+        p2Ctrls, //Player 2 controls
+        p2Bounds //Player 2 bounds
+
+        ;
+    </script>
+
     <!-- Game initializer -->
     <script src="./init.js" type="module"></script>
+
 
 </head>
 <body>

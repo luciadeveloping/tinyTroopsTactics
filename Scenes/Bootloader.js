@@ -1,12 +1,16 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////LOADS EVERY RESOURCE AND THEN CERTAIN SCENE/////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default class Bootloader extends Phaser.Scene {
     constructor(){
         super({key: "Bootloader"});
     }
 
     preload(){
-        //Start startScene when everything is loaded
+
+        //StartS startScene when everything is loaded
         this.load.on("complete", () => {
-            this.scene.start("GameScene");
+            this.scene.start("StartScene");
         })
 
         //Buttons
