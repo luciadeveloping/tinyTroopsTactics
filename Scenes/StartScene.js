@@ -13,18 +13,19 @@ export default class StartScene extends Phaser.Scene {
 
     create() {
     // IMAGES
-        const MAP = this.add.image(850, centerY, 'mapStart');
-        const TITLE = this.add.image(250, 150, 'title');
+        map = this.add.image(centerX, centerY, 'mapStart');
+        map.setScale(1.4);
+        const TITLE = this.add.image(centerX, 90, 'title');
 
     // BUTTONS
         // Start
-        this.startButton = this.add.image(250, 230, 'start_default').setInteractive();
+        this.startButton = this.add.image(400, centerY, 'start_default').setInteractive();
 
         //Settings
-        this.settingsButton = this.add.image(250, 310, 'settings_default').setInteractive();
+        this.settingsButton = this.add.image(gameConfig.width - 200, gameConfig.height - 200, 'settings_default').setInteractive();
 
         //Credits
-        this.creditsButton = this.add.image(250, 390, 'credits_default').setInteractive();
+        this.creditsButton = this.add.image(200, gameConfig.height - 200, 'credits_default').setInteractive();
 
         //Exit
         //this.exitButton = this.add.image(250, 470, 'exit_default').setInteractive();

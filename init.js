@@ -15,8 +15,8 @@ import CreditsScene from "./Scenes/CreditsScene.js";
 gameConfig = {
     //Canvas settings
     type: Phaser.AUTO,
-    width: 1200,
-    height: 600,
+    width: 1280,
+    height: 960,
     parent: "display", //Hosting container
     backgroundColor: '#8FC9FF',
 
