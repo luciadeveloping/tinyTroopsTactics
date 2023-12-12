@@ -1,12 +1,23 @@
 ///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
 let nodeList;
 
-const PLAYER_STARTING_SOLDIERS = 10;
+const MAP_WIDTH = 1280;
+const MAP_HEIGHT = 960;
+
+
+//p1Skin = skinList[0];
+
+const PLAYER_STARTING_SOLDIERS = 0;
 const PLAYER_RANGE = 200;
 const PLAYER_DRAFTING_RANGE = 30;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 
 const SOLDIER_OBJECT_SPEED = 100;
+
+const PLANE_SPEED = 100;
+const BOMBARDMENT_DAMAGE = 15;
+const PLANE_GENERATION_INTERVAL_MAX = 20000;
+const PLANE_GENERATION_INTERVAL_MIN = 10000; // Minimum time for a plane to appear.
 
 const NODE_STARTING_SOLDIERS = 5;
 const SOLDIER_GENERATION_INTERVAL = 2000;// Milliseconds
@@ -15,13 +26,13 @@ const NODE_MAXIMUN_SOLDIER_CAPACITY = 30;
 
 const DRAFTING_COOLDOWN = 500; // Milliseconds
 
-const FACTION = {
+const Faction = {
     Neutral: "Neutral",
     One: "One",
     Two: "Two"
 }
 
-const MOVEMENT = {
+const Movement = {
     None: "None",
     StopVertial: "Stopvertical",
     StopHorizontal: "StopHorizotal",
@@ -96,26 +107,26 @@ class Player extends SceneObject {
     // Movement:
     move(movement){
         switch(movement){
-            case MOVEMENT.Up:
+            case Movement.Up:
                 this.phaserGO.setVelocityY(-PLAYER_SPEED);
                 break;
-            case MOVEMENT.Down:
+            case Movement.Down:
                 this.phaserGO.setVelocityY(PLAYER_SPEED);
                 break;
-            case MOVEMENT.Right:
+            case Movement.Right:
                 this.phaserGO.setVelocityX(PLAYER_SPEED);
                 break;
-            case MOVEMENT.Left:
+            case Movement.Left:
                 this.phaserGO.setVelocityX(-PLAYER_SPEED);
                 break;
-            case MOVEMENT.None:
+            case Movement.None:
                 this.phaserGO.setVelocityX(0);
                 this.phaserGO.setVelocityY(0);
                 break;
-            case MOVEMENT.StopHorizontal:
+            case Movement.StopHorizontal:
                 this.phaserGO.setVelocityX(0);
                 break;
-            case MOVEMENT.StopVertial:
+            case Movement.StopVertial:
                 this.phaserGO.setVelocityY(0);
                 break;
             default:
@@ -247,7 +258,7 @@ class Player extends SceneObject {
 }
 
 class Node extends SceneObject {
-    constructor(xPos, yPos, zoneKey) {
+    constructor(xPos, yPos, zoneKey, faction) { // faction is optional.
         super(xPos, yPos, 'node');
         // Create the region
         this.region = new SceneObject(xPos, yPos, zoneKey);
@@ -256,9 +267,11 @@ class Node extends SceneObject {
         this.soldiers = NODE_STARTING_SOLDIERS;
         this.soldiersDisplay = game.add.text(xPos - 7, yPos + 30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         this.updateSoldiersDisplay();
-        this.faction = FACTION.Neutral;
+        this.faction = Faction.Neutral;
         this.soldiersGenerationTimer;
 
+        if(faction != undefined) { this.setFaction(faction); }
+        
 
         // Booleans to know if the player has already selected this node.
         this.smallRadius1 =false ; 
@@ -286,22 +299,22 @@ class Node extends SceneObject {
         const bigRadius = 20;
 
         switch (faction) {
-            case FACTION.One: //player1 select a node
+            case Faction.One: //player1 select a node
                 if(this.smallRadius2){ // if the player2 has already selected a node (smallRadius2) --> player1 bigRadius1
-                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, bigRadius);
+                    this.drawCircumference(this.circumferencePlayer1, p1Skin.regionColor, bigRadius);
                     this.bigRadius1 = true;
                 }else if(!this.bigRadius1 ){ // if theres no node selected yet (no bigRadius1, no smallRadius2..) --> player1 select it (smallRadius1)
-                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, smallRadius);
+                    this.drawCircumference(this.circumferencePlayer1, p1Skin.regionColor, smallRadius);
                     this.smallRadius1 = true;
                 }
             break;
             
-            case FACTION.Two: //player2 select a node
+            case Faction.Two: //player2 select a node
                 if(this.smallRadius1){ // if the player1 has already selected a node (smallRadius1) --> player2 bigRadius2
-                    this.drawCircumference(this.circumferencePlayer2, 0x800080, bigRadius);
+                    this.drawCircumference(this.circumferencePlayer2, p2Skin.regionColor, bigRadius);
                     this.bigRadius2 = true;
                 }else if(!this.bigRadius2){ // if theres no node selected yet (no bigRadius2, no smallRadius1..) --> player2 select it (smallRadius2)
-                    this.drawCircumference(this.circumferencePlayer2, 0x800080, smallRadius);
+                    this.drawCircumference(this.circumferencePlayer2, p2Skin.regionColor, smallRadius);
                     this.smallRadius2 = true;
                 }
             break;
@@ -313,7 +326,7 @@ class Node extends SceneObject {
         const smallRadius = 15;
 
         switch (faction) {
-            case FACTION.One: // player1 unselect a node
+            case Faction.One: // player1 unselect a node
                 if(this.bigRadius2){ // if the player2 still selecting it (bigRadius2) --> player1 clear all --> draw player2 smallRadius2 
                     this.circumferencePlayer1.clear();
                     this.smallRadius1=false;
@@ -322,7 +335,7 @@ class Node extends SceneObject {
                     this.circumferencePlayer2.clear();
                     this.bigRadius2=false;
 
-                    this.drawCircumference(this.circumferencePlayer2, 0x800080, smallRadius);
+                    this.drawCircumference(this.circumferencePlayer2, p2Skin.regionColor, smallRadius);
                     this.smallRadius2=true;
                 }else{ // else just clear all
                     this.circumferencePlayer1.clear();
@@ -330,7 +343,7 @@ class Node extends SceneObject {
                     this.bigRadius1=false;
                 }
            break;
-            case FACTION.Two:// player2 unselect a node
+            case Faction.Two:// player2 unselect a node
                 if(this.bigRadius1){ // if the player1 still selecting it (bigRadius1) --> player2 clear all --> draw player1 smallRadius1 
                     this.circumferencePlayer2.clear();
                     this.smallRadius2=false;
@@ -339,7 +352,7 @@ class Node extends SceneObject {
                     this.circumferencePlayer1.clear();
                     this.bigRadius1=false;
 
-                    this.drawCircumference(this.circumferencePlayer1, 0xFFA500, smallRadius);
+                    this.drawCircumference(this.circumferencePlayer1, p1Skin.regionColor, smallRadius);
                     this.smallRadius1=true;
 
                 }else{// else just clear all
@@ -376,18 +389,27 @@ class Node extends SceneObject {
         this.updateSoldiersDisplay();
     }
 
-    takeDamage(faction){
+    takeDamage(damage, faction){
         if(this.soldiers > 0){
-            this.addSoldiers(-1);
+            this.addSoldiers(-damage);
             if(this.soldiers == 0){ // Turn neutral if soldiers reach 0.
-                this.changeFaction(FACTION.Neutral);
+                this.setFaction(Faction.Neutral);
             }
 
         }else{
-            this.addSoldiers(+1);
-            this.changeFaction(faction);
+            this.addSoldiers(+damage);
+            this.setFaction(faction);
         }
         
+    }
+
+    getBombed(){ // Gets bombed by a plane.
+
+        this.addSoldiers(-BOMBARDMENT_DAMAGE);
+
+        if(this.soldiers == 0){ // Turn neutral if soldiers reach 0.
+            this.setFaction(Faction.Neutral);
+        }
     }
 
     draftSoldier(){
@@ -399,18 +421,18 @@ class Node extends SceneObject {
         return false;
     }
 
-    changeFaction(faction){
+    setFaction(faction){
         switch(faction){
-            case FACTION.Neutral:
+            case Faction.Neutral:
                 this.region.phaserGO.clearTint(); // Clear tint
                 this.stopSoldierGeneratio()
                 break;
-            case FACTION.One:
-                this.region.phaserGO.setTint(0xFFA500); // Orange tint for player 1
+            case Faction.One:
+                this.region.phaserGO.setTint(p1Skin.regionColor); // Orange tint for player 1
                 this.startSoldierGeneration();
                 break;
-            case FACTION.Two:
-                this.region.phaserGO.setTint(0x800080); // Purple tint for player 2
+            case Faction.Two:
+                this.region.phaserGO.setTint(p2Skin.regionColor); // Purple tint for player 2
                 this.startSoldierGeneration();
                 break;
             default:
@@ -439,10 +461,10 @@ class Soldier extends SceneObject{
     // Initialization.
     setUpTint(){
         switch(this.faction){
-            case FACTION.One:
+            case Faction.One:
 
                 break;
-            case FACTION.Two:
+            case Faction.Two:
 
                 break;
             default:
@@ -452,11 +474,11 @@ class Soldier extends SceneObject{
 
     setUpCollisions(){ // Assigns an overlap event for each node in nodeList.
         nodeList.forEach(node => {
-            game.physics.add.overlap(this.phaserGO, node.phaserGO, this.onCollision, null, this);
+            game.physics.add.overlap(this.phaserGO, node.phaserGO, this.onOverlap, null, this);
         });
     }
 
-    onCollision(soldierGO, nodeGO){
+    onOverlap(soldierGO, nodeGO){
         this.attackNode(this.searchNode(nodeGO)); // Since we only have the phaserGO we have to look for the corresponding node to call it's methods.
     }
 
@@ -476,11 +498,46 @@ class Soldier extends SceneObject{
         if(this.faction == node.faction){
             node.addSoldiers(1);
         }else{
-            node.takeDamage(this.faction);
+            node.takeDamage(1, this.faction);
         }
         this.destroy();
     }
 
+}
+
+class Plane extends SceneObject{
+    constructor(xPos, yPos){
+        super(xPos, yPos, 'node');
+        this.phaserGO.setDepth(3);
+        this.phaserGO.setCollideWorldBounds(false);
+
+        this.hasBombed = false;
+        this.targetNode = this.chooseTarget();
+        this.setTrayectory(this.targetNode, PLANE_SPEED);
+
+        game.physics.add.overlap(this.phaserGO, this.targetNode.phaserGO, this.onOverlap, null, this); // Add overlap event.
+
+        setTimeout(this.destroy.bind(this), 30000); // Destroy itself after a certain ammount of time.
+    }
+
+    chooseTarget(){ // Randomly chooses a node to target.
+        if(nodeList.length == 0){
+            console.log("Plane couldn't choose target.");
+            return undefined;
+        }
+        return nodeList[this.getRandomInt(nodeList.length)]; // Chooses a random node from nodelist
+    }
+
+    onOverlap(planeGO, nodeGO){
+        if(!this.hasBombed){
+            this.targetNode.getBombed();
+        }
+    }
+
+    getRandomInt(max) { // credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+        return Math.floor(Math.random() * max);
+    }
+    
 }
 
 ///////////////////////////////////////////////// GAME /////////////////////////////////////////////////
@@ -497,11 +554,6 @@ export default class GameScene extends Phaser.Scene {
             this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
         }
 
-        // Scene Obects.
-        this.load.image('node', 'assets/map/node.png');
-        this.load.image('player1', 'assets/player1.png');
-        this.load.image('player2', 'assets/player2.png');
-
     }
 
     create() {
@@ -513,11 +565,11 @@ export default class GameScene extends Phaser.Scene {
 
 
         // Players.
-        player1 = new Player(100, 500, 'player1', FACTION.One, 'player1');
-        player2 = new Player(200, 500, 'player2', FACTION.Two, 'player2');
+        player1 = new Player(100, 500, p1Skin.spriteTag , Faction.One, 'player1');
+        player2 = new Player(200, 500, p2Skin.spriteTag, Faction.Two, 'player2');
 
         nodeList = [
-            new Node(456, 138, 'mapZone0'),
+            new Node(456, 138, 'mapZone0', Faction.One),
             new Node(628, 108,  'mapZone1'),
             new Node(744, 164, 'mapZone2'),
             new Node(746, 260, 'mapZone3'),
@@ -526,7 +578,7 @@ export default class GameScene extends Phaser.Scene {
             new Node(643, 556, 'mapZone6'),
             new Node(797, 542, 'mapZone7'),
             new Node(751, 634, 'mapZone8'),
-            new Node(767, 735, 'mapZone9'),
+            new Node(767, 735, 'mapZone9', Faction.Two),
         ]
 
         p1Ctrls = this.input.keyboard.addKeys({
@@ -545,31 +597,32 @@ export default class GameScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
         });
 
+        setTimeout(this.generatePlane.bind(this), PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
+
     }
 
     update() {
         this.playerControls();
     }
     
- 
 
     playerControls() {
 
         // Movement Player 1 (wasd).
         if (p1Ctrls.left.isDown) { // Horizontal movement.
-            player1.move(MOVEMENT.Left);
+            player1.move(Movement.Left);
         } else if (p1Ctrls.right.isDown) {
-            player1.move(MOVEMENT.Right);
+            player1.move(Movement.Right);
         } else {
-            player1.move(MOVEMENT.StopHorizontal);
+            player1.move(Movement.StopHorizontal);
         }
 
         if (p1Ctrls.up.isDown) { // Vertical movement.
-            player1.move(MOVEMENT.Up);
+            player1.move(Movement.Up);
         } else if (p1Ctrls.down.isDown) {
-            player1.move(MOVEMENT.Down);
+            player1.move(Movement.Down);
         } else {
-            player1.move(MOVEMENT.StopVertial);
+            player1.move(Movement.StopVertial);
         }
 
         // Interaction Player 1.
@@ -579,24 +632,47 @@ export default class GameScene extends Phaser.Scene {
 
         // Movement Player 2 (Arrows).
         if (p2Ctrls.left.isDown) { // Horizontal movement.
-            player2.move(MOVEMENT.Left);
+            player2.move(Movement.Left);
         } else if (p2Ctrls.right.isDown) {
-            player2.move(MOVEMENT.Right);
+            player2.move(Movement.Right);
         } else {
-            player2.move(MOVEMENT.StopHorizontal);
+            player2.move(Movement.StopHorizontal);
         }
 
         if (p2Ctrls.up.isDown) { // Vertical movement.
-            player2.move(MOVEMENT.Up);
+            player2.move(Movement.Up);
         } else if (p2Ctrls.down.isDown) {
-            player2.move(MOVEMENT.Down);
+            player2.move(Movement.Down);
         } else {
-            player2.move(MOVEMENT.StopVertial);
+            player2.move(Movement.StopVertial);
         }
 
         //Interaction Player 2.
         if(p2Ctrls.interact.isDown){
             player2.interact();
         }
+    }
+
+    generatePlane(){
+        // Generate a random position at the top or bottom of the map.
+        var targetX = 0;
+        var targetY = 0;
+        switch(this.getRandomInt(2)){
+            case 0: // Launch plane from the top of the screen.
+                targetY = 0 - 5;
+                break;
+            case 1: // Launch plane from the bottom of the screen.
+                targetY = gameConfig.height + 5;
+                break;
+        }
+        targetX = this.getRandomInt(gameConfig.width);
+
+        new Plane(targetX, targetY);
+
+        setTimeout(this.generatePlane.bind(this), PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
+    }
+
+    getRandomInt(max) { // credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+        return Math.floor(Math.random() * max);
     }
 }
