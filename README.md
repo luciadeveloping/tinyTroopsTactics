@@ -131,21 +131,52 @@ Si analizamos la matriz MoSCoW inicial la mayor parte de la columna del Must Hav
 
 ## Escenas
 
+Los jugadores interactúan y se mueven en todas las escenas con sus respectivas teclas e interactúan con los botones también con estas.
+
 ### Init y Bootloader
 
 Estos ficheros auxiliares están encargados de inicializar y configurar la clase de juego de Phaser y cargar los assets necesarios respectivamente. 
+Init crea el juego. En el se realiza la configuración del game y la del audio. Se importarán las escenas que componen el juego para construir un array de estas en la configuración.
+Bootloader carga las imágenes de los jugadores, el mapa y sus zonas, los elementos de la interfaz y los audios que se usarán en las demás escenas.
 
 ### StartScene
 
-La escena de inicio implementa el menú principal donde los usuarios pueden acceder a otras escenas. 
+La escena de inicio implementa el menú principal donde los usuarios pueden acceder a otras escenas.
+En ella los dos jugadores podrán moverse por el espacio e interactuar con tres botones haciendo que las texturas de estos cambien. El botón PLAY inicia la GameScene y con ella la competición entre los jugadores. El botón CREDITS inicia la CreditsScene y el botón SETTING nos permite ir al menú de ajustes. 
+
+![mainmenu](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/5274cfcc-e179-402e-96d2-62852e61bc96)
+
 
 ### SettingScene
+La escena de ajustes es la encargada de la gestión del sonido. En ella los jugadores podrán moverse con sus respectivos controles e interactuar con dos botones, uno para habilitar o inhabilitar la música y otro para los efectos. Un tercer botón permitirá a los jugadores volver a la escena de inicio. 
+
+![settings](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/319e97f0-bbf3-4d80-91ce-422c0fbc8fdf)
+
 
 ### GameScene
 
 En la escena de juego se desarrolla la competición entre los dos jugadores. La escena se estructura con la ayuda de una familia de clases con una clase padre (SceneObject) que contiene métodos y atrubutos útiles para entidades dentro del mapa de juego, entre ellas se encuentran: Player, Node, Soldier y Plane. Todas contienen el groso de la implementación de la jugabilidad y se construyen por encima del motor de phaser. 
-La funcionalidad de cada objeto está encapsulada en su clase correspondiente para mejor comprensión y limpieza del código. Así, player implementa su movimiento, la selección de nodos, la aparición de soldados... los nodos pueden 
+La funcionalidad de cada objeto está encapsulada en su clase correspondiente para mejor comprensión y limpieza del código. Así, player implementa su movimiento, la selección de nodos, la aparición de soldados...
 
-### CreditScene
+Al principio del gameplay se muestra una guía.
+![tutorial](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/34d7b843-7f06-440e-87b3-4d8a8e7fe21e)
+
+![gameplay](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/007edf38-a289-455a-9ad3-beb583bddda3)
+
+
+### FinalScene
+Es la escena final donde se muestra al ganador de la competición según la condición de victoria implementada en la GameScene. 
+
+![winP1](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/8fb66e9e-b2c8-4667-8546-f70c3871159b)
+![winP2](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/fc92b52f-647e-49ba-a569-d37a4bd844fa)
+![gameOver](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/7b3012da-f3b2-4dd4-9d2e-532a1e8b3a84)
+
+
+### CreditsScene
+En ella el movimiento de los jugadores está implementado como en el resto de escenas. Se asemeja la FinalScene ya que consta de un único botón con el que interactuar para retornar a la StartScene pero a diferencia de esta en la CreditsScene se muestra el logo del equipo y el nombre de cada uno de sus integrantes.
+
+![credits](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/877f7852-8df8-4188-8614-49779108b49d)
 
 ## Diagrama de flujo.
+
+![diagram](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/612624aa-2642-4673-a81e-2bd4dcadcf16)
