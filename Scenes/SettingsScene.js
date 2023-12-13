@@ -1,201 +1,273 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// SETTINGS MENU ///////////////////////////////////////////////
+
 export default class SettingsScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SettingsScene' });
     }
 
     create() {
-        // CONSTANTS
-        const gameConfig = this.sys.game.config; // Game configuration
-        const centerX = gameConfig.width / 2; // Get the center coordinates of the canvas
+    // SOUNDS
+        this.music = this.sound.add('secondaryMusic', musicConfig);
+        this.clickSound = this.sound.add('clickSound');
 
-        // IMAGES
-        const exitButton = this.add.image(centerX, 480, 'exit_default');
-
-        // FIGURES
-        var graphics = this.add.graphics();
-        graphics.fillStyle(1884159, 0.7); // Set the fill color
-        graphics.fillRoundedRect(centerX - 200, 200, 400, 220, 10); // Rectangle dimensions and corner radius
-
-        // TEXTS
-        // Settings
-        var sceneTitle = this.add.text(
-            centerX,
-            130,
-            'SETTINGS',
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '60px',
-                fill: 'white',
-                align: 'center',
-            }
-        );
-        sceneTitle.setOrigin(0.5);
-
-        // MusicText
-        var musicText = this.add.text(
-            centerX - 40,
-            260,
-            'Music: ',
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '40px',
-                fill: 'white',
-                align: 'center',
-            }
-        );
-        musicText.setOrigin(0.5);
-
-        // (Music:) On/Off
-        var musicIs, musicColor;
-        if (!gameConfig.audio.music.mute) {
-            // If music not muted: On in green
-            musicIs = 'On';
-            musicColor = 'green';
-        } else {
-            // If music muted: Off in red
-            musicIs = 'Off';
-            musicColor = 'red';
+        if (musicEnabled){
+            this.music.play();
         }
 
-        var musicButton = this.add.text(
-            centerX + 50,
-            260,
-            musicIs,
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '40px',
-                fill: musicColor,
-                align: 'center',
-            }
-        );
-        musicButton.setOrigin(0.5);
+    // IMAGES
+        this.title = this.add.image(centerX, 220, 'settingsTitle');
+        this.title.setScale(0.7);
 
-        // Effects
-        var effectsText = this.add.text(
-            centerX - 45,
-            350,
-            'Effects: ',
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '40px',
-                fill: 'white',
-                align: 'center',
-            }
-        );
-        effectsText.setOrigin(0.5);
+    // BUTTONS
 
-        // (Effects:) On/Off
-        var effectsAre, effectsColor;
-        if (!gameConfig.audio.click.mute) {
-            // If effects not muted: On in green
-            effectsAre = 'On';
-            effectsColor = 'green';
-        } else {
-            // If effects muted: Off in red
-            effectsAre = 'Off';
-            effectsColor = 'red';
-        }
-
-        var effectsButton = this.add.text(
-            centerX + 50,
-            350,
-            effectsAre,
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '40px',
-                fill: effectsColor,
-                align: 'center',
-            }
-        );
-        effectsButton.setOrigin(0.5);
-
-        // Return to main menu
-        var returnText = this.add.text(
-            centerX,
-            530,
-            'Return to main menu',
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '18px',
-                fill: 'white',
-                align: 'center',
-                lineSpacing: 10,
-                padding: 20,
-            }
-        );
-        returnText.setOrigin(0.5);
-
-    // INTERACTIVITY
-    // Music button
-    musicButton.setInteractive();
-    musicButton.on('pointerover', () => musicButton.setTint('12094720'));
-    musicButton.on('pointerout', () => musicButton.clearTint());
-    musicButton.on('pointerdown', () => {
-        //Plays click sound if not muted
-        if (gameConfig.audio.click.mute == false){
-            gameConfig.audio.click.play();
+        // Music
+        if (musicEnabled){
+            this.musicButton = this.add.image(centerX - 100, centerY, 'musicEnabledDefault');
+        }else{
+            this.musicButton = this.add.image(centerX - 100, centerY, 'musicDisabledDefault');
         }
         
-        // Toggles music
-        gameConfig.audio.music.mute = !gameConfig.audio.music.mute;
+        // Effects
+        if (effectsEnabled){
+            this.effectsButton = this.add.image(centerX + 100, centerY, 'effectsEnabledDefault');
+        }else{
+            this.effectsButton = this.add.image(centerX + 100, centerY, 'effectsDisabledDefault');
+        }
 
-        // Changes text and color
-        if (!gameConfig.audio.music.mute) {
-            musicButton.setText('On');
-            musicButton.setFill('green');
-            // Play music only if there's user interaction
-            this.sound.context.resume().then(() => {
-            gameConfig.audio.music.play();
-            });
+        // Exit
+        this.exitButton = this.add.image(centerX, 800, 'exitDefault');
+
+        /*
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        this.musicButton.setInteractive();
+        this.musicButton.on('pointerover', () => this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Default', 'Hover')}`));
+        this.musicButton.on('pointerout', () => this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Hover', 'Default')}`));
+        this.musicButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Toggle music boolean
+            musicEnabled = !musicEnabled;
+
+            if (musicEnabled){
+                //Plays music
+                this.music.play();
+
+                //Change texture to enabled
+                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Disabled', 'Enabled')}`);
+            }else{
+                this.music.stop();
+
+                //Change texture to disabled
+                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Enabled', 'Disabled')}`);
+            }
+
+        });
+
+        this.effectsButton.setInteractive();
+        this.effectsButton.on('pointerover', () => this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Default', 'Hover')}`));
+        this.effectsButton.on('pointerout', () => this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Hover', 'Default')}`));
+        this.effectsButton.on('pointerdown', () => {
+            
+            //Toggle effects boolean
+            effectsEnabled = !effectsEnabled;
+
+            if (effectsEnabled){
+                //Play click sound
+                this.clickSound.play();
+
+                //Change texture to enabled
+                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Disabled', 'Enabled')}`);
+            }else{
+                //Change texture to disabled
+                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Enabled', 'Disabled')}`);
+            }
+        });
+
+        this.exitButton.setInteractive();
+        this.exitButton.on('pointerover', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Default', 'Hover')}`));
+        this.exitButton.on('pointerout', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Hover', 'Default')}`));
+        this.exitButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('StartScene');
+        });
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        */
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // PLAYERS CREATION
+        player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
+        player2 = this.physics.add.image(centerX+300, centerY, 'player2');//.setInteractive();
+
+        // Collision with world bounds
+        player1.setCollideWorldBounds(true);
+        player2.setCollideWorldBounds(true);
+    
+    // CONTROLS OF PLAYERS
+        // PLayer 1 is controlled with WASD and interacts with SPACE
+        p1Ctrls = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.W,
+            'down': Phaser.Input.Keyboard.KeyCodes.S,
+            'left': Phaser.Input.Keyboard.KeyCodes.A,
+            'right': Phaser.Input.Keyboard.KeyCodes.D,
+            'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
+        });
+
+        // Player 2 is controlled with arrow keys and interacts with ENTER
+        p2Ctrls = this.input.keyboard.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.UP,
+            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
+            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
+            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
+        });
+
+        // To avoid player 1 automatic movement after returning to this scene 
+        //(because it uses WASD)
+        this.p1ctrlsReset();
+    }
+
+    
+    update() {
+
+        // Assigns p1ctrls as controls for player1
+        this.handlePlayerMovement(player1, p1Ctrls);
+        // Assigns p2ctrls as controls for player2
+        this.handlePlayerMovement(player2, p2Ctrls);
+
+        // Toggling music
+        this.handleButtonInteraction(this.musicButton, p1Ctrls.interact);
+        this.handleButtonInteraction(this.musicButton, p2Ctrls.interact);
+
+        // Toggling sound effects
+        this.handleButtonInteraction(this.effectsButton, p1Ctrls.interact);
+        this.handleButtonInteraction(this.effectsButton, p2Ctrls.interact);
+
+        // Interaction with Exit button
+        this.handleButtonInteraction(this.exitButton, p1Ctrls.interact);
+        this.handleButtonInteraction(this.exitButton, p2Ctrls.interact);
+
+    }
+
+    // Resets controls of player 1
+    p1ctrlsReset() {
+        p1Ctrls.up.reset();
+        p1Ctrls.down.reset();
+        p1Ctrls.left.reset();
+        p1Ctrls.right.reset();
+        p1Ctrls.interact.reset();
+    }
+
+    // Detects if key in input is pressed to move player
+    handlePlayerMovement(player, input) {
+        if (input.left.isDown) {
+            player.setVelocityX(-PLAYER_SPEED);
+        } else if (input.right.isDown) {
+            player.setVelocityX(PLAYER_SPEED);
         } else {
-            musicButton.setText('Off');
-            musicButton.setFill('red');
-
-            // Pause music
-            gameConfig.audio.music.pause();
-        }
-        });
-
-    // Effects button
-    effectsButton.setInteractive();
-    effectsButton.on('pointerover', () => effectsButton.setTint('12094720'));
-    effectsButton.on('pointerout', () => effectsButton.clearTint());
-    effectsButton.on('pointerdown', () => {
-    // Toggles effects
-        gameConfig.audio.click.mute = !gameConfig.audio.click.mute;
-
-        //Plays click sound if not muted
-        if (gameConfig.audio.click.mute == false){
-            gameConfig.audio.click.play();
+            player.setVelocityX(0);
         }
 
-    // Changes text and color
-        if (!gameConfig.audio.click.mute) {
-            effectsButton.setText('On');
-            effectsButton.setFill('green');
+        if (input.up.isDown) {
+            player.setVelocityY(-PLAYER_SPEED);
+        } else if (input.down.isDown) {
+            player.setVelocityY(PLAYER_SPEED);
         } else {
-            effectsButton.setText('Off');
-            effectsButton.setFill('red');
+            player.setVelocityY(0);
         }
-        });
+    }
 
-// Exit button
-    exitButton.setInteractive();
-    exitButton.on('pointerover', () => exitButton.setTexture('exit_hover'));
-    exitButton.on('pointerout', () => exitButton.setTexture('exit_default'));
-    exitButton.on('pointerdown', () => {
-        //Plays click sound if not muted
-        if (gameConfig.audio.click.mute == false){
-            gameConfig.audio.click.play();
+    // Detects if player interacts with the button
+    handleButtonInteraction(button, interactKey) {
+        p1Bounds = player1.getBounds();
+        p2Bounds = player2.getBounds();
+        buttonBounds = button.getBounds();
+
+        //If bounds of any player and the button intersect
+        if (Phaser.Geom.Intersects.RectangleToRectangle(p1Bounds, buttonBounds) ||
+            Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
+            
+            //Changes button texture to hover
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+                
+            //Interact key pressed
+            if (interactKey.isDown) {
+                //Click sound
+                if (effectsEnabled){
+                    this.clickSound.play();
+                }
+
+                //Recognizes the button
+                if (button == this.exitButton){
+                    //Changes scene
+                    this.sceneChange('StartScene');
+                }else if (button == this.musicButton || button == this.effectsButton){
+                    this.toggle(button);
+                }
+
+                
+            }
+        } else {
+            //Maintains normal texture of button
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
         }
+    }
 
-    // Stop music (if it's playing)
-        if (gameConfig.audio.music.isPlaying) {
-            gameConfig.audio.music.stop();
+    // Starts another scene
+    sceneChange(targetScene) {
+        //Stops music
+        this.music.stop();
+
+        this.scene.start(targetScene);
+    }
+
+    // Toggles button
+    toggle(button){
+
+        //Recognizes button
+        if (button == this.musicButton){
+
+            //Toggle music boolean
+            musicEnabled = !musicEnabled;
+
+            if (musicEnabled){
+                //Plays music
+                this.music.play();
+
+                //Change texture to enabled
+                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Disabled', 'Enabled')}`);
+            }else{
+                this.music.stop();
+
+                //Change texture to disabled
+                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Enabled', 'Disabled')}`);
+            }
+            
+        }else if (button = this.effectsButton){
+
+            //Toggle effects boolean
+            effectsEnabled = !effectsEnabled;
+
+            if (effectsEnabled){
+                //Play click sound
+                this.clickSound.play();
+
+                //Change texture to enabled
+                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Disabled', 'Enabled')}`);
+            }else{
+                //Change texture to disabled
+                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Enabled', 'Disabled')}`);
+            }
         }
-
-        // Switch to the main menu scene
-        this.scene.start('StartScene');
-        });
     }
 }

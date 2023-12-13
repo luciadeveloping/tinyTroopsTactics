@@ -13,27 +13,33 @@
 
     <!-- Global variables and constants -->
     <script> 
-        const PLAYER_SPEED = 200; // Movement speed of players
+        const PLAYER_SPEED = 300; // Movement speed of players
 
         //Defined in init.js
         let game,
         gameConfig, //Game configuration
         centerX, //Center of canvas in X
         centerY, //Center of canvas in Y
+        musicEnabled,
+        effectsEnabled,
+        musicConfig, //Music configuration
+
+        //Defined in bootloader.js
+        skinList, //Array of skins for players
+        p1Skin, //Skin used by player 1
+        p2Skin, //Skin used by player 2
 
         //Defined in every scene as needed
         map,
         player1,
         p1Ctrls, //Player 1 controls
         p1Bounds, //Player 1 bounds
-        p1Skin,
-
         player2,
         p2Ctrls, //Player 2 controls
         p2Bounds, //Player 2 bounds
-        p2Skin,
+        buttonBounds
 
-        skinList;
+        ;
 
         
     </script>

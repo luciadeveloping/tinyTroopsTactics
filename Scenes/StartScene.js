@@ -1,39 +1,96 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////MAIN MENU ALREADY WITH PLAYER CONTROLS TO SELECT BUTTONS///////////////////////////
+///////////////////////////////////////////////// MAIN MENU /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
-let buttonBounds;
-
-/////////////////////////////////////////////////// CLASS ///////////////////////////////////////////////////
 export default class StartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'StartScene' });
     }
 
     create() {
+    // SOUNDS
+        this.music = this.sound.add('mainMenuMusic', musicConfig);
+        this.clickSound = this.sound.add('clickSound');
+
+        if (musicEnabled){
+            this.music.play();
+        }
+
     // IMAGES
-        map = this.add.image(centerX, centerY, 'mapStart');
+        map = this.add.image(centerX, centerY+80, 'mapStart');
         map.setScale(1.4);
-        const TITLE = this.add.image(centerX, 90, 'title');
+
+        this.title = this.add.image(centerX, 140, 'title');
+        this.title.setScale(0.7);
 
     // BUTTONS
         // Start
-        this.startButton = this.add.image(400, centerY, 'start_default').setInteractive();
+        this.startButton = this.add.image(420, centerY+70, 'startDefault')
+
+        // Starts locked
+        this.startLocked1 = this.add.image(600, centerY-80, 'startLocked');
+        this.startLocked1.setScale(0.8);
+        this.startLocked2 = this.add.image(680, centerY+190, 'startLocked');
+        this.startLocked2.setScale(0.8);
 
         //Settings
-        this.settingsButton = this.add.image(gameConfig.width - 200, gameConfig.height - 200, 'settings_default').setInteractive();
+        this.settingsButton = this.add.image(gameConfig.width - 150, gameConfig.height - 150, 'settingsDefault')
 
         //Credits
-        this.creditsButton = this.add.image(200, gameConfig.height - 200, 'credits_default').setInteractive();
+        this.creditsButton = this.add.image(150, gameConfig.height - 150, 'creditsDefault')
 
-        //Exit
-        //this.exitButton = this.add.image(250, 470, 'exit_default').setInteractive();
+        /*
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // INTERACTIVITY
+        this.startButton.setInteractive();
+        this.startButton.on('pointerover', () => this.startButton.setTexture(`${this.startButton.texture.key.replace('Default', 'Hover')}`));
+        this.startButton.on('pointerout', () => this.startButton.setTexture(`${this.startButton.texture.key.replace('Hover', 'Default')}`));
+        this.startButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('GameScene');
+        });
+
+        this.settingsButton.setInteractive();
+        this.settingsButton.on('pointerover', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Default', 'Hover')}`));
+        this.settingsButton.on('pointerout', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Hover', 'Default')}`));
+        this.settingsButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('SetingsScene');
+        });
+
+        this.creditsButton.setInteractive();
+        this.creditsButton.on('pointerover', () => this.creditsButton.setTexture(`${this.creditsButton.texture.key.replace('Default', 'Hover')}`));
+        this.creditsButton.on('pointerout', () => this.creditsButton.setTexture(`${this.creditsButton.texture.key.replace('Hover', 'Default')}`));
+        this.creditsButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('CreditsScene');
+        });
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        */
 
     // PLAYERS CREATION
-        player1 = this.physics.add.image(650, 270, 'player1').setInteractive();
-
-        player2 = this.physics.add.image(880, centerY, 'player2').setInteractive();
+        player1 = this.physics.add.image(centerX-50, centerY+20, 'player1');//.setInteractive();
+        player2 = this.physics.add.image(centerX+160, centerY+130, 'player2');//.setInteractive();
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);
@@ -81,11 +138,15 @@ export default class StartScene extends Phaser.Scene {
         //Interaction with Credits button
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
-
-        // No target scene for exitButton
-        //this.handleButtonInteraction(this.exitButton, null, p2ctrls.interactPlayer1);
-        //this.handleButtonInteraction(this.exitButton, null, p2ctrls.interactPlayer2);
+    }
     
+    // Resets controls of player 1
+    p1ctrlsReset() {
+        p1Ctrls.up.reset();
+        p1Ctrls.down.reset();
+        p1Ctrls.left.reset();
+        p1Ctrls.right.reset();
+        p1Ctrls.interact.reset();
     }
 
     // Detects if key in input is pressed to move player
@@ -119,36 +180,28 @@ export default class StartScene extends Phaser.Scene {
             Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
             
             //Changes button texture to hover
-            button.setTexture(`${button.texture.key.replace('_default', '_hover')}`);
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
                 
-            //Changes scene if key dow
+            //Changes scene if key down and plays sound
             if (interactKey.isDown) {
+                //Play click sound
+                if (effectsEnabled){
+                    this.clickSound.play();
+                }
+
                 this.sceneChange(targetScene);
             }
         } else {
             //Maintains normal texture of button
-            button.setTexture(button.texture.key.replace('_hover', '_default'));
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
         }
     }
 
     // Starts another scene
     sceneChange(targetScene) {
-
-        // DOESN'T WORK
-        // //Plays click sound if not muted
-        // if (gameConfig.audio.click.mute == false){
-        //     gameConfig.audio.click.play();
-        // }
+        //Stops music
+        this.music.stop();
 
         this.scene.start(targetScene);
-    }
-
-    // Resets controls of player 1
-    p1ctrlsReset() {
-        p1Ctrls.up.reset();
-        p1Ctrls.down.reset();
-        p1Ctrls.left.reset();
-        p1Ctrls.right.reset();
-        p1Ctrls.interact.reset();
     }
 }

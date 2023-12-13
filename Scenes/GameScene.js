@@ -1,9 +1,6 @@
 ///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
 let nodeList;
 
-const MAP_WIDTH = 1280;
-const MAP_HEIGHT = 960;
-
 
 //p1Skin = skinList[0];
 
@@ -218,8 +215,6 @@ class Player extends SceneObject {
             this.interactWithSelectedNode();
             this.initTimeDraft = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
         }
-
-        
     }
 
     interactWithSelectedNode(){
@@ -455,7 +450,6 @@ class Soldier extends SceneObject{
         this.phaserGO.setScale(0.5);
 
         this.setTrayectory(destination, SOLDIER_OBJECT_SPEED);
-
     }
 
     // Initialization.
@@ -540,34 +534,74 @@ class Plane extends SceneObject{
     
 }
 
-///////////////////////////////////////////////// GAME /////////////////////////////////////////////////
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////// GAME ////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
     }
 
-    preload() {
-        //Map.
-        this.load.image('map', 'assets/map/map_lvl1.png');
-        for (let i = 0; i < 10; i++) {
-            this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);
-        }
-
-    }
-
     create() {
         game = this; // Store "game" object for SceneObject class.
 
-        // Map.
+    // SOUNDS
+        this.music = this.sound.add('gameplayMusic', musicConfig);
+        this.clickSound = this.sound.add('clickSound');
+
+        if (musicEnabled){
+            this.music.play();
+        }
+
+    // IMAGES
         map = this.add.image(600+40, 300+100, 'map');
         map.setScale(1.4);
 
+    // BUTTONS
+        // Exit
+        this.exitButton = this.add.image(100, 100, 'exitDefault');
 
-        // Players.
+        // Settings
+        this.settingsButton = this.add.image(100, gameConfig.height - 100, 'settingsDefault')
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // INTERACTIVITY
+        this.exitButton.setInteractive();
+        this.exitButton.on('pointerover', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Default', 'Hover')}`));
+        this.exitButton.on('pointerout', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Hover', 'Default')}`));
+        this.exitButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('StartScene');
+        });
+
+        this.settingsButton.setInteractive();
+        this.settingsButton.on('pointerover', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Default', 'Hover')}`));
+        this.settingsButton.on('pointerout', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Hover', 'Default')}`));
+        this.settingsButton.on('pointerdown', () => {
+            //Play click sound
+            if (effectsEnabled){
+                this.clickSound.play();
+            }
+
+            //Stops music
+            this.music.stop();
+
+            this.scene.start('SettingsScene');
+        });
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+    // PLAYERS CREATION
         player1 = new Player(100, 500, p1Skin.spriteTag , Faction.One, 'player1');
         player2 = new Player(200, 500, p2Skin.spriteTag, Faction.Two, 'player2');
 
+        //Array of regions
         nodeList = [
             new Node(456, 138, 'mapZone0', Faction.One),
             new Node(628, 108,  'mapZone1'),
@@ -603,6 +637,16 @@ export default class GameScene extends Phaser.Scene {
 
     update() {
         this.playerControls();
+
+        /*
+        // Interaction with Exit button
+        this.handleButtonInteraction(this.exitButton, 'StarScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.exitButton, 'StarScene', p2Ctrls.interact);
+
+        // Interaction with Settings button
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
+        */
     }
     
 
@@ -653,6 +697,37 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    /*
+    // Detects if player interacts with the button to start another scene
+    handleButtonInteraction(button, targetScene, interactKey) {
+        p1Bounds = player1.getBounds();
+        p2Bounds = player2.getBounds();
+        buttonBounds = button.getBounds();
+
+        //If bounds of any player and the button intersect
+        if (Phaser.Geom.Intersects.RectangleToRectangle(p1Bounds, buttonBounds) ||
+            Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
+            
+            //Changes button texture to hover
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+                
+            //Changes scene if key down and plays sound
+            if (interactKey.isDown) {
+                //Play click sound
+                if (effectsEnabled){
+                    this.clickSound.play();
+                }
+
+                this.sceneChange(targetScene);
+            }
+        } else {
+            //Maintains normal texture of button
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    }
+    */
+
+    //////////////////////////////////////////////////// PLANE ////////////////////////////////////////////////////
     generatePlane(){
         // Generate a random position at the top or bottom of the map.
         var targetX = 0;

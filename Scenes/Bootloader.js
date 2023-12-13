@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////LOADS EVERY RESOURCE AND THEN CERTAIN SCENE/////////////////////////////////
+//////////////////////////////// LOADS EVERY RESOURCE AND THEN CERTAIN SCENE ////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default class Bootloader extends Phaser.Scene {
     constructor(){
@@ -8,31 +8,54 @@ export default class Bootloader extends Phaser.Scene {
 
     preload(){
 
-        //StartS startScene when everything is loaded
+        // Starts startScene when everything is loaded
         this.load.on("complete", () => {
             this.scene.start("GameScene");
         })
 
-        //Buttons
-        this.load.image('start_default', 'assets/ui/start_Default.png');
-        this.load.image('credits_default', 'assets/ui/credits_Default.png');
-        this.load.image('settings_default', 'assets/ui/settings_Default.png');
-        this.load.image('exit_default', 'assets/ui/exit_Default.png');
-        this.load.image('start_hover', 'assets/ui/start_Hover.png');
-        this.load.image('credits_hover', 'assets/ui/credits_Hover.png');
-        this.load.image('settings_hover', 'assets/ui/settings_Hover.png');
-        this.load.image('exit_hover', 'assets/ui/exit_Hover.png');
+        // Sounds
+        this.load.audio('clickSound', 'audio/click.mp3');
+        this.load.audio('mainMenuMusic', 'audio/mainMenuMusic.mp3');
+        this.load.audio('secondaryMusic', 'audio/secondaryMusic.wav');
+        this.load.audio('gameplayMusic', 'audio/gameplayMusic.mp3');
+        //Victory sound
+        //Loss sound
+        //Conquest sound (one for each player)
 
-        //StartScene
+        // Buttons
+        this.load.image('startLocked', 'assets/ui/startLocked.png');
+        this.load.image('startDefault', 'assets/ui/startDefault.png');
+        this.load.image('creditsDefault', 'assets/ui/creditsDefault.png');
+        this.load.image('settingsDefault', 'assets/ui/settingsDefault.png');
+        this.load.image('exitDefault', 'assets/ui/exitDefault.png');
+        this.load.image('musicEnabledDefault', 'assets/ui/musicEnabledDefault.png');
+        this.load.image('effectsEnabledDefault', 'assets/ui/effectsEnabledDefault.png');
+        this.load.image('musicDisabledDefault', 'assets/ui/musicDisabledDefault.png');
+        this.load.image('effectsDisabledDefault', 'assets/ui/effectsDisabledDefault.png');
+
+        this.load.image('startHover', 'assets/ui/startHover.png');
+        this.load.image('creditsHover', 'assets/ui/creditsHover.png');
+        this.load.image('settingsHover', 'assets/ui/settingsHover.png');
+        this.load.image('exitHover', 'assets/ui/exitHover.png');
+        this.load.image('musicEnabledHover', 'assets/ui/musicEnabledHover.png');
+        this.load.image('effectsEnabledHover', 'assets/ui/effectsEnabledHover.png');
+        this.load.image('musicDisabledHover', 'assets/ui/musicDisabledHover.png');
+        this.load.image('effectsDisabledHover', 'assets/ui/effectsDisabledHover.png');
+
+        // StartScene
         this.load.image('mapStart', 'assets/map/mapa_1.png');
         this.load.image('title', 'assets/ui/title.png');
         this.load.image('player1', 'assets/player1.png');
         this.load.image('player2', 'assets/player2.png');
     
-        //CredistScene
-        this.load.image("logo", "./assets/misc/Logo.png");
-        
-        //GameScene
+        // CredistScene
+        this.load.image("logo", "./assets/misc/logo.png");
+        this.load.image("creditsTitle", "./assets/ui/titleCredits.png");
+
+        // SettingsScene
+        this.load.image("settingsTitle", "./assets/ui/titleSettings.png")
+
+        // GameScene
         this.load.image('map', 'assets/map/map_lvl1.png');
         for (let i = 0; i < 10; i++) 
             {this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);}
