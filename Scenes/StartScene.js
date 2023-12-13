@@ -116,7 +116,7 @@ export default class StartScene extends Phaser.Scene {
         });
 
         // To avoid player 1 automatic movement after returning to this scene 
-        //(because it uses WASD)
+        // (because it uses WASD)
         this.p1ctrlsReset();
     }
 
@@ -166,6 +166,7 @@ export default class StartScene extends Phaser.Scene {
         } else {
             player.setVelocityY(0);
         }
+
     }
 
     
@@ -203,5 +204,24 @@ export default class StartScene extends Phaser.Scene {
         this.music.stop();
 
         this.scene.start(targetScene);
+    }
+
+    getNextSkin(currentSkin){ // Given a certain skin return the nextSkin in skinList.
+        if(skinList.length == 0){
+            console.log("Skin list empty.");
+            return false;
+        }
+        
+        let currentSkinIndex = skinList.indexOf(currentSkin);
+
+        if(currentSkin == skinList.length - 1){ // Last index.
+            return skinList[0]; // Go back to the begining: Return first element.
+        }else{
+            return skinList[currentSkinIndex+1]; // Return next element.
+        }
+    }
+
+    updateSkin(player, newSkin){ 
+        
     }
 }
