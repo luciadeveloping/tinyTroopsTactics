@@ -88,8 +88,8 @@ export default class Bootloader extends Phaser.Scene {
 
         ]
 
-        p1Skin = skinList[0];
-        p2Skin = skinList[1];
+        p1Skin = skinList[4];
+        p2Skin = skinList[2];
 
         function Skin(spriteTag, nodeColor, regionColor, selectionColor){
             this.spriteTag = spriteTag;

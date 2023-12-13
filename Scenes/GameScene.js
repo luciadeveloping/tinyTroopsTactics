@@ -3,7 +3,7 @@ let nodeList; //Array of regions
 
 //p1Skin = skinList[0];
 
-const PLAYER_STARTING_SOLDIERS = 100;
+const PLAYER_STARTING_SOLDIERS = 5;
 const PLAYER_RANGE = 200;
 const PLAYER_DRAFTING_RANGE = 30;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
@@ -91,7 +91,7 @@ class SceneObject {
 }
 
 class Player extends SceneObject {
-    constructor(xPos, yPos, sprite, faction, soldierAsset) {
+    constructor(xPos, yPos, sprite, faction) {
         super(xPos, yPos, sprite);
         this.phaserGO.setDepth(1);
 
@@ -105,7 +105,7 @@ class Player extends SceneObject {
         this.selectedNode = undefined;
         this.initTimeDraft = 0;
 
-        this.soldierAsset = soldierAsset;
+        this.soldierAsset = sprite;
     }
 
     // Movement:
@@ -643,8 +643,8 @@ export default class GameScene extends Phaser.Scene {
         ///////////////////////////////////////////////////////////////////////////////////////////
 
     // PLAYERS CREATION
-        player1 = new Player(100, 500, p1Skin.spriteTag , Faction.One, 'player1');
-        player2 = new Player(200, 500, p2Skin.spriteTag, Faction.Two, 'player2');
+        player1 = new Player(350, 250, p1Skin.spriteTag , Faction.One, 'player1');
+        player2 = new Player(700, 850, p2Skin.spriteTag, Faction.Two, 'player2');
 
         //Array of regions
         nodeList = [

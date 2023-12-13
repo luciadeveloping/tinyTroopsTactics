@@ -89,8 +89,8 @@ export default class StartScene extends Phaser.Scene {
         */
 
     // PLAYERS CREATION
-        player1 = this.physics.add.image(centerX-50, centerY+20, 'player1');//.setInteractive();
-        player2 = this.physics.add.image(centerX+160, centerY+130, 'player2');//.setInteractive();
+        player1 = this.physics.add.image(centerX-50, centerY+20, 'wheel');//.setInteractive();
+        player2 = this.physics.add.image(centerX+160, centerY+130, 'moon');//.setInteractive();
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);
