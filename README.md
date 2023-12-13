@@ -123,4 +123,29 @@ Será una melodía suave con instrumentos como el piano para crear una sensació
 
 https://www.youtube.com/watch?v=c0Hmvev5r7A 
 
+## Cambios y progreso.
 
+A medida que el desarrollo avanza muchas ideas han tenido que adaptarse a la realidad del proyecto pero en general se ha implementado el núcleo jugable. 
+Si analizamos la matriz MoSCoW inicial la mayor parte de la columna del Must Have está incluída en el juego, la parte que no ha podido completarse es la de realizar varios niveles que era la que menos prioridad tenía para la entrega.
+
+
+## Escenas
+
+### Init y Bootloader
+
+Estos ficheros auxiliares están encargados de inicializar y configurar la clase de juego de Phaser y cargar los assets necesarios respectivamente. 
+
+### StartScene
+
+La escena de inicio implementa el menú principal donde los usuarios pueden acceder a otras escenas. 
+
+### SettingScene
+
+### GameScene
+
+En la escena de juego se desarrolla la competición entre los dos jugadores. La escena se estructura con la ayuda de una familia de clases con una clase padre (SceneObject) que contiene métodos y atrubutos útiles para entidades dentro del mapa de juego, entre ellas se encuentran: Player, Node, Soldier y Plane. Todas contienen el groso de la implementación de la jugabilidad y se construyen por encima del motor de phaser. 
+La funcionalidad de cada objeto está encapsulada en su clase correspondiente para mejor comprensión y limpieza del código. Así, player implementa su movimiento, la selección de nodos, la aparición de soldados... los nodos pueden 
+
+### CreditScene
+
+## Diagrama de flujo.
