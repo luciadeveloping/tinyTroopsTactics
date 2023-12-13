@@ -10,7 +10,7 @@ const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const SOLDIER_OBJECT_SPEED = 100;
 
 const PLANE_SPEED = 100;
-const BOMBARDMENT_DAMAGE = 10;
+const BOMBARDMENT_DAMAGE = 5;
 const INITIAL_PLANE_GENERATION_DELAY = 10000; // Starting delay until planes start appearing;
 const PLANE_GENERATION_INTERVAL_MAX = 20000;
 const PLANE_GENERATION_INTERVAL_MIN = 10000; // Minimum time for a plane to appear.
@@ -430,8 +430,8 @@ class Node extends SceneObject {
 
     getBombed(){ // Gets bombed by a plane.
 
+        console.log()
         this.addSoldiers(-BOMBARDMENT_DAMAGE);
-
         if(this.soldiers == 0){ // Turn neutral if soldiers reach 0.
             this.setFaction(Faction.Neutral);
         }
@@ -561,7 +561,7 @@ class Plane extends SceneObject{
         super(xPos, yPos, 'node');
         this.phaserGO.setDepth(3);
         this.phaserGO.setCollideWorldBounds(false);
-        this.phaserGO.setScale(0.4);
+        this.phaserGO.setScale(0.7);
 
         this.hasBombed = false;
         this.targetNode = this.chooseTarget();
