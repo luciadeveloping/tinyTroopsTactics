@@ -9,6 +9,7 @@ import StartScene from "./Scenes/StartScene.js";
 import GameScene from "./Scenes/GameScene.js";
 import SettingsScene from "./Scenes/SettingsScene.js";
 import CreditsScene from "./Scenes/CreditsScene.js";
+import FinalScene from "./Scenes/FinalScene.js";
 
 ///////////////////////////////////////////// GAME CONFIGURATION ////////////////////////////////////////////
 
@@ -20,7 +21,7 @@ gameConfig = {
     parent: "display", //Hosting container
     backgroundColor: '#8FC9FF',
 
-    scene: [Bootloader, StartScene, GameScene, SettingsScene, CreditsScene],
+    scene: [Bootloader, StartScene, GameScene, SettingsScene, CreditsScene, FinalScene],
 
     //Game behaviour
     physics: {

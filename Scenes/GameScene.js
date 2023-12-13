@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
-let nodeList;
-
+let nodeList; //Array of regions
+let p1Regions = 0, p2Regions = 0; //Regions controlled by each player
 
 //p1Skin = skinList[0];
 
@@ -19,7 +19,6 @@ const PLANE_GENERATION_INTERVAL_MIN = 10000; // Minimum time for a plane to appe
 const NODE_STARTING_SOLDIERS = 5;
 const SOLDIER_GENERATION_INTERVAL = 2000;// Milliseconds
 const NODE_MAXIMUN_SOLDIER_CAPACITY = 30;
-
 
 const DRAFTING_COOLDOWN = 500; // Milliseconds
 
@@ -147,7 +146,7 @@ class Player extends SceneObject {
         this.soldiersDisplay.setText(this.soldiers);
     }    
 
-    //Mechaics:
+    //Mechanics:
     addSoldiers(nSoldiers){ // Can also be used to substract soldiers.
         if((this.soldiers + nSoldiers) < 0 ){ // Can't go negative.
             this.soldiers = 0;
@@ -275,7 +274,7 @@ class Node extends SceneObject {
         this.bigRadius2 = false;
 
 
-        // Graphics obsjects for circumferences.
+        // Graphics objects for circumferences.
         this.circumferencePlayer1 = game.add.graphics();
         this.circumferencePlayer2 = game.add.graphics();
 
@@ -425,10 +424,18 @@ class Node extends SceneObject {
             case Faction.One:
                 this.region.phaserGO.setTint(p1Skin.regionColor); // Orange tint for player 1
                 this.startSoldierGeneration();
+
+                //Adds a region to player 1 faction
+                p1Regions++;
+
                 break;
             case Faction.Two:
                 this.region.phaserGO.setTint(p2Skin.regionColor); // Purple tint for player 2
                 this.startSoldierGeneration();
+
+                //Adds a region to player 2 faction
+                p2Regions++;
+
                 break;
             default:
                 break;
@@ -605,13 +612,13 @@ export default class GameScene extends Phaser.Scene {
         nodeList = [
             new Node(456, 138, 'mapZone0', Faction.One),
             new Node(628, 108,  'mapZone1'),
-            new Node(744, 164, 'mapZone2'),
-            new Node(746, 260, 'mapZone3'),
-            new Node(618, 390, 'mapZone4'),
-            new Node(816, 377, 'mapZone5'),
-            new Node(643, 556, 'mapZone6'),
-            new Node(797, 542, 'mapZone7'),
-            new Node(751, 634, 'mapZone8'),
+            //new Node(744, 164, 'mapZone2'),
+            //new Node(746, 260, 'mapZone3'),
+            //new Node(618, 390, 'mapZone4'),
+            //new Node(816, 377, 'mapZone5'),
+            //new Node(643, 556, 'mapZone6'),
+            //new Node(797, 542, 'mapZone7'),
+            //new Node(751, 634, 'mapZone8'),
             new Node(767, 735, 'mapZone9', Faction.Two),
         ]
 
@@ -637,6 +644,8 @@ export default class GameScene extends Phaser.Scene {
 
     update() {
         this.playerControls();
+
+        this.checkWinner();
 
         /*
         // Interaction with Exit button
@@ -694,6 +703,25 @@ export default class GameScene extends Phaser.Scene {
         //Interaction Player 2.
         if(p2Ctrls.interact.isDown){
             player2.interact();
+        }
+    }
+
+    checkWinner(){
+        let numRegions = nodeList.length;
+
+        //Player 1 winner if takes all the regions
+        if (p1Regions == numRegions){
+            winner = 'player1';
+        }
+        //Player 2 winner if takes all the regions
+        else if (p2Regions == numRegions){
+            winner = 'player2';
+        }
+
+        //If there's a winner
+        if (winner == 'player1' || winner == 'player2'){
+            //Changes to final scene
+            this.scene.start('FinalScene');
         }
     }
 
