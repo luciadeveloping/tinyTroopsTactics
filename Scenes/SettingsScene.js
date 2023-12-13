@@ -38,72 +38,6 @@ export default class SettingsScene extends Phaser.Scene {
         // Exit
         this.exitButton = this.add.image(centerX, 800, 'exitDefault');
 
-        /*
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        this.musicButton.setInteractive();
-        this.musicButton.on('pointerover', () => this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Default', 'Hover')}`));
-        this.musicButton.on('pointerout', () => this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Hover', 'Default')}`));
-        this.musicButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Toggle music boolean
-            musicEnabled = !musicEnabled;
-
-            if (musicEnabled){
-                //Plays music
-                this.music.play();
-
-                //Change texture to enabled
-                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Disabled', 'Enabled')}`);
-            }else{
-                this.music.stop();
-
-                //Change texture to disabled
-                this.musicButton.setTexture(`${this.musicButton.texture.key.replace('Enabled', 'Disabled')}`);
-            }
-
-        });
-
-        this.effectsButton.setInteractive();
-        this.effectsButton.on('pointerover', () => this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Default', 'Hover')}`));
-        this.effectsButton.on('pointerout', () => this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Hover', 'Default')}`));
-        this.effectsButton.on('pointerdown', () => {
-            
-            //Toggle effects boolean
-            effectsEnabled = !effectsEnabled;
-
-            if (effectsEnabled){
-                //Play click sound
-                this.clickSound.play();
-
-                //Change texture to enabled
-                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Disabled', 'Enabled')}`);
-            }else{
-                //Change texture to disabled
-                this.effectsButton.setTexture(`${this.effectsButton.texture.key.replace('Enabled', 'Disabled')}`);
-            }
-        });
-
-        this.exitButton.setInteractive();
-        this.exitButton.on('pointerover', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Default', 'Hover')}`));
-        this.exitButton.on('pointerout', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Hover', 'Default')}`));
-        this.exitButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('StartScene');
-        });
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        */
-
     /////////////////////////////////////////////////////////////////////////////////////////////
     // PLAYERS CREATION
         player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
@@ -202,24 +136,39 @@ export default class SettingsScene extends Phaser.Scene {
                 
             //Interact key pressed
             if (interactKey.isDown) {
-                //Click sound
-                if (effectsEnabled){
-                    this.clickSound.play();
+                //Check cooldown of player of this interact key
+                if (interactKey = p1Ctrls.interact)
+                {
+                    //Cooldown time of player 1 passsed
+                    if(checkCooldown(player1)){
+                        this.interact(button);
+                    }
+                }else if (interactKey = p2Ctrls.interact)
+                {
+                    //Cooldown time of player 2 passed
+                    if(checkCooldown(player2)){
+                        this.interact(button);
+                    }
                 }
-
-                //Recognizes the button
-                if (button == this.exitButton){
-                    //Changes scene
-                    this.sceneChange('StartScene');
-                }else if (button == this.musicButton || button == this.effectsButton){
-                    this.toggle(button);
-                }
-
-                
             }
         } else {
             //Maintains normal texture of button
             button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    }
+
+    interact(button){
+        //Click sound
+        if (effectsEnabled){
+            this.clickSound.play();
+        }
+
+        //Recognizes the button
+        if (button == this.exitButton){
+            //Changes scene
+            this.sceneChange('StartScene');
+        }else if (button == this.musicButton || button == this.effectsButton){
+            this.toggle(button);
         }
     }
 

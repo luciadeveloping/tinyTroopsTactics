@@ -14,6 +14,7 @@
     <!-- Global variables and constants -->
     <script> 
         const PLAYER_SPEED = 300; // Movement speed of players
+        const BUTTON_INTERACTION_COOLDOWN = 500; // Milliseconds passed between button click
 
         //Defined in init.js
         let game,
@@ -23,6 +24,8 @@
         musicEnabled,
         effectsEnabled,
         musicConfig, //Music configuration
+        initTimeDraftP1, //Last time the Player 1 interacted with a button
+        initTimeDraftP2, //Last time the Player 2 interacted with a button
 
         //Defined in bootloader.js
         skinList, //Array of skins for players
@@ -42,6 +45,40 @@
         //Defined in GameScene.js
         winner
         ;
+
+        //Checks if cooldown time of a player has passed from last interaction
+        function checkCooldown(player){
+            let time = new Date(); //Current time
+            let timeElapsedP1, timeElapsedP2; //Time passed from last interaction
+            
+            //Recognizes playerby its interact key
+            if (player == player1){
+
+                console.log("PLAYER1 WANTS TO CLICK");
+                
+                timeElapsedP1 = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftP1;
+                
+                console.log(" te = " + timeElapsedP1 + ", initTime = " + initTimeDraftP1 + " interacting:");
+
+                if(timeElapsedP1 >= BUTTON_INTERACTION_COOLDOWN){
+                    initTimeDraftP1 = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
+                    return true;
+                }else{
+                    return false;
+
+                    console.log("PLAYER1 HASN'T CLICKED");
+                }
+            }else if (player == player1){
+                timeElapsedP2 = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftP2;
+                
+                if(timeElapsedP2 >= BUTTON_INTERACTION_COOLDOWN){
+                    initTimeDraftP2 = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        };
         
     </script>
 

@@ -80,26 +80,6 @@ export default class CreditsScene extends Phaser.Scene {
         );
         creditsText.setOrigin(0.5); //Center the text around its position
 
-    /*
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    //INTERACTIVITY
-        this.exitButton.setInteractive();
-        this.exitButton.on('pointerover', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Default', 'Hover')}`));
-        this.exitButton.on('pointerout', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Hover', 'Default')}`));
-        this.exitButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('StartScene');
-        });
-        ///////////////////////////////////////////////////////////////////////////////////////////
-    */
-
     // PLAYERS CREATION
         player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
         player2 = this.physics.add.image(centerX+300, centerY, 'player2');//.setInteractive();
@@ -189,12 +169,20 @@ export default class CreditsScene extends Phaser.Scene {
                 
             //Changes scene if key down and plays sound
             if (interactKey.isDown) {
-                //Play click sound
-                if (effectsEnabled){
-                    this.clickSound.play();
+                //Check cooldown of player of this interact key
+                if (interactKey = p1Ctrls.interact)
+                {
+                    //Cooldown time of player 1 passsed
+                    if(checkCooldown(player1)){
+                        this.sceneChange(targetScene);
+                    }
+                }else if (interactKey = p2Ctrls.interact)
+                {
+                    //Cooldown time of player 2 passed
+                    if(checkCooldown(player2)){
+                        this.sceneChange(targetScene);
+                    }
                 }
-
-                this.sceneChange(targetScene);
             }
         } else {
             //Maintains normal texture of button

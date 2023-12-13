@@ -38,59 +38,9 @@ export default class StartScene extends Phaser.Scene {
         //Credits
         this.creditsButton = this.add.image(150, gameConfig.height - 150, 'creditsDefault')
 
-        /*
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        // INTERACTIVITY
-        this.startButton.setInteractive();
-        this.startButton.on('pointerover', () => this.startButton.setTexture(`${this.startButton.texture.key.replace('Default', 'Hover')}`));
-        this.startButton.on('pointerout', () => this.startButton.setTexture(`${this.startButton.texture.key.replace('Hover', 'Default')}`));
-        this.startButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('GameScene');
-        });
-
-        this.settingsButton.setInteractive();
-        this.settingsButton.on('pointerover', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Default', 'Hover')}`));
-        this.settingsButton.on('pointerout', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Hover', 'Default')}`));
-        this.settingsButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('SetingsScene');
-        });
-
-        this.creditsButton.setInteractive();
-        this.creditsButton.on('pointerover', () => this.creditsButton.setTexture(`${this.creditsButton.texture.key.replace('Default', 'Hover')}`));
-        this.creditsButton.on('pointerout', () => this.creditsButton.setTexture(`${this.creditsButton.texture.key.replace('Hover', 'Default')}`));
-        this.creditsButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('CreditsScene');
-        });
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        */
-
     // PLAYERS CREATION
-        player1 = this.physics.add.image(centerX-50, centerY+20, 'player1');//.setInteractive();
-        player2 = this.physics.add.image(centerX+160, centerY+130, 'player2');//.setInteractive();
+        player1 = this.physics.add.image(centerX-50, centerY+20, 'wheel');//.setInteractive();
+        player2 = this.physics.add.image(centerX+160, centerY+130, 'moon');//.setInteractive();
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);
@@ -138,6 +88,7 @@ export default class StartScene extends Phaser.Scene {
         //Interaction with Credits button
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
+
     }
     
     // Resets controls of player 1
@@ -172,6 +123,7 @@ export default class StartScene extends Phaser.Scene {
     
     // Detects if player interacts with the button to start another scene
     handleButtonInteraction(button, targetScene, interactKey) {
+        
         p1Bounds = player1.getBounds();
         p2Bounds = player2.getBounds();
         buttonBounds = button.getBounds();
@@ -179,18 +131,28 @@ export default class StartScene extends Phaser.Scene {
         //If bounds of any player and the button intersect
         if (Phaser.Geom.Intersects.RectangleToRectangle(p1Bounds, buttonBounds) ||
             Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
-            
+                
+                console.log("COllided");
+
             //Changes button texture to hover
             button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
                 
-            //Changes scene if key down and plays sound
+            //Interact key pressed
             if (interactKey.isDown) {
-                //Play click sound
-                if (effectsEnabled){
-                    this.clickSound.play();
-                }
-
-                this.sceneChange(targetScene);
+                 //Check cooldown of player of this interact key
+                 if (interactKey = p1Ctrls.interact)
+                 {
+                     //Cooldown time of player 1 passsed
+                     if(checkCooldown(player1)){
+                         this.sceneChange(targetScene);
+                     }
+                 }else if (interactKey = p2Ctrls.interact)
+                 {
+                     //Cooldown time of player 2 passed
+                     if(checkCooldown(player2)){
+                         this.sceneChange(targetScene);
+                     }
+                 }
             }
         } else {
             //Maintains normal texture of button
@@ -200,6 +162,11 @@ export default class StartScene extends Phaser.Scene {
 
     // Starts another scene
     sceneChange(targetScene) {
+        //Play click sound
+        if (effectsEnabled){
+            this.clickSound.play();
+        }
+
         //Stops music
         this.music.stop();
 
