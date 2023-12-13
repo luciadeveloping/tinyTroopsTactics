@@ -18,6 +18,8 @@ export default class Bootloader extends Phaser.Scene {
         this.load.audio('mainMenuMusic', 'audio/mainMenuMusic.mp3');
         this.load.audio('secondaryMusic', 'audio/secondaryMusic.wav');
         this.load.audio('gameplayMusic', 'audio/gameplayMusic.mp3');
+        this.load.audio('dropSound', 'audio/dropSound.mp3');
+
         //Victory sound
         //Loss sound
         //Conquest sound (one for each player)

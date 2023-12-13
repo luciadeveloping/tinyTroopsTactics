@@ -308,7 +308,7 @@ class Node extends SceneObject {
     // Node selection:
     select(faction){
         const smallRadius = 15;
-        const bigRadius = 20;
+        const bigRadius = 23;
 
         switch (faction) {
             case Faction.One: //player1 select a node
@@ -377,7 +377,7 @@ class Node extends SceneObject {
     }
    
     drawCircumference(graphics, color, radius) {
-        graphics.lineStyle(2, color, 1);
+        graphics.lineStyle(8, color, 1);
         graphics.strokeCircle(this.x, this.y, radius);
     }
 
@@ -464,7 +464,11 @@ class Soldier extends SceneObject{
         super(xPos, yPos,  playerAsset);
         this.faction = faction;
 
-        this.setUpTint();
+        // initialize dropSound
+        this.dropSound = game.sound.add('dropSound');
+
+        //this.setUpTint();
+        this.setUpAppearance();
         this.setUpCollisions();
 
         // smaller scale for soldiers
@@ -475,13 +479,25 @@ class Soldier extends SceneObject{
     }
 
     // Initialization.
-    setUpTint(){
+    /*setUpTint(){
         switch(this.faction){
             case Faction.One:
 
                 break;
             case Faction.Two:
 
+                break;
+            default:
+                break;
+        }
+    }*/
+    setUpAppearance() {
+        switch (this.faction) {
+            case Faction.One:
+                this.phaserGO.setTint(p1Skin.nodeColor);
+                break;
+            case Faction.Two:
+                this.phaserGO.setTint(p2Skin.nodeColor);
                 break;
             default:
                 break;
@@ -513,8 +529,14 @@ class Soldier extends SceneObject{
     attackNode(node){
         if(this.faction == node.faction){
             node.addSoldiers(1);
+            if (effectsEnabled){
+                this.dropSound.play();
+            }
         }else{
             node.takeDamage(1, this.faction);
+            if (effectsEnabled){
+                this.dropSound.play();
+            }
         }
         this.destroy();
     }
