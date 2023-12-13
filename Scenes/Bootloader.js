@@ -63,11 +63,27 @@ export default class Bootloader extends Phaser.Scene {
         this.load.image('player1', 'assets/player1.png');
         this.load.image('player2', 'assets/player2.png');
 
+        // Skins
+        this.load.image('pill', 'assets/skins/pill.png');
+        this.load.image('star', 'assets/skins/star.png');
+        this.load.image('moon', 'assets/skins/moon.png');
+        this.load.image('cloud', 'assets/skins/cloud.png');
+        this.load.image('wheel', 'assets/skins/wheel.png');
+        this.load.image('square', 'assets/skins/square.png');
+        this.load.image('flower', 'assets/skins/flower.png');
+        
         
         // Players Skins
         skinList = [
-            new Skin('player1', 0x4E8FA8, 0x75D9FF, 0x3794B7),
-            new Skin('player2', 0xA865A2, 0xFFB2F8, 0xCF41C2)
+            
+            new Skin('pill', 0x710B0B, 0xF27070, 0xFF3737),
+            new Skin('star', 0x20644B, 0x8AE5B4, 0x1DFF85),
+            new Skin('moon', 0x6A3384, 0xC996FB, 0x9D3BFF),
+            new Skin('cloud', 0x263A80, 0x8DA5F9, 0x373FFF),
+            new Skin('wheel', 0x902B8C, 0xF18CE7, 0xFF24E9),
+            new Skin('square', 0xC05B11, 0xEEB291, 0xFF6712),
+            new Skin('flower', 0xBAA808, 0xFAF1A7, 0xFFEA2B)
+
         ]
 
         p1Skin = skinList[0];
