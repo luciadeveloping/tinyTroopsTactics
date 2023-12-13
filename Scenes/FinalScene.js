@@ -17,18 +17,23 @@ export default class FinalScene extends Phaser.Scene {
 
     // IMAGES
         //winner = 'player1';
+        this.grid = this.add.image(centerX, centerY, 'grid');
         
         // Congrats to player 1
         if (winner == 'player1'){
-            map = this.add.image(centerX, centerY, 'mapStart');
+            this.add.image(centerX, centerY-50, 'winP1');
+
+
         }
         // Congrats to player 2
         else if(winner == 'player2'){
+            this.add.image(centerX, centerY-50, 'winP2');
+
 
         }
 
         else if(winner == 'none'){
-
+            this.add.image(centerX, centerY-50, 'gameOver');
         }
 
     // BUTTONS
@@ -36,8 +41,8 @@ export default class FinalScene extends Phaser.Scene {
         this.exitButton = this.add.image(centerX, 800, 'exitDefault');
 
     // PLAYERS CREATION
-        player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
-        player2 = this.physics.add.image(centerX+300, centerY, 'player2');//.setInteractive();
+        player1 = this.physics.add.image(centerX-300, centerY + 300, 'wheel');
+        player2 = this.physics.add.image(centerX+300, centerY + 300, 'moon');
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);

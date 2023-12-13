@@ -53,20 +53,14 @@
             
             //Recognizes playerby its interact key
             if (player == player1){
-
-                console.log("PLAYER1 WANTS TO CLICK");
                 
                 timeElapsedP1 = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftP1;
-                
-                console.log(" te = " + timeElapsedP1 + ", initTime = " + initTimeDraftP1 + " interacting:");
 
                 if(timeElapsedP1 >= BUTTON_INTERACTION_COOLDOWN){
                     initTimeDraftP1 = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
                     return true;
                 }else{
                     return false;
-
-                    console.log("PLAYER1 HASN'T CLICKED");
                 }
             }else if (player == player1){
                 timeElapsedP2 = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - initTimeDraftP2;

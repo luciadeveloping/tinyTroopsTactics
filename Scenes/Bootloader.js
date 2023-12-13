@@ -10,7 +10,7 @@ export default class Bootloader extends Phaser.Scene {
 
         // Starts startScene when everything is loaded
         this.load.on("complete", () => {
-            this.scene.start("StartScene");
+            this.scene.start("FinalScene");
         })
 
         // Sounds
@@ -20,9 +20,8 @@ export default class Bootloader extends Phaser.Scene {
         this.load.audio('gameplayMusic', 'audio/gameplayMusic.mp3');
         this.load.audio('dropSound', 'audio/dropSound.mp3');
 
-        //Victory sound
-        //Loss sound
-        //Conquest sound (one for each player)
+        // Background
+        this.load.image('grid', 'assets/misc/grid.png');
 
         // Buttons
         this.load.image('startLocked', 'assets/ui/startLocked.png');
@@ -47,23 +46,30 @@ export default class Bootloader extends Phaser.Scene {
         // StartScene
         this.load.image('mapStart', 'assets/map/mapa_1.png');
         this.load.image('title', 'assets/ui/title.png');
-        this.load.image('player1', 'assets/player1.png');
-        this.load.image('player2', 'assets/player2.png');
+
+        this.load.image('controlP1', 'assets/misc/controlP1.png');
+        this.load.image('controlP2', 'assets/misc/controlP2.png');
     
         // CredistScene
-        this.load.image("logo", "./assets/misc/logo.png");
+        this.load.image("logo", "./assets/ui/logo.png");
         this.load.image("creditsTitle", "./assets/ui/titleCredits.png");
+        this.load.image("creditsNames", "./assets/ui/creditsNames.png");
 
         // SettingsScene
         this.load.image("settingsTitle", "./assets/ui/titleSettings.png")
+
+        // FinalScene
+        this.load.image("gameOver", "./assets/misc/gameOver.png");
+        this.load.image("winP1", "./assets/misc/winP1.png");
+        this.load.image("winP2", "./assets/misc/winP2.png");
 
         // GameScene
         this.load.image('map', 'assets/map/map_lvl1.png');
         for (let i = 0; i < 10; i++) 
             {this.load.image(`mapZone${i}`, `assets/map/mapZone${i}.png`);}
         this.load.image('node', 'assets/map/node.png');
-        this.load.image('player1', 'assets/player1.png');
-        this.load.image('player2', 'assets/player2.png');
+        this.load.image('plane', 'assets/misc/plane.png');
+        this.load.image('tutorial', 'assets/misc/tutorial.png');
 
         // Skins
         this.load.image('pill', 'assets/skins/pill.png');
@@ -73,7 +79,6 @@ export default class Bootloader extends Phaser.Scene {
         this.load.image('wheel', 'assets/skins/wheel.png');
         this.load.image('square', 'assets/skins/square.png');
         this.load.image('flower', 'assets/skins/flower.png');
-        
         
         // Players Skins
         skinList = [

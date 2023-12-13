@@ -16,6 +16,8 @@ export default class SettingsScene extends Phaser.Scene {
         }
 
     // IMAGES
+        this.grid = this.add.image(centerX, centerY, 'grid');
+
         this.title = this.add.image(centerX, 220, 'settingsTitle');
         this.title.setScale(0.7);
 
@@ -40,8 +42,8 @@ export default class SettingsScene extends Phaser.Scene {
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     // PLAYERS CREATION
-        player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
-        player2 = this.physics.add.image(centerX+300, centerY, 'player2');//.setInteractive();
+        player1 = this.physics.add.image(centerX-300, centerY, 'wheel');//.setInteractive();
+        player2 = this.physics.add.image(centerX+300, centerY, 'moon');//.setInteractive();
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);

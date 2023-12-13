@@ -52,5 +52,7 @@ musicConfig = {
 initTimeDraftP1 = 0; //Last time the Player 1 interacted with a button
 initTimeDraftP2 = 0; //Last time the Player 2 interacted with a button
 
+winner = 'player1';
+
 //////////////////////////////////////////// GAME INITIALIZATION ////////////////////////////////////////////
 game = new Phaser.Game(gameConfig); //New game is created with that configuration

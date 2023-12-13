@@ -16,8 +16,15 @@ export default class StartScene extends Phaser.Scene {
         }
 
     // IMAGES
+        this.grid = this.add.image(centerX, centerY, 'grid');
+
         map = this.add.image(centerX, centerY+80, 'mapStart');
         map.setScale(1.4);
+
+        this.controlP1 = this.add.image(centerX + 300, centerY - 100, 'controlP1');
+        this.controlP1.setScale(0.3);
+        this.controlP2 = this.add.image(centerX + 500, centerY - 100, 'controlP2');
+        this.controlP2.setScale(0.3);
 
         this.title = this.add.image(centerX, 140, 'title');
         this.title.setScale(0.7);
@@ -131,8 +138,6 @@ export default class StartScene extends Phaser.Scene {
         //If bounds of any player and the button intersect
         if (Phaser.Geom.Intersects.RectangleToRectangle(p1Bounds, buttonBounds) ||
             Phaser.Geom.Intersects.RectangleToRectangle(p2Bounds, buttonBounds)) {
-                
-                console.log("COllided");
 
             //Changes button texture to hover
             button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);

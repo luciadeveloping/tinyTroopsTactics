@@ -1,7 +1,6 @@
 ///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
 let nodeList; //Array of regions
-
-//p1Skin = skinList[0];
+let tutorialSeen = false;
 
 const PLAYER_STARTING_SOLDIERS = 5;
 const PLAYER_RANGE = 200;
@@ -11,7 +10,7 @@ const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
 const SOLDIER_OBJECT_SPEED = 100;
 
 const PLANE_SPEED = 100;
-const BOMBARDMENT_DAMAGE = 15;
+const BOMBARDMENT_DAMAGE = 10;
 const INITIAL_PLANE_GENERATION_DELAY = 10000; // Starting delay until planes start appearing;
 const PLANE_GENERATION_INTERVAL_MAX = 20000;
 const PLANE_GENERATION_INTERVAL_MIN = 10000; // Minimum time for a plane to appear.
@@ -83,9 +82,19 @@ class SceneObject {
     }
 
     setOrientationTo(target){
-        var angle = Phaser.Math.Angle.Between(this.phaserGO.x, this.phaserGO.y, target.x, target.y);
-        var angleInDegrees = Phaser.Math.RadToDeg(angle);
-        this.phaserGO.setAngle(angleInDegrees);
+        // var angle = Phaser.Math.Angle.Between(this.phaserGO.x, this.phaserGO.y, target.x, target.y);
+        // var angleInDegrees = Phaser.Math.RadToDeg(angle);
+        // this.phaserGO.setAngle(angleInDegrees);
+
+        var dx = target.x - this.x;
+        var dy = target.y - this.y;
+
+        // Calcular el ángulo de rotación en radianes
+        var angle = Math.atan2(dy, dx);
+
+        // Convertir el ángulo a grados y aplicar la rotación al objeto
+        var degrees = angle * (180 / Math.PI);
+        this.phaserGO.setAngle(degrees)
     }
 
     destroy(){
@@ -552,6 +561,7 @@ class Plane extends SceneObject{
         super(xPos, yPos, 'node');
         this.phaserGO.setDepth(3);
         this.phaserGO.setCollideWorldBounds(false);
+        this.phaserGO.setScale(0.4);
 
         this.hasBombed = false;
         this.targetNode = this.chooseTarget();
@@ -603,6 +613,8 @@ export default class GameScene extends Phaser.Scene {
         }
 
     // IMAGES
+        this.grid = this.add.image(centerX, centerY, 'grid');
+
         map = this.add.image(600+40, 300+100, 'map');
         map.setScale(1.4);
 
@@ -652,6 +664,19 @@ export default class GameScene extends Phaser.Scene {
             this.generatePlane.bind(this), 
             INITIAL_PLANE_GENERATION_DELAY + PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
 
+    
+        this.tutorial = this.add.image(centerX, centerY, 'tutorial');
+        this.tutorial.setDepth(5);
+
+        
+        this.input.keyboard.on('keydown', () => { 
+
+            if (!tutorialSeen){
+                tutorialSeen = true;
+
+                this.tutorial.setVisible(false);
+            }
+        });
     }
 
     update() {
@@ -661,8 +686,17 @@ export default class GameScene extends Phaser.Scene {
 
         this.handleButtonInteraction(this.exitButton, 'StartScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.exitButton, 'StartScene', p2Ctrls.interact);
+        
     }
     
+    seeTutorial(){
+        this.input.keyboard.on('keydown', () => { 
+
+            tutorialSeen =! tutorialSeen
+
+            this.tutorial.setVisible(false);
+        });
+    }
 
     playerControls() {
 

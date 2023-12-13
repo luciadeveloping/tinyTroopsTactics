@@ -16,73 +16,24 @@ export default class CreditsScene extends Phaser.Scene {
         }
 
     //IMAGES
-        this.title = this.add.image(centerX, 220, 'creditsTitle');
+        this.grid = this.add.image(centerX, centerY, 'grid');
+
+        this.title = this.add.image(centerX, 210, 'creditsTitle');
         this.title.setScale(0.7);
 
-        this.logo = this.add.image(centerX-100, centerY - 100, 'logo');
-        this.logo.setScale(0.3);
+        this.logo = this.add.image(centerX, centerY + 300, 'logo');
+        this.logo.setScale(1);
+
+        this.credits = this.add.image(centerX, centerY, 'creditsNames');
+        this.credits.setScale(0.7);
 
     // BUTTONS
         // Exit
-        this.exitButton = this.add.image(centerX, 800, 'exitDefault');
-
-    //FIGURES
-        //Name credits background
-        var graphics = this.add.graphics();
-        graphics.fillStyle(1884159, 0.7); // Set the fill color
-        graphics.fillRoundedRect(centerX - 200, centerY , 400, 220, 10); // Rectangle dimensions and corner radius
-    
-    //TEXTS
-        var studioText = this.add.text(
-            centerX+70,
-            centerY-100,
-            'Spinaca\nStudio', 
-            {
-                fontFamily: 'JosefinSans',
-                fontStyle: 'bold',
-                fontSize: '40px',
-                fill: 'white',
-                align: 'center',
-                lineSpacing: 5,
-                padding:20
-            }
-        );
-        studioText.setOrigin(0.5);
-
-        var subtitle = this.add.text(
-            centerX,
-            centerY+30, 
-            'Developed by', 
-            {
-                fontFamily: 'JosefinSans',
-                fontSize: '20px',
-                fill: 'white',
-                align: 'center',
-                lineSpacing: 10,
-                padding:20
-            }
-        );
-        subtitle.setOrigin(0.5); //Center the text around its position
-
-        var creditsText = this.add.text(
-            centerX,
-            centerY+130, 
-            'Paula González Stradiotto\nÁlvaro Moreno García\nAna Ordoñez Gragera\nEduardo Sánchez Abril', 
-            {
-                fontFamily: 'JosefinSans',
-                fontStyle: 'bold',
-                fontSize: '24px',
-                fill: 'white',
-                align: 'center',
-                lineSpacing: 10,
-                padding:20
-            }
-        );
-        creditsText.setOrigin(0.5); //Center the text around its position
+        this.exitButton = this.add.image(100, 100, 'exitDefault');
 
     // PLAYERS CREATION
-        player1 = this.physics.add.image(centerX-300, centerY, 'player1');//.setInteractive();
-        player2 = this.physics.add.image(centerX+300, centerY, 'player2');//.setInteractive();
+        player1 = this.physics.add.image(centerX-300, centerY, 'wheel');//.setInteractive();
+        player2 = this.physics.add.image(centerX+300, centerY, 'moon');//.setInteractive();
 
         // Collision with world bounds
         player1.setCollideWorldBounds(true);
