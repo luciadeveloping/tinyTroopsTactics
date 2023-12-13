@@ -40,13 +40,17 @@ centerY = gameConfig.height / 2;
 
 ///////////////////////////////////////////// SOUND CONFIGURATION ///////////////////////////////////////////
 
-musicEnabled = true,
-effectsEnabled = true
+musicEnabled = true;
+effectsEnabled = true;
 
 musicConfig = {
-    volume: 0.5,
+    volume: 0.8,
     loop: true
 }
+
+///////////////////////////////////////// BUTTON INTERACTION COOLDOWN ///////////////////////////////////////
+initTimeDraftP1 = 0; //Last time the Player 1 interacted with a button
+initTimeDraftP2 = 0; //Last time the Player 2 interacted with a button
 
 //////////////////////////////////////////// GAME INITIALIZATION ////////////////////////////////////////////
 game = new Phaser.Game(gameConfig); //New game is created with that configuration

@@ -59,6 +59,10 @@ class SceneObject {
         return this.phaserGO.y;
     }
 
+    getBounds(){
+        return this.phaserGO.getBounds();
+    }
+
     distanceTo(sceneObject){
         return Math.sqrt(
             Math.pow(sceneObject.x - this.x, 2) +
@@ -606,42 +610,6 @@ export default class GameScene extends Phaser.Scene {
         // Exit
         this.exitButton = this.add.image(100, 100, 'exitDefault');
 
-        // Settings
-        this.settingsButton = this.add.image(100, gameConfig.height - 100, 'settingsDefault')
-
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        // INTERACTIVITY
-        this.exitButton.setInteractive();
-        this.exitButton.on('pointerover', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Default', 'Hover')}`));
-        this.exitButton.on('pointerout', () => this.exitButton.setTexture(`${this.exitButton.texture.key.replace('Hover', 'Default')}`));
-        this.exitButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('StartScene');
-        });
-
-        this.settingsButton.setInteractive();
-        this.settingsButton.on('pointerover', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Default', 'Hover')}`));
-        this.settingsButton.on('pointerout', () => this.settingsButton.setTexture(`${this.settingsButton.texture.key.replace('Hover', 'Default')}`));
-        this.settingsButton.on('pointerdown', () => {
-            //Play click sound
-            if (effectsEnabled){
-                this.clickSound.play();
-            }
-
-            //Stops music
-            this.music.stop();
-
-            this.scene.start('SettingsScene');
-        });
-        ///////////////////////////////////////////////////////////////////////////////////////////
-
     // PLAYERS CREATION
         player1 = new Player(350, 250, p1Skin.spriteTag , Faction.One, 'player1');
         player2 = new Player(700, 850, p2Skin.spriteTag, Faction.Two, 'player2');
@@ -649,7 +617,7 @@ export default class GameScene extends Phaser.Scene {
         //Array of regions
         nodeList = [
             new Node(456, 138, 'mapZone0', Faction.One),
-            new Node(628, 108,  'mapZone1'),
+            new Node(628, 108, 'mapZone1'),
             new Node(744, 164, 'mapZone2'),
             new Node(746, 260, 'mapZone3'),
             new Node(618, 390, 'mapZone4'),
@@ -676,6 +644,10 @@ export default class GameScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
         });
 
+        // To avoid player 1 automatic movement after returning to this scene 
+        //(because it uses WASD)
+        this.p1ctrlsReset();
+
         planeGeneratorTimer = setTimeout( // Start plane generation.
             this.generatePlane.bind(this), 
             INITIAL_PLANE_GENERATION_DELAY + PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
@@ -687,15 +659,8 @@ export default class GameScene extends Phaser.Scene {
 
         this.checkWinner();
 
-        /*
-        // Interaction with Exit button
-        this.handleButtonInteraction(this.exitButton, 'StarScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.exitButton, 'StarScene', p2Ctrls.interact);
-
-        // Interaction with Settings button
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
-        */
+        this.handleButtonInteraction(this.exitButton, 'StartScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.exitButton, 'StartScene', p2Ctrls.interact);
     }
     
 
@@ -747,7 +712,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     checkWinner(){
-        let totalRegions = nodeList.length;
 
         let p1Regions = player1.countRegions();
         let p2Regions = player2.countRegions();
@@ -769,7 +733,6 @@ export default class GameScene extends Phaser.Scene {
         this.scene.start('FinalScene');
     }
 
-    /*
     // Detects if player interacts with the button to start another scene
     handleButtonInteraction(button, targetScene, interactKey) {
         p1Bounds = player1.getBounds();
@@ -785,19 +748,43 @@ export default class GameScene extends Phaser.Scene {
                 
             //Changes scene if key down and plays sound
             if (interactKey.isDown) {
-                //Play click sound
-                if (effectsEnabled){
-                    this.clickSound.play();
+                //Check cooldown of player of this interact key
+                if (interactKey = p1Ctrls.interact)
+                {
+                    //Cooldown time of player 1 passsed
+                    if(checkCooldown(player1)){
+                        this.sceneChange(targetScene);
+                    }
+                }else if (interactKey = p2Ctrls.interact)
+                {
+                    //Cooldown time of player 2 passed
+                    if(checkCooldown(player2)){
+                        this.sceneChange(targetScene);
+                    }
                 }
-
-                this.sceneChange(targetScene);
             }
         } else {
             //Maintains normal texture of button
             button.setTexture(button.texture.key.replace('Hover', 'Default'));
         }
     }
-    */
+
+    // Starts another scene
+    sceneChange(targetScene) {
+        //Stops music
+        this.music.stop();
+
+        this.scene.start(targetScene);
+    }
+
+    // Resets controls of player 1
+    p1ctrlsReset() {
+        p1Ctrls.up.reset();
+        p1Ctrls.down.reset();
+        p1Ctrls.left.reset();
+        p1Ctrls.right.reset();
+        p1Ctrls.interact.reset();
+    }
 
     //////////////////////////////////////////////////// PLANE ////////////////////////////////////////////////////
     generatePlane(){
