@@ -1,10 +1,9 @@
 ///////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
 let nodeList; //Array of regions
-let p1Regions = 0, p2Regions = 0; //Regions controlled by each player
 
 //p1Skin = skinList[0];
 
-const PLAYER_STARTING_SOLDIERS = 0;
+const PLAYER_STARTING_SOLDIERS = 100;
 const PLAYER_RANGE = 200;
 const PLAYER_DRAFTING_RANGE = 30;
 const SOLDIER_DISPLAY_VERTICAL_ANCHOR = -20
@@ -13,14 +12,17 @@ const SOLDIER_OBJECT_SPEED = 100;
 
 const PLANE_SPEED = 100;
 const BOMBARDMENT_DAMAGE = 15;
+const INITIAL_PLANE_GENERATION_DELAY = 10000; // Starting delay until planes start appearing;
 const PLANE_GENERATION_INTERVAL_MAX = 20000;
 const PLANE_GENERATION_INTERVAL_MIN = 10000; // Minimum time for a plane to appear.
 
-const NODE_STARTING_SOLDIERS = 5;
+const NODE_STARTING_SOLDIERS = 10;
 const SOLDIER_GENERATION_INTERVAL = 2000;// Milliseconds
 const NODE_MAXIMUN_SOLDIER_CAPACITY = 30;
 
-const DRAFTING_COOLDOWN = 500; // Milliseconds
+const PLAYER_INTERACTION_COOLDOWN = 200; // Milliseconds
+
+var planeGeneratorTimer;
 
 const Faction = {
     Neutral: "Neutral",
@@ -74,6 +76,12 @@ class SceneObject {
         // Set object in motion.
         this.phaserGO.setVelocityX(xSpeed);
         this.phaserGO.setVelocityY(ySpeed);
+    }
+
+    setOrientationTo(target){
+        var angle = Phaser.Math.Angle.Between(this.phaserGO.x, this.phaserGO.y, target.x, target.y);
+        var angleInDegrees = Phaser.Math.RadToDeg(angle);
+        this.phaserGO.setAngle(angleInDegrees);
     }
 
     destroy(){
@@ -202,6 +210,16 @@ class Player extends SceneObject {
         return this.distanceTo(sceneObject) <= this.draftingRange;
     }
 
+    countRegions(){ // Returns the number of regions this player has.
+        var numRegions = 0;
+        nodeList.forEach(node => {
+            if(node.faction == this.faction){
+                numRegions++;
+            }
+        });
+        return numRegions;
+    }
+
     // Node interaction:
     interact(){ // Tries to interact with the scene selected object, cooldown is applied.
 
@@ -210,7 +228,7 @@ class Player extends SceneObject {
         var timeElapsed = (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds()) - this.initTimeDraft;
         //console.log(" te = " + timeElapsed + ", initTime = " + this.initTimeDraft + " interacting:");
 
-        if(timeElapsed >= DRAFTING_COOLDOWN){
+        if(timeElapsed >= PLAYER_INTERACTION_COOLDOWN){
             this.interactWithSelectedNode();
             this.initTimeDraft = time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds();
         }
@@ -219,7 +237,7 @@ class Player extends SceneObject {
     interactWithSelectedNode(){
         if(this.selectedNode == undefined) { return false; }
         
-        if(this.isInDraftingRange(this.selectedNode)){
+        if(this.isInDraftingRange(this.selectedNode) && this.selectedNode.faction == this.faction){
             this.draftSoldierFromSelectedNode();
         }else{
             this.sendSoldierToSelectedNode();
@@ -231,7 +249,6 @@ class Player extends SceneObject {
         if(this.selectedNode != undefined){ // If a node is selected.
 
             if(this.selectedNode.draftSoldier()){ // If there are enough soldiers in selected node draft them.
-                //console.log("Drafting...");
                 this.addSoldiers(1);
             }
             return true;
@@ -249,6 +266,7 @@ class Player extends SceneObject {
             this.addSoldiers(-1);
         }
     }
+
 }
 
 class Node extends SceneObject {
@@ -419,22 +437,18 @@ class Node extends SceneObject {
         switch(faction){
             case Faction.Neutral:
                 this.region.phaserGO.clearTint(); // Clear tint
+                this.phaserGO.clearTint();
                 this.stopSoldierGeneratio()
                 break;
             case Faction.One:
                 this.region.phaserGO.setTint(p1Skin.regionColor); // Orange tint for player 1
+                this.phaserGO.setTint(p1Skin.nodeColor);
                 this.startSoldierGeneration();
-
-                //Adds a region to player 1 faction
-                p1Regions++;
-
                 break;
             case Faction.Two:
                 this.region.phaserGO.setTint(p2Skin.regionColor); // Purple tint for player 2
+                this.phaserGO.setTint(p2Skin.nodeColor);
                 this.startSoldierGeneration();
-
-                //Adds a region to player 2 faction
-                p2Regions++;
 
                 break;
             default:
@@ -457,6 +471,7 @@ class Soldier extends SceneObject{
         this.phaserGO.setScale(0.5);
 
         this.setTrayectory(destination, SOLDIER_OBJECT_SPEED);
+        this.setOrientationTo(destination);
     }
 
     // Initialization.
@@ -515,6 +530,7 @@ class Plane extends SceneObject{
         this.hasBombed = false;
         this.targetNode = this.chooseTarget();
         this.setTrayectory(this.targetNode, PLANE_SPEED);
+        this.setOrientationTo(this.targetNode);
 
         game.physics.add.overlap(this.phaserGO, this.targetNode.phaserGO, this.onOverlap, null, this); // Add overlap event.
 
@@ -612,13 +628,13 @@ export default class GameScene extends Phaser.Scene {
         nodeList = [
             new Node(456, 138, 'mapZone0', Faction.One),
             new Node(628, 108,  'mapZone1'),
-            //new Node(744, 164, 'mapZone2'),
-            //new Node(746, 260, 'mapZone3'),
-            //new Node(618, 390, 'mapZone4'),
-            //new Node(816, 377, 'mapZone5'),
-            //new Node(643, 556, 'mapZone6'),
-            //new Node(797, 542, 'mapZone7'),
-            //new Node(751, 634, 'mapZone8'),
+            new Node(744, 164, 'mapZone2'),
+            new Node(746, 260, 'mapZone3'),
+            new Node(618, 390, 'mapZone4'),
+            new Node(816, 377, 'mapZone5'),
+            new Node(643, 556, 'mapZone6'),
+            new Node(797, 542, 'mapZone7'),
+            new Node(751, 634, 'mapZone8'),
             new Node(767, 735, 'mapZone9', Faction.Two),
         ]
 
@@ -638,7 +654,9 @@ export default class GameScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
         });
 
-        setTimeout(this.generatePlane.bind(this), PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
+        planeGeneratorTimer = setTimeout( // Start plane generation.
+            this.generatePlane.bind(this), 
+            INITIAL_PLANE_GENERATION_DELAY + PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
 
     }
 
@@ -707,22 +725,26 @@ export default class GameScene extends Phaser.Scene {
     }
 
     checkWinner(){
-        let numRegions = nodeList.length;
+        let totalRegions = nodeList.length;
 
-        //Player 1 winner if takes all the regions
-        if (p1Regions == numRegions){
-            winner = 'player1';
-        }
-        //Player 2 winner if takes all the regions
-        else if (p2Regions == numRegions){
-            winner = 'player2';
-        }
+        let p1Regions = player1.countRegions();
+        let p2Regions = player2.countRegions();
 
-        //If there's a winner
-        if (winner == 'player1' || winner == 'player2'){
-            //Changes to final scene
-            this.scene.start('FinalScene');
+        //console.log("Total regions:" +totalRegions+ ", player1 has " +p1Regions+ ", player2 has " +p2Regions);
+        if(p1Regions == 0 && p2Regions == 0){ // Player 1 wins.
+            this.endGameScene('none');
+        }else if(p1Regions == 0){ // Player 2 wins.
+            this.endGameScene('player2')
+        }else if(p2Regions == 0){ // Tie.
+            this.endGameScene('player1')
         }
+    }
+
+    endGameScene(result){
+        winner = result;
+
+        clearInterval(planeGeneratorTimer);
+        this.scene.start('FinalScene');
     }
 
     /*
@@ -772,7 +794,7 @@ export default class GameScene extends Phaser.Scene {
 
         new Plane(targetX, targetY);
 
-        setTimeout(this.generatePlane.bind(this), PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
+        planeGeneratorTimer = setTimeout(this.generatePlane.bind(this), PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
     }
 
     getRandomInt(max) { // credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random

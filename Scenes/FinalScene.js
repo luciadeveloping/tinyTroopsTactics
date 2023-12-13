@@ -27,6 +27,10 @@ export default class FinalScene extends Phaser.Scene {
 
         }
 
+        else if(winner == 'none'){
+
+        }
+
     // BUTTONS
         // Exit
         this.exitButton = this.add.image(centerX, 800, 'exitDefault');

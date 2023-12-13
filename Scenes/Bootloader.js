@@ -10,7 +10,7 @@ export default class Bootloader extends Phaser.Scene {
 
         // Starts startScene when everything is loaded
         this.load.on("complete", () => {
-            this.scene.start("StartScene");
+            this.scene.start("GameScene");
         })
 
         // Sounds
@@ -66,15 +66,16 @@ export default class Bootloader extends Phaser.Scene {
         
         // Players Skins
         skinList = [
-            new Skin('player1', 0x75D9FF, 0x3794B7),
-            new Skin('player2', 0xFFB2F8, 0xCF41C2)
+            new Skin('player1', 0x4E8FA8, 0x75D9FF, 0x3794B7),
+            new Skin('player2', 0xA865A2, 0xFFB2F8, 0xCF41C2)
         ]
 
         p1Skin = skinList[0];
         p2Skin = skinList[1];
 
-        function Skin(spriteTag, regionColor, selectionColor){
+        function Skin(spriteTag, nodeColor, regionColor, selectionColor){
             this.spriteTag = spriteTag;
+            this.nodeColor = nodeColor;
             this.regionColor = regionColor;
             this.selectionColor = selectionColor;
         }
