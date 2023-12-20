@@ -138,4 +138,61 @@ $(document).ready(function () {
             showUser(userWithId);
         });
     })
+
+    
+    // Función para cargar los mensajes desde el servidor
+    function loadMessages(callback) {
+        $.ajax({
+            url: 'http://localhost:8080/messages'
+        }).done(function (messages) {
+            console.log('Messages loaded: ' + JSON.stringify(messages));
+
+            // Llama a la función de devolución de llamada con los mensajes cargados
+            callback(messages);
+        })
+    }
+
+    // Función para mostrar un mensaje en la página
+    function showMessage(message) {
+        $('#message-container').append('<div>' + message.user + ': ' + message.content + '</div>');
+    }
+
+    // Cargar mensajes al cargar la página
+    loadMessages(function (messages) {
+        // Mostrar cada mensaje en la página
+        for (var i = 0; i < messages.length; i++) {
+            showMessage(messages[i]);
+        }
+    });
+
+    // Manejar el evento de clic en el botón de enviar
+    $('#send-button').click(function () {
+        var messageInput = $('#message-input');
+        var messageContent = messageInput.val();
+
+        // Crear un nuevo mensaje
+        var newMessage = {
+            user: 'User1', // Puedes obtener el nombre del usuario de alguna manera
+            content: messageContent
+        };
+
+        // Enviar el nuevo mensaje al servidor
+        $.ajax({
+            method: 'POST',
+            url: 'http://localhost:8080/messages',
+            data: JSON.stringify(newMessage),
+            processData: false,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).done(function (message) {
+            console.log("Message sent: " + JSON.stringify(message));
+
+            // Mostrar el nuevo mensaje en la página
+            showMessage(message);
+
+            // Limpiar el área de texto después de enviar
+            messageInput.val('');
+        });
+    });
 })

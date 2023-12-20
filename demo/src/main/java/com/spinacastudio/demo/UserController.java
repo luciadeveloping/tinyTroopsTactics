@@ -1,84 +1,96 @@
 package com.spinacastudio.demo;
 
+// Importa las clases necesarias
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-//import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController //identifies this class as a controller
-@RequestMapping("/users") //finds this class in /users
+@RestController
+@RequestMapping("/users")
 public class UserController {
 
-    Map<Long, User> users = new ConcurrentHashMap<>(); 
-	AtomicLong nextId = new AtomicLong(0); //ids start from 0
+    // Mapa para almacenar usuarios, con clave como ID del usuario
+    private final Map<Long, User> users = new ConcurrentHashMap<>();
 
-    @GetMapping //gets all users values
-	public Collection<User> users() {
-		return users.values();
-	}
+    // Contador atómico para generar IDs únicos para nuevos usuarios
+    private final AtomicLong nextId = new AtomicLong(0);
 
-    @PostMapping //like a setter
-	@ResponseStatus(HttpStatus.CREATED)
-	public User newUser(@RequestBody User user) {
+    // Obtiene la lista de todos los usuarios
+    @GetMapping
+    public Collection<User> users() {
+        return users.values();
+    }
 
-		long id = nextId.incrementAndGet();
-		user.setId(id);
-		users.put(id, user);
+    // Crea un nuevo usuario y lo agrega al mapa de usuarios
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User newUser(@RequestBody User user) {
+        long id = nextId.incrementAndGet();
+        user.setId(id);
+        user.setMessages(new ArrayList<>());  // Inicializa la lista de mensajes
+        users.put(id, user);
 
-		return user;
-	}
+        // Escribir usuarios en el archivo
+        UserFileHandler.writeUsers(new ArrayList<>(users.values()));
 
-    @PutMapping("/{id}") //updates given ID ./users/{id}
-	public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userUpdated) {
+        return user;
+    }
 
-		User savedUser = users.get(userUpdated.getId());
+    // Actualiza un usuario existente con la información proporcionada
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userUpdated) {
+        User savedUser = users.get(id);
 
-		if (savedUser != null) {
+        if (savedUser != null) {
+            users.put(id, userUpdated);
 
-			users.put(id, userUpdated);
+            // Escribir usuarios en el archivo
+            UserFileHandler.writeUsers(new ArrayList<>(users.values()));
 
-			return new ResponseEntity<>(userUpdated, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
+            // Preserva la información de los mensajes del usuario original
+            userUpdated.setMessages(savedUser.getMessages());
+            users.put(id, userUpdated);
 
-    @GetMapping("/{id}") //gets given ID
-	public ResponseEntity<User> getUser(@PathVariable long id) {
+            return new ResponseEntity<>(userUpdated, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-		User savedUser = users.get(id);
+    // Obtiene un usuario por su ID
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable long id) {
+        User savedUser = users.get(id);
 
-		if (savedUser != null) {
-			return new ResponseEntity<>(savedUser, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-    
-	@DeleteMapping("/{id}") //deletes given ID
-	public ResponseEntity<User> deleteUser(@PathVariable long id) {
+        if (savedUser != null) {
+            return new ResponseEntity<>(savedUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-		User savedUser = users.get(id);
+    // Elimina un usuario por su ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable long id) {
+        User savedUser = users.get(id);
 
-		if (savedUser != null) {
-			users.remove(savedUser.getId());
-			return new ResponseEntity<>(savedUser, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	} 
-    
+        if (savedUser != null) {
+            users.remove(savedUser.getId());
+
+            // Escribir usuarios en el archivo
+            UserFileHandler.writeUsers(new ArrayList<>(users.values()));
+
+            return new ResponseEntity<>(savedUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
+
+
