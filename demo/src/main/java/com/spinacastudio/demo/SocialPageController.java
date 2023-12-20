@@ -9,9 +9,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -25,13 +22,27 @@ public class SocialPageController {
         return sp.getChatLog();
     }
 
-    @PostMapping
+    @PostMapping("/message")
     @ResponseStatus(HttpStatus.CREATED)
     public Message newMessage(@RequestBody Message message){
         sp.addMessage(message);
         return message;
     }
 
+    @PostMapping("/user")
+    @ResponseStatus(HttpStatus.CREATED)
+    public User newUser(@RequestBody User user){
+        sp.addUser(user);
+        return user;
+    }
+
+    @DeleteMapping("/user/{id}")
+	public ResponseEntity<User> deleteUser(@PathVariable int id) {
+        sp.removeUser(id);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+    
     /* @PutMapping("path/{id}")
     public ResponseEntity<Message> updateMessage(@PathVariable int id, @RequestBody Message message){
 

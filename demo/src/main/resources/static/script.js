@@ -157,11 +157,13 @@ $(document).ready(function () {
             success: function(data){
                 console.log(data);
             }
-            
+        })
+
+        $.ajax({
+            method: 'DELETE',
+            url: 'http://localhost:8080/socialPage/user/' + 1
+        }).done(function (user) {
+            console.log("Deleted item " + user.id);
         })
     })
-
-    function getChatLog(){
-        
-    }
 })
