@@ -1,18 +1,16 @@
-<!DOCTYPE html> 
-<html lang="en"> 
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>TINY TROOPS TACTICS</title>
+
+    <!-- Vincula el archivo CSS -->
+    <link rel="stylesheet" type="text/css" href="indexStyle.css">
 
     <!-- Phaser CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
-
-    <!-- Style of this webpage -->
-    <link rel="stylesheet" href="indexStyle.css"/>
-
-    <script src="script.js"></script>
 
     <!-- Global variables and constants -->
     <script src="./Classes/GlobalVariables.js"></script>
@@ -20,15 +18,21 @@
     <!-- Game initializer -->
     <script src="./init.js" type="module"></script>
 
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="script.js"></script>
 </head>
+
 <body>
     <h1>TINY TROOPS TACTICS</h1>
-    
     <h2>Fase 3. Proyecto práctico de Juegos en Red</h2>
+    <hr>
+    <input id='value-input' type='text'>
+    <button id='add-button'>Add</button>
 
     <main>
         <!-- Section where the game will be displayed-->
         <div id="display"></div>
     </main>
 </body>
+
 </html>
