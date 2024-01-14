@@ -35,10 +35,8 @@ winner
 var connection; // Reference to websocket
 var assignedPlayer; // Either 1 or 2
 
-// Input variables form the web player
-var otherPlayerVerticalMovementInput = 0;
-var otherPlayerHorizontallMovementInput = 0;
-var otherPlayerInteractionInput = 0;
+// Input variables from the web player
+var otherInputInfo = [0, 0, 0]; // [horizontal, vertical, interaction]
 
 //Checks if cooldown time of a player has passed from last interaction
 function checkCooldown(player){

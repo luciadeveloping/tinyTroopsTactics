@@ -99,8 +99,21 @@ export default class StartScene extends Phaser.Scene {
 
         
         this.movementHandler();
-        //this.handlePlayerMovement(player1, p1Ctrls);
 
+        // Interaction with Start button
+        this.handleButtonInteraction(this.startButton, 'GameScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.startButton, 'GameScene', p2Ctrls.interact);
+
+        //Interaction with Settings button
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
+
+        //Interaction with Credits button
+        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
+        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
+
+        
+        //this.handlePlayerMovement(player1, p1Ctrls);
         /*
         // Assigns p1ctrls as controls for player1
         this.handlePlayerMovement(player1, p1Ctrls);
@@ -123,21 +136,21 @@ export default class StartScene extends Phaser.Scene {
 
     movementHandler(){
 
-        if(assignedPlayer == 1){
+        if (assignedPlayer == 1){
             this.handlePlayerMovement(player1, p1Ctrls);
             this.handleOtherPlayerMovement(
                 player2, 
-                otherPlayerVerticalMovementInput,
-                otherPlayerHorizontallMovementInput,
-                otherPlayerInteractionInput);
+                otherInputInfo[0],
+                otherInputInfo[1],
+                otherInputInfo[2]);
 
-        }else if(assignedPlayer == 2){
+        } else if (assignedPlayer == 2){
             this.handlePlayerMovement(player2, p2Ctrls);
             this.handleOtherPlayerMovement(
                 player1, 
-                otherPlayerVerticalMovementInput,
-                otherPlayerHorizontallMovementInput,
-                otherPlayerInteractionInput);
+                otherInputInfo[0],
+                otherInputInfo[1],
+                otherInputInfo[2]);
         }
     }
     
@@ -171,7 +184,7 @@ export default class StartScene extends Phaser.Scene {
 
     }
 
-    handleOtherPlayerMovement(player, verticalInput, horizontalInput, interactionInput){
+    handleOtherPlayerMovement(player, horizontalInput, verticalInput, interactionInput){
         if (horizontalInput == 1 ) {
             player.setVelocityX(PLAYER_SPEED);
         } else if (horizontalInput == -1) {

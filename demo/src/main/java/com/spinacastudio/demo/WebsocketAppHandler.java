@@ -20,24 +20,21 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 	private ObjectMapper mapper = new ObjectMapper();
 	private WebSocketSession player1Session;
 	private WebSocketSession player2Session;
-	private int playerCount = 0; // Number of players.
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		System.out.println("New user: " + session.getId());
 
 		// Assign user to player1 or player2 and send the result back to the session.
-		if(playerCount == 0){
+		if(player1Session == null){
 
 			player1Session = session;
 			SendMessageToSession(session, "SessionId", "1");
-			playerCount += 1;
 
-		}else if(playerCount == 1){
+		}else if(player2Session == null){
 
 			player2Session = session;
 			SendMessageToSession(session, "SessionId", "2");
-			playerCount += 1;
 
 		}else{
 			System.out.println("Ammount of maximum players reached.");
@@ -49,7 +46,8 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		System.out.println("Session closed: " + session.getId());
-		if(playerCount>0){ playerCount =- 1; }
+		if(session == player1Session) {player1Session = null;}
+		else if ( session == player2Session) {player2Session = null;}
 		
 	}
 
@@ -62,19 +60,23 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		String requestType = message.get("type").asText();
 		switch (requestType) {
 			case "InputUpdate":
+				JsonNode contentNode = message.get("content");
 				if(session == player1Session){
 					
-					JsonNode contentNode = message.get("content");
 					SendMessageToSession(
-						player1Session, 
+						player2Session, 
 						"InputUpdate", 
 						contentNode.toString()
 					);
 
 				}else if(session == player2Session){
-
+					SendMessageToSession(
+						player1Session, 
+						"InputUpdate", 
+						contentNode.toString()
+					);
 				}else{
-					System.out.println("An undefined session tried to update its input.");
+					System.out.println("An undefined session tried to update input information.");
 				}
 				
 				break;

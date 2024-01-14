@@ -123,11 +123,11 @@ export default class Bootloader extends Phaser.Scene {
                 break;
 
                 case "InputUpdate":
-                    console.log("Input received: " + message.content);
+                    //console.log("Input received: " + message.content);
                     var inputInfo = JSON.parse(message.content);
-                    otherPlayerHorizontallMovementInput = inputInfo[0];
-                    otherPlayerVerticalMovementInput = inputInfo[1];
-                    otherPlayerInteractionInput = inputInfo[2];
+                    otherInputInfo[0] = inputInfo[0];
+                    otherInputInfo[1] = inputInfo[1];
+                    otherInputInfo[2] = inputInfo[2];
                     break;
 
                 case "Error":
