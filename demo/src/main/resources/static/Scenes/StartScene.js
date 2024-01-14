@@ -78,20 +78,14 @@ export default class StartScene extends Phaser.Scene {
 
         let teclasPulsadas = {};
         this.input.keyboard.on('keydown', function (event) {
-            // Almacenar la tecla presionada en el objeto teclasPulsadas
             teclasPulsadas[event.code] = true;
-    
-            // Llamar a la función updateInputToWS cuando se presiona una tecla
             this.updateInputToWS(teclasPulsadas);
         }, this);
     
-        // Configurar el detector de eventos de teclado para 'keyup'
         this.input.keyboard.on('keyup', function (event) {
-            // Eliminar la tecla liberada del objeto teclasPulsadas
             delete teclasPulsadas[event.code];
-    
-            // Llamar a la función updateInputToWS cuando se libera una tecla
             this.updateInputToWS(teclasPulsadas);
+            
         }, this);
     }
 
@@ -112,7 +106,7 @@ export default class StartScene extends Phaser.Scene {
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
 
-        
+
         //this.handlePlayerMovement(player1, p1Ctrls);
         /*
         // Assigns p1ctrls as controls for player1
@@ -142,7 +136,9 @@ export default class StartScene extends Phaser.Scene {
                 player2, 
                 otherInputInfo[0],
                 otherInputInfo[1],
-                otherInputInfo[2]);
+                otherInputInfo[2],
+                otherInputInfo[3],
+                otherInputInfo[4]);
 
         } else if (assignedPlayer == 2){
             this.handlePlayerMovement(player2, p2Ctrls);
@@ -150,7 +146,9 @@ export default class StartScene extends Phaser.Scene {
                 player1, 
                 otherInputInfo[0],
                 otherInputInfo[1],
-                otherInputInfo[2]);
+                otherInputInfo[2],
+                otherInputInfo[3],
+                otherInputInfo[4]);
         }
     }
     
@@ -184,13 +182,14 @@ export default class StartScene extends Phaser.Scene {
 
     }
 
-    handleOtherPlayerMovement(player, horizontalInput, verticalInput, interactionInput){
+    handleOtherPlayerMovement(player, horizontalInput, verticalInput, interactionInput, xPos, yPos){
         if (horizontalInput == 1 ) {
             player.setVelocityX(PLAYER_SPEED);
         } else if (horizontalInput == -1) {
             player.setVelocityX(-PLAYER_SPEED);
         } else if (horizontalInput == 0) {
             player.setVelocityX(0);
+            player.x = xPos;
         }
 
         if (verticalInput == 1) {
@@ -199,6 +198,7 @@ export default class StartScene extends Phaser.Scene {
             player.setVelocityY(PLAYER_SPEED);
         } else if(verticalInput == 0){
             player.setVelocityY(0);
+            player.y = yPos;
         }
 
         if(interactionInput == 1){
@@ -287,43 +287,66 @@ export default class StartScene extends Phaser.Scene {
         connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
     }
 
+    updateInfoToWS(keys){
+        let pos;
+        if(assignedPlayer = 1){
+            pos = [
+                player1.x,
+                player1.y,
+                0
+            ];
+
+            if(keys['Space']){ pos[2] = 1}
+
+            //console.log(pos);
+            //this.sendMessageToWS("InputUpdate", pos);
+        }
+    }
+
     updateInputToWS(teclasPulsadas) {
         //console.log('Teclas pulsadas:', teclasPulsadas);
 
         // Encode Inputs
-        let horizontalInputWS;
-        let verticalInputWS;
-        let interactionInputWS;
-
         let inputInfo = [];
 
-        if (teclasPulsadas['KeyD']) {
-            inputInfo[0] = 1;
-        } else if (teclasPulsadas['KeyA']) {
-            inputInfo[0] = -1;
-        } else {
-            inputInfo[0] = 0;
-        }
+        if(assignedPlayer == 1){
+            if (teclasPulsadas['KeyD']) {
+                inputInfo[0] = 1;
+            } else if (teclasPulsadas['KeyA']) {
+                inputInfo[0] = -1;
+            } else {
+                inputInfo[0] = 0;
+            }
+    
+            if (teclasPulsadas['KeyW']) {
+                inputInfo[1] = 1;
+            } else if (teclasPulsadas['KeyS']) {
+                inputInfo[1] = -1;
+            } else {
+                inputInfo[1] = 0;
+            }
+    
+            if (teclasPulsadas['Space']) {
+                inputInfo[2] = 1;
+            } else {
+                inputInfo[2] = 0;
+            }
 
-        if (teclasPulsadas['KeyW']) {
-            inputInfo[1] = 1;
-        } else if (teclasPulsadas['KeyS']) {
-            inputInfo[1] = -1;
-        } else {
-            inputInfo[1] = 0;
+            inputInfo[3] = player1.x;
+            inputInfo[4] = player1.y;
         }
-
-        if (teclasPulsadas['Space']) {
-            inputInfo[2] = 1;
-        } else {
-            inputInfo[2] = 0;
-        }
-
         /*console.log("verticalInput= " + verticalInputWS + "\n" +
                     " horizontalInput = " + horizontalInputWS + "\n" +
                     " interactionInput = " + interactionInputWS + "\n");*/
 
         this.sendMessageToWS("InputUpdate", inputInfo);
+    }
+
+    
+
+    fixPos(){
+        player2.x = otherInputInfo[3];
+        player2.y = otherInputInfo[4];
     }
     
 }

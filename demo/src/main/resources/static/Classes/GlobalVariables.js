@@ -34,6 +34,7 @@ winner
 // Websocket - Defined in bootloader.
 var connection; // Reference to websocket
 var assignedPlayer; // Either 1 or 2
+var otherPlayerPosDirty;
 
 // Input variables from the web player
 var otherInputInfo = [0, 0, 0]; // [horizontal, vertical, interaction]

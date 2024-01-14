@@ -64,7 +64,7 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 				if(session == player1Session){
 					
 					SendMessageToSession(
-						player2Session, 
+						player1Session, 
 						"InputUpdate", 
 						contentNode.toString()
 					);
