@@ -31,6 +31,15 @@ buttonBounds,
 winner
 ;
 
+// Websocket - Defined in bootloader.
+var connection; // Reference to websocket
+var assignedPlayer; // Either 1 or 2
+
+// Input variables form the web player
+var otherPlayerVerticalMovementInput = 0;
+var otherPlayerHorizontallMovementInput = 0;
+var otherPlayerInteractionInput = 0;
+
 //Checks if cooldown time of a player has passed from last interaction
 function checkCooldown(player){
     let time = new Date(); //Current time

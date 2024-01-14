@@ -102,5 +102,56 @@ export default class Bootloader extends Phaser.Scene {
             this.regionColor = regionColor;
             this.selectionColor = selectionColor;
         }
+
+        // WebScoket Connection.
+        connection = new WebSocket('ws://127.0.0.1:8080/app');
+        
+        assignedPlayer;
+
+        // Websocket methods.
+        connection.onopen = function(){
+            console.log("Conection established.")
+        }
+
+        connection.onmessage = function(msg) {
+            var message = JSON.parse(msg.data)
+            
+            switch(message.type){
+                case "SessionId":
+                    console.log("Id request succesful. My ID = " + message.content)    
+                    assignedPlayer = parseInt(message.content);
+                break;
+
+                case "InputUpdate":
+                    console.log("Input received: " + message.content);
+                    var inputInfo = JSON.parse(message.content);
+                    otherPlayerHorizontallMovementInput = inputInfo[0];
+                    otherPlayerVerticalMovementInput = inputInfo[1];
+                    otherPlayerInteractionInput = inputInfo[2];
+                    break;
+
+                case "Error":
+                    console.log("An error has occurred, error: " + message.content);
+                    break;
+
+                default:
+                    console.log("The type " + message.type + " is not valid.")
+            }
+            
+            
+        }
+
+        /**
+         * 
+         * @param {String} type InputUpdate
+         * @param {String} content 
+         */
+        function sendMessageToWS(type, content){
+            var msg = {
+                type : type,
+                content : content
+            }
+            connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
+        }
     }
 }

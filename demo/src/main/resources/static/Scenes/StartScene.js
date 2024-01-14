@@ -75,10 +75,33 @@ export default class StartScene extends Phaser.Scene {
         // To avoid player 1 automatic movement after returning to this scene 
         // (because it uses WASD)
         this.p1ctrlsReset();
+
+        let teclasPulsadas = {};
+        this.input.keyboard.on('keydown', function (event) {
+            // Almacenar la tecla presionada en el objeto teclasPulsadas
+            teclasPulsadas[event.code] = true;
+    
+            // Llamar a la función updateInputToWS cuando se presiona una tecla
+            this.updateInputToWS(teclasPulsadas);
+        }, this);
+    
+        // Configurar el detector de eventos de teclado para 'keyup'
+        this.input.keyboard.on('keyup', function (event) {
+            // Eliminar la tecla liberada del objeto teclasPulsadas
+            delete teclasPulsadas[event.code];
+    
+            // Llamar a la función updateInputToWS cuando se libera una tecla
+            this.updateInputToWS(teclasPulsadas);
+        }, this);
     }
 
     update() {
 
+        
+        this.movementHandler();
+        //this.handlePlayerMovement(player1, p1Ctrls);
+
+        /*
         // Assigns p1ctrls as controls for player1
         this.handlePlayerMovement(player1, p1Ctrls);
         // Assigns p2ctrls as controls for player2
@@ -95,7 +118,27 @@ export default class StartScene extends Phaser.Scene {
         //Interaction with Credits button
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
+        */
+    }
 
+    movementHandler(){
+
+        if(assignedPlayer == 1){
+            this.handlePlayerMovement(player1, p1Ctrls);
+            this.handleOtherPlayerMovement(
+                player2, 
+                otherPlayerVerticalMovementInput,
+                otherPlayerHorizontallMovementInput,
+                otherPlayerInteractionInput);
+
+        }else if(assignedPlayer == 2){
+            this.handlePlayerMovement(player2, p2Ctrls);
+            this.handleOtherPlayerMovement(
+                player1, 
+                otherPlayerVerticalMovementInput,
+                otherPlayerHorizontallMovementInput,
+                otherPlayerInteractionInput);
+        }
     }
     
     // Resets controls of player 1
@@ -109,10 +152,11 @@ export default class StartScene extends Phaser.Scene {
 
     // Detects if key in input is pressed to move player
     handlePlayerMovement(player, input) {
-        if (input.left.isDown) {
-            player.setVelocityX(-PLAYER_SPEED);
-        } else if (input.right.isDown) {
+        
+        if (input.right.isDown) {
             player.setVelocityX(PLAYER_SPEED);
+        } else if (input.left.isDown) {
+            player.setVelocityX(-PLAYER_SPEED);
         } else {
             player.setVelocityX(0);
         }
@@ -125,6 +169,30 @@ export default class StartScene extends Phaser.Scene {
             player.setVelocityY(0);
         }
 
+    }
+
+    handleOtherPlayerMovement(player, verticalInput, horizontalInput, interactionInput){
+        if (horizontalInput == 1 ) {
+            player.setVelocityX(PLAYER_SPEED);
+        } else if (horizontalInput == -1) {
+            player.setVelocityX(-PLAYER_SPEED);
+        } else if (horizontalInput == 0) {
+            player.setVelocityX(0);
+        }
+
+        if (verticalInput == 1) {
+            player.setVelocityY(-PLAYER_SPEED);
+        } else if (verticalInput == -1) {
+            player.setVelocityY(PLAYER_SPEED);
+        } else if(verticalInput == 0){
+            player.setVelocityY(0);
+        }
+
+        if(interactionInput == 1){
+
+        }else{
+
+        }
     }
 
     
@@ -196,4 +264,53 @@ export default class StartScene extends Phaser.Scene {
     updateSkin(player, newSkin){ 
         
     }
+
+    //////////////////////////////////////////////////// WEBSCOCKET ////////////////////////////////////////////////////
+    sendMessageToWS(type, content){
+        var msg = {
+            type : type,
+            content : content
+        }
+        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
+    }
+
+    updateInputToWS(teclasPulsadas) {
+        //console.log('Teclas pulsadas:', teclasPulsadas);
+
+        // Encode Inputs
+        let horizontalInputWS;
+        let verticalInputWS;
+        let interactionInputWS;
+
+        let inputInfo = [];
+
+        if (teclasPulsadas['KeyD']) {
+            inputInfo[0] = 1;
+        } else if (teclasPulsadas['KeyA']) {
+            inputInfo[0] = -1;
+        } else {
+            inputInfo[0] = 0;
+        }
+
+        if (teclasPulsadas['KeyW']) {
+            inputInfo[1] = 1;
+        } else if (teclasPulsadas['KeyS']) {
+            inputInfo[1] = -1;
+        } else {
+            inputInfo[1] = 0;
+        }
+
+        if (teclasPulsadas['Space']) {
+            inputInfo[2] = 1;
+        } else {
+            inputInfo[2] = 0;
+        }
+
+        /*console.log("verticalInput= " + verticalInputWS + "\n" +
+                    " horizontalInput = " + horizontalInputWS + "\n" +
+                    " interactionInput = " + interactionInputWS + "\n");*/
+
+        this.sendMessageToWS("InputUpdate", inputInfo);
+    }
+    
 }

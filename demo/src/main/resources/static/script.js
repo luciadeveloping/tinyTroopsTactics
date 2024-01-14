@@ -1,69 +1,3 @@
-//Load items from server
-function loadItems(callback) {
-    $.ajax({
-        url: 'http://localhost:8080/items'
-    }).done(function (items) {
-        console.log('Items loaded: ' + JSON.stringify(items));
-        callback(items);
-    })
-}
-
-//Create item in server
-function createItem(item, callback) {
-    $.ajax({
-        method: "POST",
-        url: 'http://localhost:8080/items',
-        data: JSON.stringify(item),
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (item) {
-        console.log("Item created: " + JSON.stringify(item));
-        callback(item);
-    })
-}
-
-//Update item in server
-function updateItem(item) {
-    $.ajax({
-        method: 'PUT',
-        url: 'http://localhost:8080/items/' + item.id,
-        data: JSON.stringify(item),
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (item) {
-        console.log("Updated item: " + JSON.stringify(item))
-    })
-}
-
-//Delete item from server
-function deleteItem(itemId) {
-    $.ajax({
-        method: 'DELETE',
-        url: 'http://localhost:8080/items/' + itemId
-    }).done(function (item) {
-        console.log("Deleted item " + itemId)
-    })
-}
-
-//Show item in page
-function showItem(item) {
-
-    var checked = '';
-    var style = '';
-
-    if (item.checked) {
-        checked = 'checked';
-        style = 'style="text-decoration:line-through"';
-    }
-
-    $('#info').append(
-        '<div id="item-' + item.id + '"><input type="checkbox" ' + checked + '><span ' + style + '>' + item.description +
-        '</span> <button>Delete</button></div>')
-}
 
 $(document).ready(function () {
 
@@ -130,7 +64,7 @@ $(document).ready(function () {
         input.val('');
 
         var message = {
-            id : 1,
+            id : 1, 
             content : "hola q tal",
             user : sender
         }

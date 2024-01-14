@@ -660,27 +660,31 @@ export default class GameScene extends Phaser.Scene {
         //(because it uses WASD)
         this.p1ctrlsReset();
 
+        /*
         planeGeneratorTimer = setTimeout( // Start plane generation.
             this.generatePlane.bind(this), 
             INITIAL_PLANE_GENERATION_DELAY + PLANE_GENERATION_INTERVAL_MIN + this.getRandomInt(PLANE_GENERATION_INTERVAL_MAX));
-
+        */
     
-        this.tutorial = this.add.image(centerX, centerY, 'tutorial');
-        this.tutorial.setDepth(5);
+        if(!tutorialSeen){
+            this.tutorial = this.add.image(centerX, centerY, 'tutorial');
+            this.tutorial.setDepth(5);
+
+            this.input.keyboard.on('keydown', () => { 
+
+                tutorialSeen = true;
+                this.tutorial.setVisible(false);
+            });
+        }
 
         
-        this.input.keyboard.on('keydown', () => { 
-
-            if (!tutorialSeen){
-                tutorialSeen = true;
-
-                this.tutorial.setVisible(false);
-            }
-        });
     }
 
     update() {
-        this.playerControls();
+        //this.playerControls();
+
+        this.handlePlayerControls(player1, p1Ctrls);
+        this.handlePlayerControls(player2, p2Ctrls);
 
         this.checkWinner();
 
@@ -698,8 +702,30 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
-    playerControls() {
+    handlePlayerControls(player, playerControls){
+        if (playerControls.left.isDown) { // Horizontal movement.
+            player.move(Movement.Left);
+        } else if (playerControls.right.isDown) {
+            player.move(Movement.Right);
+        } else {
+            player.move(Movement.StopHorizontal);
+        }
 
+        if (playerControls.up.isDown) { // Vertical movement.
+            player.move(Movement.Up);
+        } else if (playerControls.down.isDown) {
+            player.move(Movement.Down);
+        } else {
+            player.move(Movement.StopVertial);
+        }
+
+        if(playerControls.interact.isDown){
+            player.interact();
+        }
+    }
+
+    /*
+    playerControls() {
         // Movement Player 1 (wasd).
         if (p1Ctrls.left.isDown) { // Horizontal movement.
             player1.move(Movement.Left);
@@ -743,7 +769,7 @@ export default class GameScene extends Phaser.Scene {
         if(p2Ctrls.interact.isDown){
             player2.interact();
         }
-    }
+    }*/
 
     checkWinner(){
 
@@ -842,5 +868,17 @@ export default class GameScene extends Phaser.Scene {
 
     getRandomInt(max) { // credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
         return Math.floor(Math.random() * max);
+    }
+
+    //////////////////////////////////////////////////// WEBSCOCKET ////////////////////////////////////////////////////
+
+    sendMessageToWS(type, content){
+        var msg = {
+            type : type,
+            content : content
+        }
+        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
+
+        if(connection == null){console.log("connection is null!")}
     }
 }
