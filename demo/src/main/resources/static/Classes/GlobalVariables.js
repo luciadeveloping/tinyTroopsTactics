@@ -27,6 +27,8 @@ p2Ctrls, //Player 2 controls
 p2Bounds, //Player 2 bounds
 buttonBounds,
 
+controls,
+
 //Defined in GameScene.js
 winner
 ;

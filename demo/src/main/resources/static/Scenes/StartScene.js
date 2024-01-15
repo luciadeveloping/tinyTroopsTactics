@@ -138,15 +138,10 @@ export default class StartScene extends Phaser.Scene {
             this.updateInfoToWS(player1, p1Ctrls);
 
         } else if (assignedPlayer == 2){
-            this.handlePlayerMovement(player2, p2Ctrls);
+            this.handlePlayerMovement(player2, p1Ctrls);
             this.updateOtherPlayerPos(player2, otherInputInfo[0], otherInputInfo[1]);
-            this.updateInfoToWS(player2, p2Ctrls);
+            this.updateInfoToWS(player2, p1Ctrls);
         }
-    }
-
-    updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
-        otherPlayer.x = newXPos;
-        otherPlayer.y = newYPos;
     }
 
     handlePlayerMovement(player, input) {
@@ -166,9 +161,14 @@ export default class StartScene extends Phaser.Scene {
         } else {
             player.setVelocityY(0);
         }
-
     }
 
+    updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
+        otherPlayer.x = newXPos;
+        otherPlayer.y = newYPos;
+    }
+
+    /*
     handleOtherPlayerMovement(player, horizontalInput, verticalInput, interactionInput, xPos, yPos){
         if (horizontalInput == 1 ) {
             player.setVelocityX(PLAYER_SPEED);
@@ -193,7 +193,7 @@ export default class StartScene extends Phaser.Scene {
         }else{
 
         }
-    }
+    }*/
 
     
     // Detects if player interacts with the button to start another scene
