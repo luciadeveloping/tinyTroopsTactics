@@ -64,82 +64,63 @@ export default class StartScene extends Phaser.Scene {
         });
 
         // Player 2 is controlled with arrow keys and interacts with ENTER
+        /*
         p2Ctrls = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.UP,
             'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
             'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
             'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
             'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
-        });
+        });*/
 
         // To avoid player 1 automatic movement after returning to this scene 
         // (because it uses WASD)
         this.p1ctrlsReset();
-
-        /*
-        let teclasPulsadas = {};
-        this.input.keyboard.on('keydown', function (event) {
-            teclasPulsadas[event.code] = true;
-            this.updateInputToWS(teclasPulsadas);
-        }, this);
-    
-        this.input.keyboard.on('keyup', function (event) {
-            delete teclasPulsadas[event.code];
-            this.updateInputToWS(teclasPulsadas);
-            
-        }, this);*/
     }
 
     update() {
 
+        if(assignedPlayer == 1){
+            this.movementHandler(player1, player2);
+            this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2)
+        }else if( assignedPlayer == 2){
+            this.movementHandler(player2, player1);
+            this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1)
+        }
         
-        this.movementHandler();
-       
-
-        // Interaction with Start button
-        this.handleButtonInteraction(this.startButton, 'GameScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.startButton, 'GameScene', p2Ctrls.interact);
-
-        //Interaction with Settings button
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
-
-        //Interaction with Credits button
-        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
-
-
-        //this.handlePlayerMovement(player1, p1Ctrls);
+        
         /*
-        // Assigns p1ctrls as controls for player1
-        this.handlePlayerMovement(player1, p1Ctrls);
-        // Assigns p2ctrls as controls for player2
-        this.handlePlayerMovement(player2, p2Ctrls);
-
         // Interaction with Start button
-        this.handleButtonInteraction(this.startButton, 'GameScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.startButton, 'GameScene', p2Ctrls.interact);
+        this.handleButtonInteraction2(this.startButton, 'GameScene', p1Ctrls.interact);
+        //this.handleButtonInteraction2(this.startButton, 'GameScene', p2Ctrls.interact);
 
         //Interaction with Settings button
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
+        this.handleButtonInteraction2(this.settingsButton, 'SettingsScene', p1Ctrls.interact);
+        //this.handleButtonInteraction2(this.settingsButton, 'SettingsScene', p2Ctrls.interact);
 
         //Interaction with Credits button
-        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
-        this.handleButtonInteraction(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
+        this.handleButtonInteraction2(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
+        //this.handleButtonInteraction2(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
         */
     }
 
-    movementHandler(){
+    movementHandler(thisPlayer, otherPlayer){
+
+        this.handlePlayerMovement(thisPlayer, p1Ctrls);
+        this.updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
+        this.updateInfoToWS(thisPlayer, p1Ctrls);
+    }
+
+    movementHandler2(){
 
         if (assignedPlayer == 1){
             this.handlePlayerMovement(player1, p1Ctrls);
-            this.updateOtherPlayerPos(player2, otherInputInfo[0], otherInputInfo[1]);
+            this.updateOtherPlayerPos(player2, otherInfo[0], otherInfo[1]);
             this.updateInfoToWS(player1, p1Ctrls);
 
         } else if (assignedPlayer == 2){
             this.handlePlayerMovement(player2, p1Ctrls);
-            this.updateOtherPlayerPos(player2, otherInputInfo[0], otherInputInfo[1]);
+            this.updateOtherPlayerPos(player1, otherInfo[0], otherInfo[1]);
             this.updateInfoToWS(player2, p1Ctrls);
         }
     }
@@ -164,8 +145,8 @@ export default class StartScene extends Phaser.Scene {
     }
 
     updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
-        otherPlayer.x = newXPos;
-        otherPlayer.y = newYPos;
+        otherPlayer.x = newXPos + 100;
+        otherPlayer.y = newYPos + 100;
     }
 
     /*
@@ -195,9 +176,28 @@ export default class StartScene extends Phaser.Scene {
         }
     }*/
 
+    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
+        var thisPlayerBounds = thisPlayer.getBounds();
+        var otherPlayerBounds = otherPlayer.getBounds();
+        var buttonBounds = button.getBounds();
+
+        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+        }else {
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+
+        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
+            this.sceneChange(targetScene);
+
+        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
+            this.sceneChange(targetScene);
+        }
+
+    }
     
     // Detects if player interacts with the button to start another scene
-    handleButtonInteraction(button, targetScene, interactKey) {
+    handleButtonInteraction2(button, targetScene, interactKey) {
         
         p1Bounds = player1.getBounds();
         p2Bounds = player2.getBounds();
@@ -215,16 +215,17 @@ export default class StartScene extends Phaser.Scene {
                  //Check cooldown of player of this interact key
                  if (interactKey = p1Ctrls.interact)
                  {
-                     //Cooldown time of player 1 passsed
-                     if(checkCooldown(player1)){
-                         this.sceneChange(targetScene);
-                     }
+                    //Cooldown time of player 1 passsed
+                    if(checkCooldown(player1)){
+                        this.sceneChange(targetScene);
+                    }
+
                  }else if (interactKey = p2Ctrls.interact)
                  {
-                     //Cooldown time of player 2 passed
-                     if(checkCooldown(player2)){
-                         this.sceneChange(targetScene);
-                     }
+                    //Cooldown time of player 2 passed
+                    if(checkCooldown(player2)){
+                        this.sceneChange(targetScene);
+                    }
                  }
             }
         } else {
@@ -275,13 +276,7 @@ export default class StartScene extends Phaser.Scene {
     }
 
     //////////////////////////////////////////////////// WEBSCOCKET ////////////////////////////////////////////////////
-    sendMessageToWS(type, content){
-        var msg = {
-            type : type,
-            content : content
-        }
-        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
-    }
+    
 
     updateInfoToWS(player, input){
         let info = [];
@@ -294,7 +289,7 @@ export default class StartScene extends Phaser.Scene {
         }else{
             info[2] = 0;
         }
-        this.sendMessageToWS("InputUpdate", info);
+        sendMessageToWS("InputUpdate", info);
     }
     
 }

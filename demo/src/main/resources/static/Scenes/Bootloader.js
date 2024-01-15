@@ -111,6 +111,12 @@ export default class Bootloader extends Phaser.Scene {
         // Websocket methods.
         connection.onopen = function(){
             console.log("Conection established.")
+            connectionOnline = true;
+        }
+
+        connection.onclose = function(){
+            console.log("Conection lost.")
+            connectionOnline = false;
         }
 
         connection.onmessage = function(msg) {
@@ -124,10 +130,10 @@ export default class Bootloader extends Phaser.Scene {
 
                 case "InputUpdate":
                     //console.log("Input received: " + message.content);
-                    var inputInfo = JSON.parse(message.content);
-                    otherInputInfo[0] = inputInfo[0];
-                    otherInputInfo[1] = inputInfo[1];
-                    otherInputInfo[2] = inputInfo[2];
+                    var info = JSON.parse(message.content);
+                    otherInfo[0] = info[0];
+                    otherInfo[1] = info[1];
+                    otherInfo[2] = info[2];
                     break;
 
                 case "Error":

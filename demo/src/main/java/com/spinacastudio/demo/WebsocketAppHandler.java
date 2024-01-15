@@ -58,26 +58,26 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		JsonNode message = mapper.readTree(msg.getPayload()); // Convert to JSON.
 
 		String requestType = message.get("type").asText();
-		JsonNode contentNode = message.get("content");
+		String contentNode = message.get("content").toString();
 		
 		if(session == player1Session){
 			
 			if(player2Session != null){
-				SendMessageToSession(
-				player2Session, 
-				requestType, 
-				contentNode.toString()
-			);
+				
 			}
-
-			
-
-		}else if(session == player2Session){
 
 			SendMessageToSession(
 				player1Session, 
 				requestType, 
-				contentNode.toString()
+				contentNode
+				);
+
+		} else if (session == player2Session){
+
+			SendMessageToSession(
+				player1Session, 
+				requestType, 
+				contentNode
 			);
 
 		}else{

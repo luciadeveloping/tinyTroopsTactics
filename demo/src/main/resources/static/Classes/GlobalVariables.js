@@ -36,10 +36,22 @@ winner
 // Websocket - Defined in bootloader.
 var connection; // Reference to websocket
 var assignedPlayer; // Either 1 or 2
-var otherPlayerPosDirty;
+var otherInfo = [0, 0, 0]; // Variables from the web player : [xPos, yPos, InteractionInput (0,1)]
+var connectionOnline;
 
-// Input variables from the web player
-var otherInputInfo = [0, 0, 0]; // [xPos, yPos, InteractionInput (0,1)]
+function sendMessageToWS(type, content){
+    var msg = {
+        type : type,
+        content : content
+    }
+
+    if(connectionOnline){
+        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
+    }else{
+        console.log("Send command failed. Connection to server closed.");
+    }
+    
+}
 
 //Checks if cooldown time of a player has passed from last interaction
 function checkCooldown(player){
