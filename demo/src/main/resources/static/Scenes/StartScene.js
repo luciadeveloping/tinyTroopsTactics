@@ -76,6 +76,7 @@ export default class StartScene extends Phaser.Scene {
         // (because it uses WASD)
         this.p1ctrlsReset();
 
+        /*
         let teclasPulsadas = {};
         this.input.keyboard.on('keydown', function (event) {
             teclasPulsadas[event.code] = true;
@@ -86,13 +87,14 @@ export default class StartScene extends Phaser.Scene {
             delete teclasPulsadas[event.code];
             this.updateInputToWS(teclasPulsadas);
             
-        }, this);
+        }, this);*/
     }
 
     update() {
 
         
         this.movementHandler();
+       
 
         // Interaction with Start button
         this.handleButtonInteraction(this.startButton, 'GameScene', p1Ctrls.interact);
@@ -139,6 +141,7 @@ export default class StartScene extends Phaser.Scene {
                 otherInputInfo[2],
                 otherInputInfo[3],
                 otherInputInfo[4]);
+            this.updateInfoToWS(player1, p1Ctrls);
 
         } else if (assignedPlayer == 2){
             this.handlePlayerMovement(player2, p2Ctrls);
@@ -149,19 +152,10 @@ export default class StartScene extends Phaser.Scene {
                 otherInputInfo[2],
                 otherInputInfo[3],
                 otherInputInfo[4]);
+            this.updateInfoToWS(player2, p2Ctrls);
         }
     }
-    
-    // Resets controls of player 1
-    p1ctrlsReset() {
-        p1Ctrls.up.reset();
-        p1Ctrls.down.reset();
-        p1Ctrls.left.reset();
-        p1Ctrls.right.reset();
-        p1Ctrls.interact.reset();
-    }
 
-    // Detects if key in input is pressed to move player
     handlePlayerMovement(player, input) {
         
         if (input.right.isDown) {
@@ -246,6 +240,15 @@ export default class StartScene extends Phaser.Scene {
         }
     }
 
+    // Resets controls of player 1
+    p1ctrlsReset() {
+        p1Ctrls.up.reset();
+        p1Ctrls.down.reset();
+        p1Ctrls.left.reset();
+        p1Ctrls.right.reset();
+        p1Ctrls.interact.reset();
+    }
+
     // Starts another scene
     sceneChange(targetScene) {
         //Play click sound
@@ -287,20 +290,34 @@ export default class StartScene extends Phaser.Scene {
         connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
     }
 
-    updateInfoToWS(keys){
-        let pos;
-        if(assignedPlayer = 1){
-            pos = [
-                player1.x,
-                player1.y,
-                0
-            ];
-
-            if(keys['Space']){ pos[2] = 1}
-
-            //console.log(pos);
-            //this.sendMessageToWS("InputUpdate", pos);
+    updateInfoToWS(player, input){
+        let inputInfo = [];
+        if (input.right.isDown) {
+            inputInfo[0] = 1;
+        } else if (input.left.isDown) {
+            inputInfo[0] = -1;
+        } else {
+            inputInfo[0] = 0;
         }
+
+        if (input.up.isDown) {
+            inputInfo[1] = 1;;
+        } else if (input.down.isDown) {
+            inputInfo[1] = -1
+        } else {
+            inputInfo[1] = 0
+        }
+
+        if(input.interact.isDown){
+            inputInfo[2] = 1
+        }else{
+            inputInfo[2] = 0;
+        }
+
+        inputInfo[3] = player.x;
+        inputInfo[4] = player.y;
+
+        this.sendMessageToWS("InputUpdate", inputInfo);
     }
 
     updateInputToWS(teclasPulsadas) {
