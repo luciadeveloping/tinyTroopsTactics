@@ -134,13 +134,14 @@ export default class StartScene extends Phaser.Scene {
 
         if (assignedPlayer == 1){
             this.handlePlayerMovement(player1, p1Ctrls);
-            this.handleOtherPlayerMovement(
+            /*this.handleOtherPlayerMovement(
                 player2, 
                 otherInputInfo[0],
                 otherInputInfo[1],
                 otherInputInfo[2],
                 otherInputInfo[3],
-                otherInputInfo[4]);
+                otherInputInfo[4]);*/
+            this.updateOtherPlayerPos(player2, otherInputInfo[3], otherInputInfo[4]);
             this.updateInfoToWS(player1, p1Ctrls);
 
         } else if (assignedPlayer == 2){
@@ -154,6 +155,11 @@ export default class StartScene extends Phaser.Scene {
                 otherInputInfo[4]);
             this.updateInfoToWS(player2, p2Ctrls);
         }
+    }
+
+    updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
+        otherPlayer.x = newXPos;
+        otherPlayer.y = newYPos;
     }
 
     handlePlayerMovement(player, input) {

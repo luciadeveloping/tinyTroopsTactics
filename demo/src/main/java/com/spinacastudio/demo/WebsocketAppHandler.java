@@ -58,32 +58,28 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		JsonNode message = mapper.readTree(msg.getPayload()); // Convert to JSON.
 
 		String requestType = message.get("type").asText();
-		switch (requestType) {
-			case "InputUpdate":
-				JsonNode contentNode = message.get("content");
-				if(session == player1Session){
-					
-					SendMessageToSession(
-						player1Session, 
-						"InputUpdate", 
-						contentNode.toString()
-					);
+		JsonNode contentNode = message.get("content");
+		
+		if(session == player1Session){
+			
+			if(player2Session != null){
+				SendMessageToSession(
+					player1Session, 
+					requestType, 
+					contentNode.toString()
+				);
+			}
 
-				}else if(session == player2Session){
-					SendMessageToSession(
-						player1Session, 
-						"InputUpdate", 
-						contentNode.toString()
-					);
-				}else{
-					System.out.println("An undefined session tried to update input information.");
-				}
-				
-				break;
+		}else if(session == player2Session){
 
-			default:
-				System.out.println("Message type not valid.");
-				break;
+			SendMessageToSession(
+				player1Session, 
+				requestType, 
+				contentNode.toString()
+			);
+
+		}else{
+			System.out.println("An undefined session tried to update input information.");
 		}
 		
 		
