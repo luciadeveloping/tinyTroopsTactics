@@ -104,8 +104,9 @@ export default class Bootloader extends Phaser.Scene {
         }
 
         // WebScoket Connection.
-        connection = new WebSocket('ws://192.168.1.43:8080/app');
+        //connection = new WebSocket('ws://192.168.1.43:8080/app');
         
+        connection = new WebSocket('ws://' + location.host + '/app');
         assignedPlayer;
 
         // Websocket methods.
