@@ -63,14 +63,14 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		if(session == player1Session){
 			
 			if(player2Session != null){
-				
-			}
-
-			SendMessageToSession(
-				player1Session, 
+				SendMessageToSession(
+				player2Session, 
 				requestType, 
 				contentNode
 				);
+			}
+
+			
 
 		} else if (session == player2Session){
 

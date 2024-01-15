@@ -83,9 +83,13 @@ export default class StartScene extends Phaser.Scene {
         if(assignedPlayer == 1){
             this.movementHandler(player1, player2);
             this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2)
+            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2)
+            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2)
         }else if( assignedPlayer == 2){
             this.movementHandler(player2, player1);
             this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1)
+            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1)
+            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1)
         }
         
         
@@ -111,6 +115,7 @@ export default class StartScene extends Phaser.Scene {
         this.updateInfoToWS(thisPlayer, p1Ctrls);
     }
 
+    /*
     movementHandler2(){
 
         if (assignedPlayer == 1){
@@ -123,7 +128,7 @@ export default class StartScene extends Phaser.Scene {
             this.updateOtherPlayerPos(player1, otherInfo[0], otherInfo[1]);
             this.updateInfoToWS(player2, p1Ctrls);
         }
-    }
+    }*/
 
     handlePlayerMovement(player, input) {
         
@@ -145,8 +150,8 @@ export default class StartScene extends Phaser.Scene {
     }
 
     updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
-        otherPlayer.x = newXPos + 100;
-        otherPlayer.y = newYPos + 100;
+        otherPlayer.x = newXPos;
+        otherPlayer.y = newYPos;
     }
 
     /*
@@ -196,6 +201,7 @@ export default class StartScene extends Phaser.Scene {
 
     }
     
+    /*
     // Detects if player interacts with the button to start another scene
     handleButtonInteraction2(button, targetScene, interactKey) {
         
@@ -232,7 +238,7 @@ export default class StartScene extends Phaser.Scene {
             //Maintains normal texture of button
             button.setTexture(button.texture.key.replace('Hover', 'Default'));
         }
-    }
+    }*/
 
     // Resets controls of player 1
     p1ctrlsReset() {
