@@ -134,25 +134,12 @@ export default class StartScene extends Phaser.Scene {
 
         if (assignedPlayer == 1){
             this.handlePlayerMovement(player1, p1Ctrls);
-            /*this.handleOtherPlayerMovement(
-                player2, 
-                otherInputInfo[0],
-                otherInputInfo[1],
-                otherInputInfo[2],
-                otherInputInfo[3],
-                otherInputInfo[4]);*/
-            this.updateOtherPlayerPos(player2, otherInputInfo[3], otherInputInfo[4]);
+            this.updateOtherPlayerPos(player2, otherInputInfo[0], otherInputInfo[1]);
             this.updateInfoToWS(player1, p1Ctrls);
 
         } else if (assignedPlayer == 2){
             this.handlePlayerMovement(player2, p2Ctrls);
-            this.handleOtherPlayerMovement(
-                player1, 
-                otherInputInfo[0],
-                otherInputInfo[1],
-                otherInputInfo[2],
-                otherInputInfo[3],
-                otherInputInfo[4]);
+            this.updateOtherPlayerPos(player2, otherInputInfo[0], otherInputInfo[1]);
             this.updateInfoToWS(player2, p2Ctrls);
         }
     }
@@ -297,79 +284,17 @@ export default class StartScene extends Phaser.Scene {
     }
 
     updateInfoToWS(player, input){
-        let inputInfo = [];
-        if (input.right.isDown) {
-            inputInfo[0] = 1;
-        } else if (input.left.isDown) {
-            inputInfo[0] = -1;
-        } else {
-            inputInfo[0] = 0;
-        }
+        let info = [];
 
-        if (input.up.isDown) {
-            inputInfo[1] = 1;;
-        } else if (input.down.isDown) {
-            inputInfo[1] = -1
-        } else {
-            inputInfo[1] = 0
-        }
-
+        info[0] = player.x;
+        info[1] = player.y;
+        
         if(input.interact.isDown){
-            inputInfo[2] = 1
+            info[2] = 1
         }else{
-            inputInfo[2] = 0;
+            info[2] = 0;
         }
-
-        inputInfo[3] = player.x;
-        inputInfo[4] = player.y;
-
-        this.sendMessageToWS("InputUpdate", inputInfo);
-    }
-
-    updateInputToWS(teclasPulsadas) {
-        //console.log('Teclas pulsadas:', teclasPulsadas);
-
-        // Encode Inputs
-        let inputInfo = [];
-
-        if(assignedPlayer == 1){
-            if (teclasPulsadas['KeyD']) {
-                inputInfo[0] = 1;
-            } else if (teclasPulsadas['KeyA']) {
-                inputInfo[0] = -1;
-            } else {
-                inputInfo[0] = 0;
-            }
-    
-            if (teclasPulsadas['KeyW']) {
-                inputInfo[1] = 1;
-            } else if (teclasPulsadas['KeyS']) {
-                inputInfo[1] = -1;
-            } else {
-                inputInfo[1] = 0;
-            }
-    
-            if (teclasPulsadas['Space']) {
-                inputInfo[2] = 1;
-            } else {
-                inputInfo[2] = 0;
-            }
-
-            inputInfo[3] = player1.x;
-            inputInfo[4] = player1.y;
-        }
-        /*console.log("verticalInput= " + verticalInputWS + "\n" +
-                    " horizontalInput = " + horizontalInputWS + "\n" +
-                    " interactionInput = " + interactionInputWS + "\n");*/
-
-        this.sendMessageToWS("InputUpdate", inputInfo);
-    }
-
-    
-
-    fixPos(){
-        player2.x = otherInputInfo[3];
-        player2.y = otherInputInfo[4];
+        this.sendMessageToWS("InputUpdate", info);
     }
     
 }

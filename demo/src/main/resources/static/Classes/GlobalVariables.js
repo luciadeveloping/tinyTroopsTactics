@@ -37,7 +37,7 @@ var assignedPlayer; // Either 1 or 2
 var otherPlayerPosDirty;
 
 // Input variables from the web player
-var otherInputInfo = [0, 0, 0]; // [horizontal, vertical, interaction]
+var otherInputInfo = [0, 0, 0]; // [xPos, yPos, InteractionInput (0,1)]
 
 //Checks if cooldown time of a player has passed from last interaction
 function checkCooldown(player){

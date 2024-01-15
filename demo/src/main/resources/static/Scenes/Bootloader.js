@@ -128,8 +128,6 @@ export default class Bootloader extends Phaser.Scene {
                     otherInputInfo[0] = inputInfo[0];
                     otherInputInfo[1] = inputInfo[1];
                     otherInputInfo[2] = inputInfo[2];
-                    otherInputInfo[3] = inputInfo[3];
-                    otherInputInfo[4] = inputInfo[4];
                     break;
 
                 case "Error":

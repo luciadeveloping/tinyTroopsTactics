@@ -54,7 +54,7 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
     @Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage msg) throws Exception {
 		
-		System.out.println("Message received: " + msg.getPayload());
+		//System.out.println("Message received: " + msg.getPayload());
 		JsonNode message = mapper.readTree(msg.getPayload()); // Convert to JSON.
 
 		String requestType = message.get("type").asText();
@@ -63,12 +63,14 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		if(session == player1Session){
 			
 			if(player2Session != null){
-				SendMessageToSession(
-					player1Session, 
-					requestType, 
-					contentNode.toString()
-				);
+				
 			}
+
+			SendMessageToSession(
+				player1Session, 
+				requestType, 
+				contentNode.toString()
+			);
 
 		}else if(session == player2Session){
 
