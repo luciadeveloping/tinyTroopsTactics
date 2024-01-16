@@ -105,9 +105,13 @@ export default class Bootloader extends Phaser.Scene {
 
         // WebScoket Connection.
 
+
+        //var websocketIP = 'ws://' +location.host+ '/app';
+        var websocketIP = 'ws://127.0.0.1:5500/app';
+        //var websocketIP = 'ws://192.168.1.43:8080/app';
         
-        connection = new WebSocket('ws://' +location.host+ '/app');
-        console.log("WS connection in ws://" +location.host+ "/app");
+        connection = new WebSocket(websocketIP);
+        console.log(" Websocket open at IP = " + websocketIP);
     
         // Configure WS:
         connection.onopen = function(){
@@ -146,16 +150,6 @@ export default class Bootloader extends Phaser.Scene {
             } 
         }
 
-        getServerIP().then((result) => {
-
-            console.log("Server IP:", result);
-            
-        }).catch((error) => {
-            console.error("Error al obtener la dirección IP del servidor:", error);
-        });
-
-        
-
         function sendMessageToWS(type, content){
             var msg = {
                 type : type,
@@ -163,6 +157,15 @@ export default class Bootloader extends Phaser.Scene {
             }
             connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
         }
+
+        /*
+        getServerIP().then((result) => {
+
+            console.log("Server IP:", result);
+            
+        }).catch((error) => {
+            console.error("Error al obtener la dirección IP del servidor:", error);
+        });
 
         function getServerIP() {
             return new Promise(function(resolve, reject) {
@@ -179,6 +182,6 @@ export default class Bootloader extends Phaser.Scene {
                     }
                 });
             });
-        }
+        }*/
     }
 }
