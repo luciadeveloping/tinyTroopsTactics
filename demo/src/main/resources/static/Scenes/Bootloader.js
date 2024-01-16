@@ -105,48 +105,51 @@ export default class Bootloader extends Phaser.Scene {
 
         // WebScoket Connection.
 
+        
+        connection = new WebSocket('ws://' +location.host+ '/app');
+        console.log("WS connection in ws://" +location.host+ "/app");
+    
+        // Configure WS:
+        connection.onopen = function(){
+            console.log("Conection established.")
+            connectionOnline = true;
+        }   
+
+        connection.onclose = function(){
+            console.log("Conection lost.")
+            connectionOnline = false;
+        }
+
+        connection.onmessage = function(msg) {
+            var message = JSON.parse(msg.data)
+            
+            switch(message.type){
+                case "SessionId":
+                    console.log("Id request succesful. My ID = " + message.content)    
+                    assignedPlayer = parseInt(message.content);
+                break;
+
+                case "InputUpdate":
+                    //console.log("Input received: " + message.content);
+                    var info = JSON.parse(message.content);
+                    otherInfo[0] = info[0];
+                    otherInfo[1] = info[1];
+                    otherInfo[2] = info[2];
+                    break;
+
+                case "Error":
+                    console.log("An error has occurred, error: " + message.content);
+                    break;
+
+                default:
+                    console.log("The type " + message.type + " is not valid.")
+            } 
+        }
+
         getServerIP().then((result) => {
 
             console.log("Server IP:", result);
-            console.log("Establishing WebSocket conection...");
-            connection = new WebSocket('ws://' + result + ':8080/app');
-        
-            // Configure WS:
-            connection.onopen = function(){
-                console.log("Conection established.")
-                connectionOnline = true;
-            }   
-
-            connection.onclose = function(){
-                console.log("Conection lost.")
-                connectionOnline = false;
-            }
-
-            connection.onmessage = function(msg) {
-                var message = JSON.parse(msg.data)
-                
-                switch(message.type){
-                    case "SessionId":
-                        console.log("Id request succesful. My ID = " + message.content)    
-                        assignedPlayer = parseInt(message.content);
-                    break;
-
-                    case "InputUpdate":
-                        //console.log("Input received: " + message.content);
-                        var info = JSON.parse(message.content);
-                        otherInfo[0] = info[0];
-                        otherInfo[1] = info[1];
-                        otherInfo[2] = info[2];
-                        break;
-
-                    case "Error":
-                        console.log("An error has occurred, error: " + message.content);
-                        break;
-
-                    default:
-                        console.log("The type " + message.type + " is not valid.")
-                } 
-            }
+            
         }).catch((error) => {
             console.error("Error al obtener la dirección IP del servidor:", error);
         });
@@ -165,16 +168,14 @@ export default class Bootloader extends Phaser.Scene {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: "GET",
-                    url: 'http://localhost:8080/serverData/serverIP',
+                    url: 'http://'+ location.host + '/serverData/serverIP',
                     dataType: "text", 
                     processData: false,
                     success: function(data) {
-                        // La llamada AJAX fue exitosa, resuelve la Promesa con el contenido.
                         resolve(data);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        // Hubo un error en la llamada AJAX, rechaza la Promesa con el error.
-                        reject("Error en la solicitud: " + textStatus, errorThrown);
+                        reject("Request error: " + textStatus, errorThrown);
                     }
                 });
             });
