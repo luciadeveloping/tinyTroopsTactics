@@ -74,9 +74,9 @@ export default class SettingsScene extends Phaser.Scene {
             this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2)
         }else if( assignedPlayer == 2){
             movementHandler(player2, player1);
-            //this.handleButtonInteraction(this.musicButton, 'GameScene', player1, player2)
-            //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player1, player2)
-            this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2)
+            //this.handleButtonInteraction(this.musicButton, 'GameScene', player2, player1)
+            //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player2, player1)
+            this.handleButtonInteraction(this.exitButton, 'StartScene', player2, player1)
         }
 
         /*

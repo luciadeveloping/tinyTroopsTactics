@@ -62,7 +62,7 @@ export default class CreditsScene extends Phaser.Scene {
             this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2);
         }else if( assignedPlayer == 2){
             movementHandler(player2, player1);
-            this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2);
+            this.handleButtonInteraction(this.exitButton, 'StartScene', player2, player1);
         }
 
         /*

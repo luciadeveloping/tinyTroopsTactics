@@ -78,6 +78,7 @@ function sendMessageToWS(type, content){
         content : content
     }
 
+
     if(connectionOnline){
         connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
     }else{
@@ -107,6 +108,7 @@ function movementHandler(thisPlayer, otherPlayer){
     handlePlayerMovement(thisPlayer, p1Ctrls);
     updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
     updateInfoToWS(thisPlayer, p1Ctrls);
+
 }
 
 function handlePlayerMovement(player, input) {
