@@ -33,25 +33,10 @@ controls,
 winner
 ;
 
-// Websocket - Defined in bootloader.
-var connection; // Reference to websocket
-var assignedPlayer; // Either 1 or 2
-var otherInfo = [0, 0, 0]; // Variables from the web player : [xPos, yPos, InteractionInput (0,1)]
-var connectionOnline;
 
-function sendMessageToWS(type, content){
-    var msg = {
-        type : type,
-        content : content
-    }
 
-    if(connectionOnline){
-        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
-    }else{
-        console.log("Send command failed. Connection to server closed.");
-    }
-    
-}
+
+
 
 //Checks if cooldown time of a player has passed from last interaction
 function checkCooldown(player){
@@ -79,4 +64,74 @@ function checkCooldown(player){
             return false;
         }
     }
-};
+}
+
+// Websocket - Defined in bootloader.
+var connection; // Reference to websocket
+var assignedPlayer; // Either 1 or 2
+var otherInfo = [0, 0, 0]; // Variables from the web player : [xPos, yPos, InteractionInput (0,1)]
+var connectionOnline;
+
+function sendMessageToWS(type, content){
+    var msg = {
+        type : type,
+        content : content
+    }
+
+    if(connectionOnline){
+        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
+    }else{
+        console.log("Send command failed. Connection to server closed.");
+    }
+    
+}
+
+function updateInfoToWS(player, input){
+    let info = [];
+
+    info[0] = player.x;
+    info[1] = player.y;
+    
+    if(input.interact.isDown){
+        info[2] = 1
+    }else{
+        info[2] = 0;
+    }
+    sendMessageToWS("InputUpdate", info);
+}
+
+
+
+function movementHandler(thisPlayer, otherPlayer){
+
+    handlePlayerMovement(thisPlayer, p1Ctrls);
+    updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
+    updateInfoToWS(thisPlayer, p1Ctrls);
+}
+
+function handlePlayerMovement(player, input) {
+        
+    if (input.right.isDown) {
+        player.setVelocityX(PLAYER_SPEED);
+    } else if (input.left.isDown) {
+        player.setVelocityX(-PLAYER_SPEED);
+    } else {
+        player.setVelocityX(0);
+    }
+
+    if (input.up.isDown) {
+        player.setVelocityY(-PLAYER_SPEED);
+    } else if (input.down.isDown) {
+        player.setVelocityY(PLAYER_SPEED);
+    } else {
+        player.setVelocityY(0);
+    }
+}
+    
+
+    
+function updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
+    otherPlayer.x = newXPos;
+    otherPlayer.y = newYPos;
+}
+

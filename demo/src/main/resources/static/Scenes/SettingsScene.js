@@ -59,15 +59,6 @@ export default class SettingsScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
 
-        // Player 2 is controlled with arrow keys and interacts with ENTER
-        p2Ctrls = this.input.keyboard.addKeys({
-            'up': Phaser.Input.Keyboard.KeyCodes.UP,
-            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
-            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
-            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
-            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
-        });
-
         // To avoid player 1 automatic movement after returning to this scene 
         //(because it uses WASD)
         this.p1ctrlsReset();
@@ -76,6 +67,19 @@ export default class SettingsScene extends Phaser.Scene {
     
     update() {
 
+        if(assignedPlayer == 1){
+            movementHandler(player1, player2);
+            //this.handleButtonInteraction(this.musicButton, 'GameScene', player1, player2)
+            //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player1, player2)
+            this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2)
+        }else if( assignedPlayer == 2){
+            movementHandler(player2, player1);
+            //this.handleButtonInteraction(this.musicButton, 'GameScene', player1, player2)
+            //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player1, player2)
+            this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2)
+        }
+
+        /*
         // Assigns p1ctrls as controls for player1
         this.handlePlayerMovement(player1, p1Ctrls);
         // Assigns p2ctrls as controls for player2
@@ -92,7 +96,7 @@ export default class SettingsScene extends Phaser.Scene {
         // Interaction with Exit button
         this.handleButtonInteraction(this.exitButton, p1Ctrls.interact);
         this.handleButtonInteraction(this.exitButton, p2Ctrls.interact);
-
+        */
     }
 
     // Resets controls of player 1
@@ -104,6 +108,7 @@ export default class SettingsScene extends Phaser.Scene {
         p1Ctrls.interact.reset();
     }
 
+    /*
     // Detects if key in input is pressed to move player
     handlePlayerMovement(player, input) {
         if (input.left.isDown) {
@@ -121,8 +126,9 @@ export default class SettingsScene extends Phaser.Scene {
         } else {
             player.setVelocityY(0);
         }
-    }
+    }*/
 
+    /*
     // Detects if player interacts with the button
     handleButtonInteraction(button, interactKey) {
         p1Bounds = player1.getBounds();
@@ -156,6 +162,25 @@ export default class SettingsScene extends Phaser.Scene {
         } else {
             //Maintains normal texture of button
             button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    }*/
+
+    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
+        var thisPlayerBounds = thisPlayer.getBounds();
+        var otherPlayerBounds = otherPlayer.getBounds();
+        var buttonBounds = button.getBounds();
+    
+        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+        }else {
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    
+        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
+            this.sceneChange(targetScene);
+    
+        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
+            this.sceneChange(targetScene);
         }
     }
 

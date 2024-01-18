@@ -81,15 +81,15 @@ export default class StartScene extends Phaser.Scene {
     update() {
 
         if(assignedPlayer == 1){
-            this.movementHandler(player1, player2);
-            this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2)
-            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2)
-            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2)
+            movementHandler(player1, player2);
+            this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2);
+            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2);
+            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2);
         }else if( assignedPlayer == 2){
-            this.movementHandler(player2, player1);
-            this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1)
-            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1)
-            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1)
+            movementHandler(player2, player1);
+            this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1);
+            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1);
+            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1);
         }
         
         
@@ -108,12 +108,7 @@ export default class StartScene extends Phaser.Scene {
         */
     }
 
-    movementHandler(thisPlayer, otherPlayer){
-
-        this.handlePlayerMovement(thisPlayer, p1Ctrls);
-        this.updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
-        this.updateInfoToWS(thisPlayer, p1Ctrls);
-    }
+    
 
     /*
     movementHandler2(){
@@ -130,30 +125,7 @@ export default class StartScene extends Phaser.Scene {
         }
     }*/
 
-    handlePlayerMovement(player, input) {
-        
-        if (input.right.isDown) {
-            player.setVelocityX(PLAYER_SPEED);
-        } else if (input.left.isDown) {
-            player.setVelocityX(-PLAYER_SPEED);
-        } else {
-            player.setVelocityX(0);
-        }
-
-        if (input.up.isDown) {
-            player.setVelocityY(-PLAYER_SPEED);
-        } else if (input.down.isDown) {
-            player.setVelocityY(PLAYER_SPEED);
-        } else {
-            player.setVelocityY(0);
-        }
-    }
-
-    updateOtherPlayerPos(otherPlayer, newXPos, newYPos){
-        otherPlayer.x = newXPos;
-        otherPlayer.y = newYPos;
-    }
-
+    
     /*
     handleOtherPlayerMovement(player, horizontalInput, verticalInput, interactionInput, xPos, yPos){
         if (horizontalInput == 1 ) {
@@ -181,25 +153,7 @@ export default class StartScene extends Phaser.Scene {
         }
     }*/
 
-    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
-        var thisPlayerBounds = thisPlayer.getBounds();
-        var otherPlayerBounds = otherPlayer.getBounds();
-        var buttonBounds = button.getBounds();
-
-        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
-            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
-        }else {
-            button.setTexture(button.texture.key.replace('Hover', 'Default'));
-        }
-
-        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
-            this.sceneChange(targetScene);
-
-        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
-            this.sceneChange(targetScene);
-        }
-
-    }
+    
     
     /*
     // Detects if player interacts with the button to start another scene
@@ -249,6 +203,25 @@ export default class StartScene extends Phaser.Scene {
         p1Ctrls.interact.reset();
     }
 
+    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
+        var thisPlayerBounds = thisPlayer.getBounds();
+        var otherPlayerBounds = otherPlayer.getBounds();
+        var buttonBounds = button.getBounds();
+    
+        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+        }else {
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    
+        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
+            this.sceneChange(targetScene);
+    
+        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
+            this.sceneChange(targetScene);
+        }
+    }
+
     // Starts another scene
     sceneChange(targetScene) {
         //Play click sound
@@ -284,18 +257,6 @@ export default class StartScene extends Phaser.Scene {
     //////////////////////////////////////////////////// WEBSCOCKET ////////////////////////////////////////////////////
     
 
-    updateInfoToWS(player, input){
-        let info = [];
-
-        info[0] = player.x;
-        info[1] = player.y;
-        
-        if(input.interact.isDown){
-            info[2] = 1
-        }else{
-            info[2] = 0;
-        }
-        sendMessageToWS("InputUpdate", info);
-    }
+    
     
 }
