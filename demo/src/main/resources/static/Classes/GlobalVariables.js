@@ -101,17 +101,15 @@ function updateInfoToWS(player, input){
     sendMessageToWS("InputUpdate", info);
 }
 
+function movementHandler(thisPlayer, otherPlayer, interactFunction){
 
-
-function movementHandler(thisPlayer, otherPlayer){
-
-    handlePlayerMovement(thisPlayer, p1Ctrls);
+    handlePlayerMovement(thisPlayer, p1Ctrls, interactFunction);
     updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
     updateInfoToWS(thisPlayer, p1Ctrls);
 
 }
 
-function handlePlayerMovement(player, input) {
+function handlePlayerMovement(player, input, interactMethod) {
         
     if (input.right.isDown) {
         player.setVelocityX(PLAYER_SPEED);
@@ -127,6 +125,10 @@ function handlePlayerMovement(player, input) {
         player.setVelocityY(PLAYER_SPEED);
     } else {
         player.setVelocityY(0);
+    }
+
+    if(input.interact.isDown){
+        interactMethod();
     }
 }
     

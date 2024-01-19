@@ -57,6 +57,12 @@ class SceneObject {
     get y() {
         return this.phaserGO.y;
     }
+    set x(newX){
+        this.phaserGO.x = newX;
+    }
+    set y(newY){
+        this.phaserGO.y = newY;
+    }
 
     getBounds(){
         return this.phaserGO.getBounds();
@@ -150,9 +156,14 @@ class Player extends SceneObject {
                 console.log("No movement valid parameter.");
                 break;
         }
+        this.updatePlayer();
 
+    }
+
+    updatePlayer(){
         this.updateSoldiersDisplayPosition();
         this.selectClosestNode(); // Each time player changes position check for the closest node to select.
+    
     }
 
     createSoldier(destination) {
@@ -648,14 +659,6 @@ export default class GameScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
 
-        p2Ctrls = this.input.keyboard.addKeys({
-            'up': Phaser.Input.Keyboard.KeyCodes.UP,
-            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
-            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
-            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
-            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
-        });
-
         // To avoid player 1 automatic movement after returning to this scene 
         //(because it uses WASD)
         this.p1ctrlsReset();
@@ -681,8 +684,21 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update() {
-        //this.playerControls();
 
+        if(assignedPlayer == 1){
+            this.movementHandler(player1, player2);
+            //this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2);
+            //this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2);
+            //this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2);
+        }else if( assignedPlayer == 2){
+            this.movementHandler(player2, player1);
+            //this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1);
+            //this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1);
+            //this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1);
+        }
+
+    
+        /*
         this.handlePlayerControls(player1, p1Ctrls);
         this.handlePlayerControls(player2, p2Ctrls);
 
@@ -690,8 +706,19 @@ export default class GameScene extends Phaser.Scene {
 
         this.handleButtonInteraction(this.exitButton, 'StartScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.exitButton, 'StartScene', p2Ctrls.interact);
+        */
+    }
+
+    movementHandler(thisPlayer, otherPlayer){
+        this.handlePlayerMovement(thisPlayer, p1Ctrls);
+        updateInfoToWS(thisPlayer, p1Ctrls);
+
+        updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
+        this.handleOtherPlayerMovement(otherPlayer);
+        console.log("Other player info = " + otherInfo);
         
     }
+
     
     seeTutorial(){
         this.input.keyboard.on('keydown', () => { 
@@ -702,7 +729,14 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
-    handlePlayerControls(player, playerControls){
+    handleOtherPlayerMovement(otherPlayer){
+        otherPlayer.updatePlayer();
+        if(otherInfo[2] == 1){
+            otherPlayer.interact();
+        }
+    }
+
+    handlePlayerMovement(player, playerControls){
         if (playerControls.left.isDown) { // Horizontal movement.
             player.move(Movement.Left);
         } else if (playerControls.right.isDown) {
@@ -723,53 +757,6 @@ export default class GameScene extends Phaser.Scene {
             player.interact();
         }
     }
-
-    /*
-    playerControls() {
-        // Movement Player 1 (wasd).
-        if (p1Ctrls.left.isDown) { // Horizontal movement.
-            player1.move(Movement.Left);
-        } else if (p1Ctrls.right.isDown) {
-            player1.move(Movement.Right);
-        } else {
-            player1.move(Movement.StopHorizontal);
-        }
-
-        if (p1Ctrls.up.isDown) { // Vertical movement.
-            player1.move(Movement.Up);
-        } else if (p1Ctrls.down.isDown) {
-            player1.move(Movement.Down);
-        } else {
-            player1.move(Movement.StopVertial);
-        }
-
-        // Interaction Player 1.
-        if(p1Ctrls.interact.isDown){
-            player1.interact();
-        }
-
-        // Movement Player 2 (Arrows).
-        if (p2Ctrls.left.isDown) { // Horizontal movement.
-            player2.move(Movement.Left);
-        } else if (p2Ctrls.right.isDown) {
-            player2.move(Movement.Right);
-        } else {
-            player2.move(Movement.StopHorizontal);
-        }
-
-        if (p2Ctrls.up.isDown) { // Vertical movement.
-            player2.move(Movement.Up);
-        } else if (p2Ctrls.down.isDown) {
-            player2.move(Movement.Down);
-        } else {
-            player2.move(Movement.StopVertial);
-        }
-
-        //Interaction Player 2.
-        if(p2Ctrls.interact.isDown){
-            player2.interact();
-        }
-    }*/
 
     checkWinner(){
 
@@ -868,17 +855,5 @@ export default class GameScene extends Phaser.Scene {
 
     getRandomInt(max) { // credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
         return Math.floor(Math.random() * max);
-    }
-
-    //////////////////////////////////////////////////// WEBSCOCKET ////////////////////////////////////////////////////
-
-    sendMessageToWS(type, content){
-        var msg = {
-            type : type,
-            content : content
-        }
-        connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
-
-        if(connection == null){console.log("connection is null!")}
     }
 }

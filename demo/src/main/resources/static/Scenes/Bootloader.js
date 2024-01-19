@@ -106,9 +106,9 @@ export default class Bootloader extends Phaser.Scene {
         // WebScoket Connection.
 
 
-        //var websocketIP = 'ws://' +location.host+ '/app';
+        var websocketIP = 'ws://' +location.host+ '/app';
         //var websocketIP = 'ws://127.0.0.1:5500/app';
-        var websocketIP = 'ws://192.168.1.43:8080/app';
+        //var websocketIP = 'ws://192.168.1.43:8080/app';
         
         connection = new WebSocket(websocketIP);
         console.log(" Websocket open at IP = " + websocketIP);

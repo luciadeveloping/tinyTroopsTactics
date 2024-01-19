@@ -81,12 +81,12 @@ export default class StartScene extends Phaser.Scene {
     update() {
 
         if(assignedPlayer == 1){
-            movementHandler(player1, player2);
+            movementHandler(player1, player2, this.interactMethod);
             this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2);
             this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2);
             this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2);
         }else if( assignedPlayer == 2){
-            movementHandler(player2, player1);
+            movementHandler(player2, player1, this.interactMethod);
             this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1);
             this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1);
             this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1);
@@ -106,6 +106,10 @@ export default class StartScene extends Phaser.Scene {
         this.handleButtonInteraction2(this.creditsButton, 'CreditsScene', p1Ctrls.interact);
         //this.handleButtonInteraction2(this.creditsButton, 'CreditsScene', p2Ctrls.interact);
         */
+    }
+
+    interactMethod(){
+        console.log('Interacting...');
     }
 
     
