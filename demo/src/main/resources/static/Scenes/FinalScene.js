@@ -7,6 +7,7 @@ export default class FinalScene extends Phaser.Scene {
     }
 
     create(){
+        currentScene = this;
     // SOUNDS
         this.music = this.sound.add('secondaryMusic', musicConfig);
         this.clickSound = this.sound.add('clickSound');
@@ -16,7 +17,7 @@ export default class FinalScene extends Phaser.Scene {
         }
 
     // IMAGES
-        //winner = 'player1';
+        //winner = 'playersad1';
         this.grid = this.add.image(centerX, centerY, 'grid');
         
         // Congrats to player 1
@@ -58,15 +59,6 @@ export default class FinalScene extends Phaser.Scene {
             'interact': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
 
-        // Player 2 is controlled with arrow keys and interacts with ENTER
-        p2Ctrls = this.input.keyboard.addKeys({
-            'up': Phaser.Input.Keyboard.KeyCodes.UP,
-            'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
-            'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
-            'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
-            'interact': Phaser.Input.Keyboard.KeyCodes.ENTER
-        });
-
         // To avoid player 1 automatic movement after returning to this scene 
         //(because it uses WASD)
         this.p1ctrlsReset();
@@ -74,6 +66,15 @@ export default class FinalScene extends Phaser.Scene {
 
     update() {
 
+        if(assignedPlayer == 1){
+            movementHandler(player1, player2);
+            handleButtonInteraction(this.exitButton, 'StartScene', player1, player2, this);
+        }else if( assignedPlayer == 2){
+            movementHandler(player2, player1);
+            handleButtonInteraction(this.exitButton, 'StartScene', player2, player1, this);
+        }
+
+        /*
         // Assigns p1ctrls as controls for player1
         this.handlePlayerMovement(player1, p1Ctrls);
         // Assigns p2ctrls as controls for player2
@@ -82,8 +83,10 @@ export default class FinalScene extends Phaser.Scene {
         // Interaction with Exit button
         this.handleButtonInteraction(this.exitButton, 'StartScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.exitButton, 'StartScene', p2Ctrls.interact);
-
+        */
     }
+
+    shutdown(){}
 
     // Resets controls of player 1
     p1ctrlsReset() {

@@ -721,6 +721,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     shutdown(){
+        this.music.stop();
+        clearInterval(planeGeneratorTimer);
         clearInterval(synchronizationTimer);
     }
 
@@ -791,7 +793,7 @@ export default class GameScene extends Phaser.Scene {
     endGameScene(result){
         winner = result;
 
-        clearInterval(planeGeneratorTimer);
+        this.shutdown();
         this.scene.start('FinalScene');
     }
 
