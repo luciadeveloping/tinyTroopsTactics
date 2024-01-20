@@ -7,6 +7,7 @@ export default class StartScene extends Phaser.Scene {
     }
 
     create() {
+    currentScene = this;
     // SOUNDS
         this.music = this.sound.add('mainMenuMusic', musicConfig);
         this.clickSound = this.sound.add('clickSound');
@@ -81,15 +82,15 @@ export default class StartScene extends Phaser.Scene {
     update() {
 
         if(assignedPlayer == 1){
-            movementHandler(player1, player2, this.interactMethod);
-            this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2);
-            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2);
-            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2);
+            movementHandler(player1, player2);
+            handleButtonInteraction(this.startButton, 'GameScene', player1, player2, this);
+            handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2, this);
+            handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2, this);
         }else if( assignedPlayer == 2){
             movementHandler(player2, player1, this.interactMethod);
-            this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1);
-            this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1);
-            this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1);
+            handleButtonInteraction(this.startButton, 'GameScene', player2, player1, this);
+            handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1, this);
+            handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1, this);
         }
         
         
@@ -108,9 +109,7 @@ export default class StartScene extends Phaser.Scene {
         */
     }
 
-    interactMethod(){
-        console.log('Interacting...');
-    }
+    shutdown(){}
 
     
 
@@ -207,6 +206,8 @@ export default class StartScene extends Phaser.Scene {
         p1Ctrls.interact.reset();
     }
 
+    /*
+
     handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
         var thisPlayerBounds = thisPlayer.getBounds();
         var otherPlayerBounds = otherPlayer.getBounds();
@@ -219,10 +220,10 @@ export default class StartScene extends Phaser.Scene {
         }
     
         if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
-            this.sceneChange(targetScene);
+            sceneChange(targetScene, this);
     
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
-            this.sceneChange(targetScene);
+            sceneChange(targetScene, this);
         }
     }
 
@@ -235,9 +236,8 @@ export default class StartScene extends Phaser.Scene {
 
         //Stops music
         this.music.stop();
-
         this.scene.start(targetScene);
-    }
+    }*/
 
     getNextSkin(currentSkin){ // Given a certain skin return the nextSkin in skinList.
         if(skinList.length == 0){

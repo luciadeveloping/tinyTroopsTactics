@@ -23,6 +23,9 @@ const PLAYER_INTERACTION_COOLDOWN = 200; // Milliseconds
 
 var planeGeneratorTimer;
 
+var synchronizationTimer;
+const SYNCRHONIZE_GAME_STATE_RATE = 10000;
+
 const Faction = {
     Neutral: "Neutral",
     One: "One",
@@ -613,6 +616,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        currentScene = this;
         game = this; // Store "game" object for SceneObject class.
 
     // SOUNDS
@@ -680,6 +684,10 @@ export default class GameScene extends Phaser.Scene {
             });
         }
 
+        if(assignedPlayer == 1){
+            synchronizationTimer = setInterval(this.sendGameState, SYNCRHONIZE_GAME_STATE_RATE);
+        }
+
         
     }
 
@@ -687,26 +695,33 @@ export default class GameScene extends Phaser.Scene {
 
         if(assignedPlayer == 1){
             this.movementHandler(player1, player2);
-            //this.handleButtonInteraction(this.startButton, 'GameScene', player1, player2);
-            //this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player1, player2);
-            //this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player1, player2);
+            handleButtonInteraction(this.exitButton, 'StartScene', player1, player2);
         }else if( assignedPlayer == 2){
             this.movementHandler(player2, player1);
-            //this.handleButtonInteraction(this.startButton, 'GameScene', player2, player1);
-            //this.handleButtonInteraction(this.settingsButton, 'SettingsScene', player2, player1);
-            //this.handleButtonInteraction(this.creditsButton, 'CreditsScene', player2, player1);
+            handleButtonInteraction(this.exitButton, 'StartScene', player2, player1);
         }
+
+        if(assignedPlayer == 2){
+            this.checkForGameStateUpdate();
+        }
+
+        this.checkWinner();
 
     
         /*
         this.handlePlayerControls(player1, p1Ctrls);
         this.handlePlayerControls(player2, p2Ctrls);
 
-        this.checkWinner();
+        
 
         this.handleButtonInteraction(this.exitButton, 'StartScene', p1Ctrls.interact);
         this.handleButtonInteraction(this.exitButton, 'StartScene', p2Ctrls.interact);
         */
+
+    }
+
+    shutdown(){
+        clearInterval(synchronizationTimer);
     }
 
     movementHandler(thisPlayer, otherPlayer){
@@ -715,7 +730,7 @@ export default class GameScene extends Phaser.Scene {
 
         updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
         this.handleOtherPlayerMovement(otherPlayer);
-        console.log("Other player info = " + otherInfo);
+        //console.log("Other player info = " + otherInfo);
         
     }
 
@@ -780,6 +795,27 @@ export default class GameScene extends Phaser.Scene {
         this.scene.start('FinalScene');
     }
 
+    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
+        var thisPlayerBounds = thisPlayer.getBounds();
+        var otherPlayerBounds = otherPlayer.getBounds();
+        var buttonBounds = button.getBounds();
+    
+        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
+            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+        }else {
+            button.setTexture(button.texture.key.replace('Hover', 'Default'));
+        }
+    
+        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
+            this.sceneChange(targetScene);
+    
+        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
+            this.sceneChange(targetScene);
+        }
+    }
+
+
+    /*
     // Detects if player interacts with the button to start another scene
     handleButtonInteraction(button, targetScene, interactKey) {
         p1Bounds = player1.getBounds();
@@ -814,7 +850,7 @@ export default class GameScene extends Phaser.Scene {
             //Maintains normal texture of button
             button.setTexture(button.texture.key.replace('Hover', 'Default'));
         }
-    }
+    }*/
 
     // Starts another scene
     sceneChange(targetScene) {
@@ -831,6 +867,38 @@ export default class GameScene extends Phaser.Scene {
         p1Ctrls.left.reset();
         p1Ctrls.right.reset();
         p1Ctrls.interact.reset();
+    }
+
+    sendGameState(){
+        var gameState = [ // [p1solddier, p2soliders, node1soldiers, node2soliders...]
+            player1.soldiers,
+            player2.soldiers
+        ]
+
+        nodeList.forEach(node => {
+            gameState.push(node.soldiers);
+        });
+
+        sendMessageToWS("GameState", gameState);
+        console.log("Synchronizing game state...");
+    }
+
+    updateGameState(){
+        player1.soldiers = gameState.shift();
+        player2.soldiers = gameState.shift();
+
+        for(var i = 0; i < gameState.length; i++){
+            nodeList[i].soldiers = gameState[i];
+            nodeList[i].updateSoldiersDisplay();
+        }
+        console.log("Game state recieved. Synchronizing game state...");
+    }
+
+    checkForGameStateUpdate(){
+        if(gameStateDirty){
+            this.updateGameState();
+            gameStateDirty = false;
+        }
     }
 
     //////////////////////////////////////////////////// PLANE ////////////////////////////////////////////////////

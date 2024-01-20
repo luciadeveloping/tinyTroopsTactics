@@ -70,8 +70,6 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 				);
 			}
 
-			
-
 		} else if (session == player2Session){
 
 			SendMessageToSession(
@@ -83,7 +81,6 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		}else{
 			System.out.println("An undefined session tried to update input information.");
 		}
-		
 		
 	}
 

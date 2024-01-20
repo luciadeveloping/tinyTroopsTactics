@@ -7,6 +7,7 @@ export default class SettingsScene extends Phaser.Scene {
     }
 
     create() {
+    currentScene = this;
     // SOUNDS
         this.music = this.sound.add('secondaryMusic', musicConfig);
         this.clickSound = this.sound.add('clickSound');
@@ -71,12 +72,12 @@ export default class SettingsScene extends Phaser.Scene {
             movementHandler(player1, player2);
             //this.handleButtonInteraction(this.musicButton, 'GameScene', player1, player2)
             //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player1, player2)
-            this.handleButtonInteraction(this.exitButton, 'StartScene', player1, player2)
+            handleButtonInteraction(this.exitButton, 'StartScene', player1, player2, this)
         }else if( assignedPlayer == 2){
             movementHandler(player2, player1);
             //this.handleButtonInteraction(this.musicButton, 'GameScene', player2, player1)
             //this.handleButtonInteraction(this.effectsButton, 'SettingsScene', player2, player1)
-            this.handleButtonInteraction(this.exitButton, 'StartScene', player2, player1)
+            handleButtonInteraction(this.exitButton, 'StartScene', player2, player1, this)
         }
 
         /*
@@ -98,6 +99,8 @@ export default class SettingsScene extends Phaser.Scene {
         this.handleButtonInteraction(this.exitButton, p2Ctrls.interact);
         */
     }
+
+    shutdown(){}
 
     // Resets controls of player 1
     p1ctrlsReset() {
@@ -165,25 +168,6 @@ export default class SettingsScene extends Phaser.Scene {
         }
     }*/
 
-    handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
-        var thisPlayerBounds = thisPlayer.getBounds();
-        var otherPlayerBounds = otherPlayer.getBounds();
-        var buttonBounds = button.getBounds();
-    
-        if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
-            button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
-        }else {
-            button.setTexture(button.texture.key.replace('Hover', 'Default'));
-        }
-    
-        if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
-            this.sceneChange(targetScene);
-    
-        } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
-            this.sceneChange(targetScene);
-        }
-    }
-
     interact(button){
         //Click sound
         if (effectsEnabled){
@@ -198,15 +182,6 @@ export default class SettingsScene extends Phaser.Scene {
             this.toggle(button);
         }
     }
-
-    // Starts another scene
-    sceneChange(targetScene) {
-        //Stops music
-        this.music.stop();
-
-        this.scene.start(targetScene);
-    }
-
     // Toggles button
     toggle(button){
 

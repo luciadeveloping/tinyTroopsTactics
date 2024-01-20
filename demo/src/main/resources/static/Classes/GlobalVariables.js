@@ -11,6 +11,7 @@ effectsEnabled,
 musicConfig, //Music configuration
 initTimeDraftP1, //Last time the Player 1 interacted with a button
 initTimeDraftP2, //Last time the Player 2 interacted with a button
+currentScene,
 
 //Defined in bootloader.js
 skinList, //Array of skins for players
@@ -71,13 +72,14 @@ var connection; // Reference to websocket
 var assignedPlayer; // Either 1 or 2
 var otherInfo = [0, 0, 0]; // Variables from the web player : [xPos, yPos, InteractionInput (0,1)]
 var connectionOnline;
+var gameState = [7, 7, 1, 2, 3, 4, 5, 6];
+var gameStateDirty = false; // If theres gameState info that needs to be updated to the gameState.
 
 function sendMessageToWS(type, content){
     var msg = {
         type : type,
         content : content
     }
-
 
     if(connectionOnline){
         connection.send(JSON.stringify(msg)); // Convert yo JSON and send to WS.
@@ -127,11 +129,49 @@ function handlePlayerMovement(player, input, interactMethod) {
         player.setVelocityY(0);
     }
 
-    if(input.interact.isDown){
-        interactMethod();
+    if(interactMethod != null){
+        if(input.interact.isDown){
+            interactMethod();
+        }
+    }
+    
+}
+
+function handleButtonInteraction(button, targetScene, thisPlayer, otherPlayer){
+    var thisPlayerBounds = thisPlayer.getBounds();
+    var otherPlayerBounds = otherPlayer.getBounds();
+    var buttonBounds = button.getBounds();
+
+    if(Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) || Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds)){
+        button.setTexture(`${button.texture.key.replace('Default', 'Hover')}`);
+    }else {
+        button.setTexture(button.texture.key.replace('Hover', 'Default'));
+    }
+
+    if( Phaser.Geom.Intersects.RectangleToRectangle(thisPlayerBounds, buttonBounds) && p1Ctrls.interact.isDown) {
+        if (effectsEnabled){
+            currentScene.clickSound.play();
+        }
+        sceneChange(targetScene);
+        sendMessageToWS('SceneChange', targetScene);
+
+    } else if (Phaser.Geom.Intersects.RectangleToRectangle(otherPlayerBounds, buttonBounds) && otherInfo[2] == 1){
+        if (effectsEnabled){
+            currentScene.clickSound.play();
+        }
+        sceneChange(targetScene);
+        sendMessageToWS('SceneChange', targetScene);
     }
 }
     
+function sceneChange(targetScene){
+    //Stops music
+    currentScene.music.stop();
+    currentScene.shutdown();
+    currentScene.scene.start(targetScene);
+    
+}
+
 
     
 function updateOtherPlayerPos(otherPlayer, newXPos, newYPos){

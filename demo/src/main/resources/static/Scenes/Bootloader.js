@@ -141,6 +141,17 @@ export default class Bootloader extends Phaser.Scene {
                     otherInfo[2] = info[2];
                     break;
 
+                case "GameState":
+                    console.log("GameState recevied. " +message.content);
+                    gameState = JSON.parse(message.content);
+                    gameStateDirty = true;
+                    break;
+
+                case "SceneChange":
+                    console.log("Change scene to " +message.content.substring(1, message.content.length -1));
+                    //sceneChange(message.content.substring(1, message.content.length -1, currentScene));
+                    break;
+
                 case "Error":
                     console.log("An error has occurred, error: " + message.content);
                     break;
