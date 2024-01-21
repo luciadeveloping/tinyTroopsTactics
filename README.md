@@ -180,3 +180,15 @@ En ella el movimiento de los jugadores está implementado como en el resto de es
 ## Diagrama de flujo.
 
 ![diagram](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/612624aa-2642-4673-a81e-2bd4dcadcf16)
+
+# RED Y WEBSOCKET
+Para la implementación del juego en red se utilizó la comunicación entre WebScokets a travése de un servidor.
+
+![Captura de pantalla 2024-01-21 201204](https://github.com/edwardeveloping/tinyTroopsTactics/assets/138675155/6d4e0a96-4df8-4601-be7e-f427f0f0f921)
+
+Se levantó un servidor a través de la biblioteca Spring y se configuró el uso de webscokets.
+Utilizamos un "protocolo" propio para la comunicación entre diferentes clientes. Los dispositivos construyen un objeto JSON con los campos type y content, una vez los envían al servidor este lo propaga al otro cliente. Este a su vez es capaz de reconocer cada uno de los tipos de mensaje y codificar la información de vuelta al juego.
+
+De esta manera el cliente es capaz de reconocer y almacenar su identificador dentro del juego (type=SesionID), leer la información del otro jugador (type=InputUpdate), etc.
+
+Así mismo, debido a la observada poca fiabilidad de los websockets se han implementado sistemas auxiliares que ayudan a sincronizar el juego entre dos sesiones diferentes: (type=GameState) codifica la información de la pantalla de juego y la envía al otro usuario o (type=SceneChange) que ejecuta una segunda instrucción para cambiar de escena.
