@@ -168,6 +168,7 @@ function sceneChange(targetScene){
     //Stops music
     currentScene.music.stop();
     currentScene.shutdown();
+    //currentScene.scene.stop();
     currentScene.scene.start(targetScene);
     
 }

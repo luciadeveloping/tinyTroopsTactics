@@ -421,7 +421,7 @@ class Node extends SceneObject {
     startSoldierGeneration(){
         this.soldiersGenerationTimer = setInterval(this.addSoldiers.bind(this), SOLDIER_GENERATION_INTERVAL, 1);
     }
-    stopSoldierGeneratio(){
+    stopSoldierGeneration(){
         clearInterval(this.soldiersGenerationTimer);
     }
 
@@ -474,16 +474,18 @@ class Node extends SceneObject {
             case Faction.Neutral:
                 this.region.phaserGO.clearTint(); // Clear tint
                 this.phaserGO.clearTint();
-                this.stopSoldierGeneratio()
+                this.stopSoldierGeneration();
                 break;
             case Faction.One:
                 this.region.phaserGO.setTint(p1Skin.regionColor); // Orange tint for player 1
                 this.phaserGO.setTint(p1Skin.nodeColor);
+                this.stopSoldierGeneration();
                 this.startSoldierGeneration();
                 break;
             case Faction.Two:
                 this.region.phaserGO.setTint(p2Skin.regionColor); // Purple tint for player 2
                 this.phaserGO.setTint(p2Skin.nodeColor);
+                this.stopSoldierGeneration();
                 this.startSoldierGeneration();
 
                 break;
@@ -881,25 +883,61 @@ export default class GameScene extends Phaser.Scene {
     }
 
     sendGameState(){
-        var gameState = [ // [p1solddier, p2soliders, node1soldiers, node2soliders...]
+        var gameState = [ // [p1solddier, p2soliders, node1soldiers, node1Faction, node2soliders, node2Faction...]
             player1.soldiers,
             player2.soldiers
         ]
 
         nodeList.forEach(node => {
             gameState.push(node.soldiers);
+            switch(node.faction){
+                case Faction.One:
+                    gameState.push(1);
+                    break;
+
+                case Faction.Two:
+                    gameState.push(2);
+                    break;
+
+                case Faction.Neutral:
+                    gameState.push(0);
+                    break;
+
+                default:
+                    gameState.push(0);
+                    break;
+            }
         });
 
         sendMessageToWS("GameState", gameState);
         console.log("Synchronizing game state...");
+        console.log(gameState);
     }
 
     updateGameState(){
         player1.soldiers = gameState.shift();
         player2.soldiers = gameState.shift();
 
-        for(var i = 0; i < gameState.length; i++){
-            nodeList[i].soldiers = gameState[i];
+        for(var i = 0; i < nodeList.length; i++){
+            nodeList[i].soldiers = gameState[i*2];
+
+            switch(gameState[(i*2) + 1]){
+                case 1:
+                    nodeList[i].setFaction(Faction.One);
+                    break;
+                case 2:
+                    nodeList[i].setFaction(Faction.Two);
+                    break;
+                case 0:
+                    nodeList[i].setFaction(Faction.Neutral);
+                    break;
+                default:
+                    nodeList[i].setFaction(Faction.Neutral);
+                    break;
+            }
+            
+
+
             nodeList[i].updateSoldiersDisplay();
         }
         console.log("Game state recieved. Synchronizing game state...");

@@ -107,6 +107,7 @@ export default class Bootloader extends Phaser.Scene {
 
 
         var websocketIP = 'ws://' +location.host+ '/app';
+        console.log(location.host);
         //var websocketIP = 'ws://127.0.0.1:5500/app';
         //var websocketIP = 'ws://192.168.1.43:8080/app';
         
@@ -149,7 +150,7 @@ export default class Bootloader extends Phaser.Scene {
 
                 case "SceneChange":
                     console.log("Change scene to " +message.content.substring(1, message.content.length -1));
-                    //sceneChange(message.content.substring(1, message.content.length -1, currentScene));
+                    sceneChange(message.content.substring(1, message.content.length -1, currentScene));
                     break;
 
                 case "Error":
