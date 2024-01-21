@@ -465,7 +465,7 @@ class Node extends SceneObject {
             this.addSoldiers(-1);
             return true;
         }
-        console.log("This node is empty!");
+        //console.log("This node is empty!");
         return false;
     }
 
@@ -911,7 +911,6 @@ export default class GameScene extends Phaser.Scene {
 
         sendMessageToWS("GameState", gameState);
         console.log("Synchronizing game state...");
-        console.log(gameState);
     }
 
     updateGameState(){

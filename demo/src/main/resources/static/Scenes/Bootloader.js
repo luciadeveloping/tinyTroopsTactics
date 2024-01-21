@@ -143,7 +143,7 @@ export default class Bootloader extends Phaser.Scene {
                     break;
 
                 case "GameState":
-                    console.log("GameState recevied. " +message.content);
+                    //console.log("GameState recevied. " +message.content);
                     gameState = JSON.parse(message.content);
                     gameStateDirty = true;
                     break;
