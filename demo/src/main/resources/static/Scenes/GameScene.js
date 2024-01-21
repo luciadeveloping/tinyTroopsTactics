@@ -24,7 +24,7 @@ const PLAYER_INTERACTION_COOLDOWN = 200; // Milliseconds
 var planeGeneratorTimer;
 
 var synchronizationTimer;
-const SYNCRHONIZE_GAME_STATE_RATE = 10000;
+const SYNCRHONIZE_GAME_STATE_RATE = 5000;
 
 const Faction = {
     Neutral: "Neutral",
@@ -115,11 +115,16 @@ class SceneObject {
 class Player extends SceneObject {
     constructor(xPos, yPos, sprite, faction) {
         super(xPos, yPos, sprite);
-        this.phaserGO.setDepth(1);
+        this.phaserGO.setDepth(2);
 
         this.faction = faction;
         this.soldiers = PLAYER_STARTING_SOLDIERS;
-        this.soldiersDisplay = game.add.text(xPos, yPos+30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });;
+        this.soldiersDisplay = game.add.text(xPos, yPos + 30, '0', {
+            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+            color: 'black', 
+            fontSize: '20px' 
+        });
+        this.soldiersDisplay.setDepth(2);
         this.updateSoldiersDisplay();
         this.range = PLAYER_RANGE;
         this.draftingRange = PLAYER_DRAFTING_RANGE;
@@ -304,7 +309,11 @@ class Node extends SceneObject {
         
         this.phaserGO.setDepth(1);
         this.soldiers = NODE_STARTING_SOLDIERS;
-        this.soldiersDisplay = game.add.text(xPos - 7, yPos + 30, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+        this.soldiersDisplay = game.add.text(xPos - 7, yPos + 15, '0', {
+            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+            color: 'black', 
+            fontSize: '20px' 
+        });
         this.updateSoldiersDisplay();
         this.faction = Faction.Neutral;
         this.soldiersGenerationTimer;

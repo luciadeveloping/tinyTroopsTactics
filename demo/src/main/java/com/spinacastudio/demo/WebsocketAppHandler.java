@@ -1,19 +1,20 @@
 package com.spinacastudio.demo;
 
-import java.util.Map;
-
-import java.util.concurrent.ConcurrentHashMap;
+//import java.util.Map;
+import java.util.Objects;
+//import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketExtension;
+//import org.springframework.web.socket.WebSocketExtension;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.JSONPObject;
+//import com.fasterxml.jackson.databind.util.JSONPObject;
 
 public class WebsocketAppHandler extends TextWebSocketHandler {
     
@@ -22,7 +23,7 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 	private WebSocketSession player2Session;
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+	public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
 		System.out.println("New user: " + session.getId());
 
 		// Assign user to player1 or player2 and send the result back to the session.
@@ -44,7 +45,7 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 	}
 
 	@Override
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+	public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) throws Exception {
 		System.out.println("Session closed: " + session.getId());
 		if(session == player1Session) {player1Session = null;}
 		else if ( session == player2Session) {player2Session = null;}
@@ -52,7 +53,7 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 	}
 
     @Override
-	protected void handleTextMessage(WebSocketSession session, TextMessage msg) throws Exception {
+	protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage msg) throws Exception {
 		
 		//System.out.println("Message received: " + msg.getPayload());
 		JsonNode message = mapper.readTree(msg.getPayload()); // Convert to JSON.
@@ -93,10 +94,10 @@ public class WebsocketAppHandler extends TextWebSocketHandler {
 		new TextMessage(buildStringedJSON(type, content)));
 	}
 
-	private String buildStringedJSON(String type, String content){ // Builds a JSON, returns it as a String
+	private @NonNull String buildStringedJSON(String type, String content){ // Builds a JSON, returns it as a String
 		ObjectNode jsonNode = mapper.createObjectNode();
         jsonNode.put("type", type);
         jsonNode.put("content", content);
-		return jsonNode.toString();
+		return Objects.requireNonNull(jsonNode.toString());
 	}
 }

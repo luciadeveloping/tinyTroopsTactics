@@ -10,7 +10,7 @@ export default class Bootloader extends Phaser.Scene {
 
         // Starts startScene when everything is loaded
         this.load.on("complete", () => {
-            this.scene.start("FinalScene");
+            this.scene.start("StartScene");
         })
 
         // Sounds
