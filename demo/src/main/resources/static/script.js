@@ -1,64 +1,16 @@
 
 $(document).ready(function () {
 
-    /*
-    loadItems(function (items) {
-        //When items are loaded from server
-        for (var i = 0; i < items.length; i++) {
-            showItem(items[i]);
-        }
-    });*/
-
     var userNameInput = $('#userName-input')
     var passwordInput = $('#password-input')
+    var userNameSignInInput = $('#userNameSignIn-input')
+    var passwordSignInInput = $('#passwordSignIn-input')
+
     var currentUserNameInput = $('#currentUserName-input')
     var newUserNameInput = $('#newUserName-input')
+    var userNameToDeleteInput = $('#userNameToDelete-input')
+    var passwordUserToDeleteInput = $('#passwordUserToDelete-input')
 
-    //var info = $('#info')
-
-    //Handle delete buttons
-    /*
-    info.click(function (event) {
-        var elem = $(event.target);
-        if (elem.is('button')) {
-            var itemDiv = elem.parent();
-            var itemId = itemDiv.attr('id').split('-')[1];
-            itemDiv.remove()
-            deleteItem(itemId);
-        }
-    })
-
-    //Handle items checkboxs
-    info.change(function (event) {
-
-        //Get page elements for item
-        var checkbox = $(event.target);
-        var itemDiv = checkbox.parent();
-        var textSpan = itemDiv.find('span');
-
-        //Read item info from elements
-        var itemDescription = textSpan.text();
-        var itemChecked = checkbox.prop('checked');
-        var itemId = itemDiv.attr('id').split('-')[1];
-
-        //Create updated item
-        var updatedItem = {
-            id: itemId,
-            description: itemDescription,
-            checked: itemChecked
-        }
-
-        //Update item in server
-        updateItem(updatedItem);
-
-        //Update page when checked
-        var style = itemChecked ? 'line-through' : 'none';
-        textSpan.css('text-decoration', style);
-
-    })
-    */
-
-    //Handle add button
     $("#add-button").click(function () {
         
         var u = {
@@ -74,6 +26,23 @@ $(document).ready(function () {
             contentType: "application/json"
         }).done(function (message) {
             console.log("User creation status: " + JSON.stringify(message));
+        });
+    });
+
+    $("#signIn-button").click(function () {
+        
+        var name = userNameSignInInput.val();
+        var password = passwordSignInInput.val();
+
+        $.ajax({
+            method: "POST",
+            url: 'http://localhost:8080/socialPage/user/' + name,
+            data: password,
+            processData: false,
+            contentType: "application/json"
+
+        }).done(function (message) {
+            console.log("User sign in status: " + JSON.stringify(message));
         });
     });
 
@@ -93,8 +62,6 @@ $(document).ready(function () {
         var currentName = currentUserNameInput.val();
         var newName = newUserNameInput.val();
 
-        console.log("Pulsado boton acutalizar, antigua nombre: " + currentName + " nuevo nombre: " + newName);
-
         $.ajax({
             method: "PUT",
             url: 'http://localhost:8080/socialPage/update/user/' + currentName,
@@ -104,6 +71,22 @@ $(document).ready(function () {
 
         }).done(function (message) {
             console.log("User update status: " + JSON.stringify(message));
+        });
+    })
+
+    $('#delete-button').click(function(){
+        var userNameToDelete = userNameToDeleteInput.val();
+        var passwordUserToDelete = passwordUserToDeleteInput.val()
+
+        $.ajax({
+            method: "DELETE",
+            url: 'http://localhost:8080/socialPage/delete/user/' + userNameToDelete,
+            data: passwordUserToDelete,
+            processData: false,
+            contentType: "application/json"
+
+        }).done(function (message) {
+            console.log("User delete status: " + JSON.stringify(message));
         });
     })
     

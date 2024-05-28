@@ -13,6 +13,9 @@ import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -24,7 +27,7 @@ public class SocialPageController {
 
     @PostMapping("/CreateUser")
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean CreateUser(@RequestBody User user){
+    public boolean SignUp(@RequestBody User user){
         return sp.TryAddUser(user);
     }
 
@@ -33,20 +36,33 @@ public class SocialPageController {
         return sp.getUsers();
     }
 
+    @PostMapping("/user/{name}")
+    public boolean SingIn(@PathVariable String name, @RequestBody String password) {
+
+        if(!sp.ContainsUserName(name)) return false;
+        if(!sp.CheckPasswordForUser(name, password)) return false;
+
+        return true;
+    }
+    
+
     @PutMapping("/update/user/{name}")
     public boolean ChangeUserName(@PathVariable String name, @RequestBody String newName) {
         
-        System.out.println("Update user pulsado.");
+        if(!sp.ContainsUserName(name)) return false;
         if(sp.ContainsUserName(newName)) return false;
         
         sp.UpdateName(name, newName);
         return true;
     }
 
-    @DeleteMapping("/user/{id}")
-	public ResponseEntity<User> deleteUser(@PathVariable int id) {
-        //sp.removeUser(id);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @DeleteMapping("/delete/user/{name}")
+	public boolean DeleteUser(@PathVariable String name, @RequestBody String password) {
+
+        if(!sp.ContainsUserName(name)) return false;
+
+        if(!sp.CheckPasswordForUser(name, password)) return false;
+        return sp.TryRemoveUser(name);
 	}
     
 }

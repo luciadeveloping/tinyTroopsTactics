@@ -42,4 +42,23 @@ public class SocialPage {
         User u = GetUser(oldName);
         u.setName(newName);
     }
+
+    public boolean CheckPasswordForUser(String n, String p){
+        return GetUser(n).getPassword().equals(p);
+    }
+
+    public boolean TryRemoveUser(String name){
+        if(!ContainsUserName(name)) return false;
+
+        RemoveUser(name);
+        return true;
+    }
+
+    private void RemoveUser(String name){
+        for(int i = 0; i < users.size(); i++){
+            if(name.equals(users.get(i).getName())){
+                users.remove(i);
+            }
+        }
+    }
 }
