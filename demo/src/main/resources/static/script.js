@@ -9,10 +9,15 @@ $(document).ready(function () {
         }
     });*/
 
-    var input = $('#value-input')
-    var info = $('#info')
+    var userNameInput = $('#userName-input')
+    var passwordInput = $('#password-input')
+    var currentUserNameInput = $('#currentUserName-input')
+    var newUserNameInput = $('#newUserName-input')
+
+    //var info = $('#info')
 
     //Handle delete buttons
+    /*
     info.click(function (event) {
         var elem = $(event.target);
         if (elem.is('button')) {
@@ -51,53 +56,55 @@ $(document).ready(function () {
         textSpan.css('text-decoration', style);
 
     })
+    */
 
     //Handle add button
     $("#add-button").click(function () {
-
-        var sender = {
-            id : 1,
-            name : input.val(),
-            password : "Gatito"
-        }
-
-        input.val('');
-
-        var message = {
-            id : 1, 
-            content : "hola q tal",
-            user : sender
-        }
-
+        
+        var u = {
+            "name": userNameInput.val(),
+            "password": passwordInput.val() 
+        };
+    
         $.ajax({
             method: "POST",
-            url: 'http://localhost:8080/socialPage',
-            data: JSON.stringify(message),
+            url: 'http://localhost:8080/socialPage/CreateUser',
+            data: JSON.stringify(u),
             processData: false,
-            headers: {
-                "Content-Type": "application/json"
-            }
-
+            contentType: "application/json"
         }).done(function (message) {
-            console.log("Item created: " + JSON.stringify(message));
-            //callback(message);
-        })
+            console.log("User creation status: " + JSON.stringify(message));
+        });
+    });
 
+    $('#getUsers-button').click(function () {
         $.ajax({
             method: "GET",
-            url: 'http://localhost:8080/socialPage/chatLog',
+            url: 'http://localhost:8080/socialPage/users',
             dataType: "json", 
             processData: false,
             success: function(data){
                 console.log(data);
             }
         })
+    });
+
+    $('#update-button').click(function(){
+        var currentName = currentUserNameInput.val();
+        var newName = newUserNameInput.val();
+
+        console.log("Pulsado boton acutalizar, antigua nombre: " + currentName + " nuevo nombre: " + newName);
 
         $.ajax({
-            method: 'DELETE',
-            url: 'http://localhost:8080/socialPage/user/' + 1
-        }).done(function (user) {
-            console.log("Deleted item " + user.id);
-        })
+            method: "PUT",
+            url: 'http://localhost:8080/socialPage/update/user/' + currentName,
+            data: newName,
+            processData: false,
+            contentType: "application/json"
+
+        }).done(function (message) {
+            console.log("User update status: " + JSON.stringify(message));
+        });
     })
+    
 })

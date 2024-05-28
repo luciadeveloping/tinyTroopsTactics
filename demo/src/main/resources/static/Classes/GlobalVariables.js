@@ -106,9 +106,9 @@ function updateInfoToWS(player, input){
 function movementHandler(thisPlayer, otherPlayer, interactFunction){
 
     handlePlayerMovement(thisPlayer, p1Ctrls, interactFunction);
-    updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
     updateInfoToWS(thisPlayer, p1Ctrls);
 
+    updateOtherPlayerPos(otherPlayer, otherInfo[0], otherInfo[1]);
 }
 
 function handlePlayerMovement(player, input, interactMethod) {

@@ -26,6 +26,12 @@
     
     <!-- Dependencias del proyecto -->
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Starter para desarrollar aplicaciones web con Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

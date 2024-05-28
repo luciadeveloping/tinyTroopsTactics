@@ -8,7 +8,6 @@ public class Message {
     public Message(){
         id = 0;
         content = "Test Message";
-        user = new User();
     }
 
     public Message(int _id, String _content, User _user){
