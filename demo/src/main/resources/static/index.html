@@ -6,59 +6,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TINY TROOPS TACTICS</title>
 
-    <!-- Vincula el archivo CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="indexStyle.css">
 
     <!-- Phaser CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
 
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
     <!-- Global variables and constants -->
     <script src="./Classes/GlobalVariables.js"></script>
+
+    <!-- API Rest: user data management-->
+    <script src="script.js"></script>
 
     <!-- Game initializer -->
     <script src="./init.js" type="module"></script>
 
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="script.js"></script>
+    <!-- Web UI handler-->
+    <script src="./webUI.js" type="module"></script>
+
 </head>
 
 <body>
     <h1>TINY TROOPS TACTICS</h1>
     <h2>Fase 3. Proyecto práctico de Juegos en Red</h2>
     <hr>
-    
-    <div>
-        <input id='userName-input' type='text' placeholder="Nombre de usuario...">
-        <input id='password-input' type='text' placeholder="Contraseña..">
-        <button id='add-button'>Sign Up</button>
-    </div>
 
-    <div>
-        <input id='userNameSignIn-input' type='text' placeholder="Nombre de usuario...">
-        <input id='passwordSignIn-input' type='text' placeholder="Contraseña..">
-        <button id='signIn-button'>Sign In</button>
-    </div>
-    
-    <div>
-        <input id='currentUserName-input' type='text' placeholder="Tu nombre de usuario...">
-        <input id='newUserName-input' type='text' placeholder="Nuevo nombre de usuario">
-        <button id='update-button'>Update Name</button>
-    </div>
+    <!-- First step -->
+    <div id="auth-buttons">
+        <div>
+            <input id='userName-input' type='text' placeholder="Nombre de usuario...">
+            <input id='password-input' type='text' placeholder="Contraseña..">
+            <button id='signUp-button'>Sign Up</button>
+        </div>
 
-    <div>
-        <input id='userNameToDelete-input' type='text' placeholder="Nombre de usuario a borrar...">
-        <input id='passwordUserToDelete-input' type='text' placeholder="Contraseña...">
-        <button id='delete-button'>Delete User</button>
-    </div>
-
-    <div>
-        <button id='getUsers-button'>GetUsers</button>
+        <div>
+            <input id='userNameSignIn-input' type='text' placeholder="Nombre de usuario...">
+            <input id='passwordSignIn-input' type='text' placeholder="Contraseña..">
+            <button id='signIn-button'>Sign In</button>
+        </div>
     </div>
     
+    <!-- Second step -->
+    <div id="user-actions" style="display:none;">
+        <div>
+            <input id='currentUserName-input' type='text' placeholder="Tu nombre de usuario...">
+            <input id='newUserName-input' type='text' placeholder="Nuevo nombre de usuario">
+            <button id='update-button'>Update Name</button>
+        </div>
 
-    <main>
-        <!-- Section where the game will be displayed-->
-        <div id="display"></div>
+        <div>
+            <input id='userNameToDelete-input' type='text' placeholder="Nombre de usuario a borrar...">
+            <input id='passwordUserToDelete-input' type='text' placeholder="Contraseña...">
+            <button id='delete-button'>Delete User</button>
+        </div>
+
+        <div>
+            <button id='getUsers-button'>GetUsers</button>
+        </div>
+
+        <div>
+            <button id='play-button'>Play</button>
+        </div>
+
+        <div>
+            <button id='signOut-button'>Sign out</button>
+        </div>
+    </div>
+    
+    <!-- Third step -->
+    <main id="game-container" style="display:none;">
+        <div id="display"></div> <!-- Game display -->
+        <button id="exit-button">Exit</button>
     </main>
 </body>
 
