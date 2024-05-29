@@ -1,6 +1,11 @@
 package com.spinacastudio.demo;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+    // To ensure serialization
+    private static final long serialVersionUID = 1L;
+    
     String name;
     String password;
 
@@ -14,6 +19,7 @@ public class User {
     public String getName() {
         return name;
     }
+
     public void setName(String newName){
         name = newName;
     }
@@ -22,7 +28,8 @@ public class User {
         return password;
     }
 
-    public String ToString(){
+    @Override
+    public String toString(){
         return "USER : Name: " + name + ", Password:" + password;
     }
 }

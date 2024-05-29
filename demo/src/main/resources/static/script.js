@@ -11,7 +11,7 @@ $(document).ready(function () {
     var userNameToDeleteInput = $('#userNameToDelete-input')
     var passwordUserToDeleteInput = $('#passwordUserToDelete-input')
 
-    $("#add-button").click(function () {
+    $("#signUp-button").click(function () {
         
         var u = {
             "name": userNameInput.val(),
@@ -59,7 +59,7 @@ $(document).ready(function () {
     });
 
     $('#update-button').click(function(){
-        var currentName = currentUserNameInput.val();
+        var currentName = currentUserNameInput.val(); //Current username
         var newName = newUserNameInput.val();
 
         $.ajax({
@@ -75,7 +75,7 @@ $(document).ready(function () {
     })
 
     $('#delete-button').click(function(){
-        var userNameToDelete = userNameToDeleteInput.val();
+        var userNameToDelete = userNameToDeleteInput.val(); // Current username
         var passwordUserToDelete = passwordUserToDeleteInput.val()
 
         $.ajax({
