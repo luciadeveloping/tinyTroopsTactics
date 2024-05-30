@@ -1,8 +1,8 @@
 // When page is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Divisions
-    const authButtons = document.getElementById('auth-buttons');
-    const userActions = document.getElementById('user-actions');
+    const userEnterButtons = document.getElementById('user-enter');
+    const userActionButtons = document.getElementById('user-actions');
     const gameContainer = document.getElementById('game-container');
     const display = document.getElementById('display');
 
@@ -13,50 +13,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('play-button');
     const exitButton = document.getElementById('exit-button');
 
-    // Sign UP
-    signUpButton.addEventListener('click', () => {
-        authButtons.style.display = 'none';
-        userActions.style.display = 'block';
-    });
-
-    // Sign IN
-    signInButton.addEventListener('click', () => {
-        authButtons.style.display = 'none';
-        userActions.style.display = 'block';
-    });
-
     // Sign OUT
     signOutButton.addEventListener('click', () => {
-        authButtons.style.display = 'block';
-        userActions.style.display = 'none';
+        userEnterButtons.style.display = 'block';
+        userActionButtons.style.display = 'none';
+
+        // Remove the currentUser item from localStorage
+        localStorage.removeItem('currentUser');
     });
 
     // Play game
     playButton.addEventListener('click', () => {
-        userActions.style.display = 'none';
+        userActionButtons.style.display = 'none';
         gameContainer.style.display = 'block';
         display.style.display = 'block';
 
         // New game
         game = new Phaser.Game(gameConfig);
-
-        /*
-        // If there is no game
-        if (!game){
-            // New game
-            game = new Phaser.Game(gameConfig);
-        }else{ // If there is, it will be paused
-            // Resumes 
-            //game.scene.manager.resume(game.scene.manager.currentScene);
-        }
-        */
     });
 
     // Exit game
     exitButton.addEventListener('click', () => {
-        gameContainer.style.display = 'none';
-        userActions.style.display = 'block';
-        display.style.display = 'none';
+        // Remove the currentUser item from localStorage
+        localStorage.removeItem('currentUser');
 
         // Forces page reload
         location.reload(true);

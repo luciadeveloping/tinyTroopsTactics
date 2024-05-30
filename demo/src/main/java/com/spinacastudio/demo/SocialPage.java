@@ -38,9 +38,9 @@ public class SocialPage {
         return false;
     }
 
-    public void UpdateName(String oldName, String newName){
-        User u = GetUser(oldName);
-        u.setName(newName);
+    public void UpdateName(User user, String newName){
+        //User u = GetUser(oldName);
+        user.setName(newName);
         serializeUsers();
     }
 
@@ -48,11 +48,20 @@ public class SocialPage {
         return GetUser(n).getPassword().equals(p);
     }
 
-    public boolean TryRemoveUser(String name){
-        if(!ContainsUserName(name)) return false;
-        RemoveUser(name);
+    public boolean CheckPasswordForUser(User user, String p){
+        return user.getPassword().equals(p);
+    }
+
+    public boolean TryRemoveUser(User user){
+        //if(!ContainsUserName(user)) return false;
+        if (!RemoveUser(user)) return false;
         serializeUsers();
         return true;
+    }
+
+    private boolean RemoveUser(User user){
+        var bool = users.remove(user);
+        return bool;
     }
 
     private void RemoveUser(String name){

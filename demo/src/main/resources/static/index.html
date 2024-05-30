@@ -35,32 +35,38 @@
     <hr>
 
     <!-- First step -->
-    <div id="auth-buttons">
+    <div id="user-enter">
+        <h3>Sign Up</h3>
+        <p>Create a new account.</p>
         <div>
-            <input id='userName-input' type='text' placeholder="Username...">
-            <input id='password-input' type='text' placeholder="Password...">
+            <input id='userName-input' type='text' placeholder="New username...">
+            <input id='password-input' type='text' placeholder="New password...">
             <button id='signUp-button'>Sign Up</button>
         </div>
 
+        <h3>Sign In</h3>
+        <p>Enter your existing account.</p>
         <div>
-            <input id='userNameSignIn-input' type='text' placeholder="Username...">
-            <input id='passwordSignIn-input' type='text' placeholder="Password...">
+            <input id='userNameSignIn-input' type='text' placeholder="Your username...">
+            <input id='passwordSignIn-input' type='text' placeholder="Your password...">
             <button id='signIn-button'>Sign In</button>
         </div>
     </div>
     
     <!-- Second step -->
     <div id="user-actions" style="display:none;">
+        <h3>Update username</h3>
         <div>
-            <input id='currentUserName-input' type='text' placeholder="Current username...">
+            <p>Enter a new username for your account.</p>
             <input id='newUserName-input' type='text' placeholder="New username...">
-            <button id='update-button'>Update Name</button>
+            <button id='update-button'>Confirm</button>
         </div>
 
+        <h3>Delete account</h3>
         <div>
-            <input id='userNameToDelete-input' type='text' placeholder="Username to delete...">
-            <input id='passwordUserToDelete-input' type='text' placeholder="Password...">
-            <button id='delete-button'>Delete User</button>
+            <p>Enter your password to delete permanently your account.</p>
+            <input id='passwordUserToDelete-input' type='text' placeholder="Your password...">
+            <button id='delete-button'>Confirm</button>
         </div>
 
         <div>

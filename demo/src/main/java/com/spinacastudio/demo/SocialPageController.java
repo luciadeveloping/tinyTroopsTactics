@@ -10,11 +10,6 @@ import java.util.Collection;
 //import java.util.concurrent.ConcurrentHashMap;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.List;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -29,6 +24,16 @@ public class SocialPageController {
     @ResponseStatus(HttpStatus.CREATED)
     public boolean SignUp(@RequestBody User user){
         return sp.TryAddUser(user);
+    }
+
+    @GetMapping("/user/{name}")
+    public ResponseEntity<User> GetUserByName(@PathVariable String name) {
+        User user = sp.GetUser(name);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/users")
@@ -47,22 +52,22 @@ public class SocialPageController {
     
 
     @PutMapping("/update/user/{name}")
-    public boolean ChangeUserName(@PathVariable String name, @RequestBody String newName) {
+    public boolean ChangeUserName(@PathVariable User user, @RequestBody String newName) {
         
-        if(!sp.ContainsUserName(name)) return false;
-        if(sp.ContainsUserName(newName)) return false;
+        //if(!sp.ContainsUserName(name)) return false;
+        //if(sp.ContainsUserName(newName)) return false;
         
-        sp.UpdateName(name, newName);
+        //sp.UpdateName(user, newName);
         return true;
     }
 
     @DeleteMapping("/delete/user/{name}")
-	public boolean DeleteUser(@PathVariable String name, @RequestBody String password) {
+	public boolean DeleteUser(@PathVariable User user, @RequestBody String password) {
 
-        if(!sp.ContainsUserName(name)) return false;
+        //if(!sp.ContainsUserName(name)) return false;
 
-        if(!sp.CheckPasswordForUser(name, password)) return false;
-        return sp.TryRemoveUser(name);
+        if(!sp.CheckPasswordForUser(user, password)) return false;
+        return sp.TryRemoveUser(user);
 	}
     
 }
