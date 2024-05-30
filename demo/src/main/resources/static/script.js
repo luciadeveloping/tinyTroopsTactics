@@ -1,33 +1,42 @@
 $(document).ready(function () {
 
+    // Inputs
     var userNameInput = $('#userName-input');
     var passwordInput = $('#password-input');
     var userNameSignInInput = $('#userNameSignIn-input');
     var passwordSignInInput = $('#passwordSignIn-input');
-
     var newUserNameInput = $('#newUserName-input');
     var passwordUserToDeleteInput = $('#passwordUserToDelete-input');
 
+    // Headers
+    var usernameHeader = $('#username-header');
+
+
+    // SIGN UP
     $("#signUp-button").click(function () {
         var username = userNameInput.val();
         var password = passwordInput.val();
 
+        // Checks if username and password are entered
         if (username === "") {
-            console.log("Please enter a username.");
+            alert("Please enter a username.");
             return;
         }
         if (password === "") {
-            console.log("Please enter a password.");
+            alert("Please enter a password.");
             return;
         }
 
+        // Check if the user already exists
         $.ajax({
             method: "GET",
             url: 'http://localhost:8080/socialPage/user/' + username,
             success: function (user) {
-                console.log("Username already exists");
+                // Does nothing if exists
+                alert("Username already exists. Enter another one.");
             },
             error: function (xhr) {
+                // If it doesn't exist
                 if (xhr.status === 404) {
                     console.log("User not found, signing up");
                     var newUser = {
@@ -35,6 +44,7 @@ $(document).ready(function () {
                         "password": password
                     };
 
+                    // Creates a new one
                     $.ajax({
                         method: "POST",
                         url: 'http://localhost:8080/socialPage/CreateUser',
@@ -42,57 +52,79 @@ $(document).ready(function () {
                         processData: false,
                         contentType: "application/json",
                         success: function (message) {
-                            console.log("User creation status:", message);
+                            // Toggles divisions
                             $('#user-actions').show();
                             $('#user-enter').hide();
+                            // Saves current user
                             localStorage.setItem('currentUser', JSON.stringify(newUser));
+                            
+                            // Gets current user again
+                            var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                            console.log(currentUser);
+                            var currentUserName = currentUser.name;
+                            // Shows current username
+                            usernameHeader.text("@"+currentUserName);
                         },
                         error: function (xhr) {
-                            console.log("Error creating user:", xhr.responseText);
+                            alert("Error creating user:", xhr.responseText);
                         }
                     });
                 } else {
-                    console.log("Error:", xhr.responseText);
+                    alert("Error:", xhr.responseText);
                 }
             }
         });
     });
 
+    // SIGN IN
     $("#signIn-button").click(function () {
         var username = userNameSignInInput.val();
         var password = passwordSignInInput.val();
 
+        // Checks if username and password are entered
         if (username === "") {
-            console.log("Please enter a username.");
+            alert("Please enter your username.");
             return;
         }
         if (password === "") {
-            console.log("Please enter a password.");
+            alert("Please enter your password.");
             return;
         }
 
+        // Check if the user already exists
         $.ajax({
             method: "GET",
             url: 'http://localhost:8080/socialPage/user/' + username,
+            // It exists
             success: function (user) {
+                // If password is correct
                 if (user.password === password) {
+                    // Toggles divisions
                     $('#user-actions').show();
                     $('#user-enter').hide();
+                    // Saves current user
                     localStorage.setItem('currentUser', JSON.stringify(user));
+
+                    // Gets current user again
+                    var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    console.log(currentUser);
+                    var currentUserName = currentUser.name;
+                    // Shows current username
+                    usernameHeader.text("@"+currentUserName);
                 } else {
-                    console.log("Incorrect password");
+                    alert("Incorrect password");
                 }
             },
             error: function (xhr) {
+                // If it doesn't exist
                 if (xhr.status === 404) {
-                    console.log("User not found");
+                    alert("User not found. Are you sure that username is correct?");
                 }
             }
-        }).done(function (message) {
-            console.log("User sign in status: " + JSON.stringify(message));
         });
     });
 
+    // GETS USERS LIST
     $('#getUsers-button').click(function () {
         $.ajax({
             method: "GET",
@@ -100,25 +132,28 @@ $(document).ready(function () {
             dataType: "json",
             processData: false,
             success: function(data){
+                // Prints list
                 console.log(data);
             }
         });
     });
 
+    // UPDATE USERNAME
     $('#update-button').click(function(){
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
         var currentUserName = currentUser.name;
         var newName = newUserNameInput.val();
 
+        // Checks if a new username has been entered
         if (newName === "") {
-            console.log("Please enter a new username.");
+            alert("Please enter a new username.");
             return;
         }
 
         $.ajax({
             method: "PUT",
             url: 'http://localhost:8080/socialPage/update/user/' + currentUserName,
-            data: JSON.stringify(newName),
+            data: newName,
             processData: false,
             contentType: "application/json"
         }).done(function (message) {
@@ -126,12 +161,23 @@ $(document).ready(function () {
             if (message.includes("Error")) {
                 console.log("Error updating user");
             } else {
-                currentUser.name = newName;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 console.log("User updated successfully");
+
+                // Update the currentUser object with the new name
+                currentUser.name = newName;
+                
+                // Saves current user
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+                // Gets current user again
+                var updatedUser = JSON.parse(localStorage.getItem('currentUser'));
+                console.log(updatedUser);
+                var updatedUserName = updatedUser.name;
+                // Shows current username
+                usernameHeader.text("@" + updatedUserName);
             }
         }).fail(function (xhr) {
-            console.log("Error updating user:", xhr.responseText);
+            alert("Error updating user: "+ xhr.responseText);
         });
     });
 
@@ -141,7 +187,7 @@ $(document).ready(function () {
         var passwordUserToDelete = passwordUserToDeleteInput.val(); // Obtener la contraseña del usuario a eliminar
     
         if (passwordUserToDelete === "") {
-            console.log("Please enter your password to confirm.");
+            alert("Please enter your password to confirm.");
             return;
         }
     
@@ -152,15 +198,21 @@ $(document).ready(function () {
             success: function (message) {
                 console.log(message);
                 if (message.includes("User deleted successfully")) {
+                    // Removes current user from memory
                     localStorage.removeItem('currentUser');
+
+                    // Toggles divisions
                     $('#user-actions').hide();
                     $('#user-enter').show();
+
+                    // Restores username header
+                    usernameHeader.text("Not signed up/in yet");
                 } else {
                     console.log("Error deleting user");
                 }
             },
             error: function (xhr) {
-                console.log("Error deleting user:", xhr.responseText);
+                alert("Error deleting user: " + xhr.responseText);
             }
         });
     });

@@ -31,8 +31,12 @@
 
 <body>
     <h1>TINY TROOPS TACTICS</h1>
-    <h2>Fase 3. Proyecto práctico de Juegos en Red</h2>
+    <p>Fase 3. Proyecto práctico de Juegos en Red</p>
     <hr>
+
+    <button id='getUsers-button'>Get users</button>
+    
+    <h2 id="username-header">Not signed up/in yet</h2>
 
     <!-- First step -->
     <div id="user-enter">
@@ -70,10 +74,6 @@
         </div>
 
         <div>
-            <button id='getUsers-button'>GetUsers</button>
-        </div>
-
-        <div>
             <button id='play-button'>Play</button>
         </div>
 
@@ -84,8 +84,8 @@
     
     <!-- Third step -->
     <main id="game-container" style="display:none;">
-        <div id="display"></div> <!-- Game display -->
         <button id="exit-button">Exit</button>
+        <div id="display"></div> <!-- Game display -->
     </main>
 </body>
 
