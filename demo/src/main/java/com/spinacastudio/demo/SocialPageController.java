@@ -4,15 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//import java.util.ArrayList;
 import java.util.Collection;
-//import java.util.Map;
-//import java.util.concurrent.ConcurrentHashMap;
-//import java.util.concurrent.atomic.AtomicLong;
-import java.util.List;
-
-
-
+import java.util.Map; // Import statement for Map
 
 @RestController
 @RequestMapping("/socialPage")
@@ -37,37 +30,36 @@ public class SocialPageController {
     }
 
     @GetMapping("/users")
-	public Collection<User> GetUsers(){
+    public Collection<User> GetUsers(){
         return sp.getUsers();
     }
 
     @PostMapping("/user/{name}")
-    public boolean SingIn(@PathVariable String name, @RequestBody String password) {
-
+    public boolean SignIn(@PathVariable String name, @RequestBody String password) {
         if(!sp.ContainsUserName(name)) return false;
-        if(!sp.CheckPasswordForUser(name, password)) return false;
-
-        return true;
+        return sp.CheckPasswordForUser(name, password);
     }
-    
 
     @PutMapping("/update/user/{name}")
-    public boolean ChangeUserName(@PathVariable User user, @RequestBody String newName) {
-        
-        //if(!sp.ContainsUserName(name)) return false;
-        //if(sp.ContainsUserName(newName)) return false;
-        
-        //sp.UpdateName(user, newName);
-        return true;
+    public ResponseEntity<String> ChangeUserName(@PathVariable String name, @RequestBody String newName) {
+        User user = sp.GetUser(name);
+        if (user == null) return new ResponseEntity<>("Current username not found", HttpStatus.NOT_FOUND);
+        if (sp.ContainsUserName(newName)) return new ResponseEntity<>("New username already exists", HttpStatus.CONFLICT);
+
+        sp.UpdateName(user, newName);
+        return new ResponseEntity<>("Username updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/user/{name}")
-	public boolean DeleteUser(@PathVariable User user, @RequestBody String password) {
-
-        //if(!sp.ContainsUserName(name)) return false;
-
-        if(!sp.CheckPasswordForUser(user, password)) return false;
-        return sp.TryRemoveUser(user);
-	}
+    public ResponseEntity<String> DeleteUser(@PathVariable String name, @RequestHeader("Authorization") String authorization) {
+        String[] parts = authorization.split(" ");
+        String password = parts[1]; // Obtener la contraseña del encabezado de autorización
+        User user = sp.GetUser(name);
+        if (user == null) return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        if (!sp.CheckPasswordForUser(user, password)) return new ResponseEntity<>("Incorrect password", HttpStatus.FORBIDDEN);
+    
+        sp.TryRemoveUser(user);
+        return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+    }
     
 }

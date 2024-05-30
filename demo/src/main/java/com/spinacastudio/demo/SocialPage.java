@@ -39,13 +39,13 @@ public class SocialPage {
     }
 
     public void UpdateName(User user, String newName){
-        //User u = GetUser(oldName);
         user.setName(newName);
         serializeUsers();
     }
 
     public boolean CheckPasswordForUser(String n, String p){
-        return GetUser(n).getPassword().equals(p);
+        User user = GetUser(n);
+        return user != null && user.getPassword().equals(p);
     }
 
     public boolean CheckPasswordForUser(User user, String p){
@@ -53,26 +53,19 @@ public class SocialPage {
     }
 
     public boolean TryRemoveUser(User user){
-        //if(!ContainsUserName(user)) return false;
         if (!RemoveUser(user)) return false;
         serializeUsers();
         return true;
     }
 
     private boolean RemoveUser(User user){
-        var bool = users.remove(user);
-        return bool;
+        return users.remove(user);
     }
 
-    private void RemoveUser(String name){
-        for(int i = 0; i < users.size(); i++){
-            if(name.equals(users.get(i).getName())){
-                users.remove(i);
-                serializeUsers();
-                return;
-            }
-        }
-    }
+    /*private void RemoveUser(String name){
+        users.removeIf(user -> name.equals(user.getName()));
+        serializeUsers();
+    }*/
 
     // DESERIALIZE USER LIST
     @SuppressWarnings("unchecked")
