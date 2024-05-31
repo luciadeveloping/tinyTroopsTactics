@@ -1,5 +1,9 @@
 $(document).ready(function () {
 
+    // Dynamic IP address
+    var ip = location.host;
+	console.log("IP address: " + ip)
+
     // Inputs
     var userNameInput = $('#userName-input');
     var passwordInput = $('#password-input');
@@ -55,7 +59,7 @@ $(document).ready(function () {
         // Check if the user already exists
         $.ajax({
             method: "GET",
-            url: 'http://localhost:8080/socialPage/user/' + username,
+            url: 'http://'+ip+'/socialPage/user/' + username,
             success: function (user) {
                 // Does nothing if exists
                 alert("Username already exists. Enter another one.");
@@ -73,7 +77,7 @@ $(document).ready(function () {
                     // Creates a new one
                     $.ajax({
                         method: "POST",
-                        url: 'http://localhost:8080/socialPage/CreateUser',
+                        url: 'http://'+ip+'/socialPage/CreateUser',
                         data: JSON.stringify(newUser),
                         processData: false,
                         contentType: "application/json",
@@ -110,7 +114,7 @@ $(document).ready(function () {
         // Check if the user already exists
         $.ajax({
             method: "GET",
-            url: 'http://localhost:8080/socialPage/user/' + username,
+            url: 'http://'+ip+'/socialPage/user/' + username,
             // It exists
             success: function (user) {
                 // If password is correct
@@ -134,7 +138,7 @@ $(document).ready(function () {
     $('#getUsers-button').click(function () {
         $.ajax({
             method: "GET",
-            url: 'http://localhost:8080/socialPage/users',
+            url: 'http://'+ip+'/socialPage/users',
             dataType: "json",
             processData: false,
             success: function(data){
@@ -158,7 +162,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "PUT",
-            url: 'http://localhost:8080/socialPage/updateName/' + currentUser.name,
+            url: 'http://'+ip+'/socialPage/updateName/' + currentUser.name,
             data: newName,
             processData: false,
             contentType: "application/json"
@@ -190,7 +194,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "PUT",
-            url: 'http://localhost:8080/socialPage/updateVictories/' + currentUser.name
+            url: 'http://'+ip+'/socialPage/updateVictories/' + currentUser.name
         }).done(function (message) {
             console.log(message);
             if (message.includes("Error")) {
@@ -226,7 +230,7 @@ $(document).ready(function () {
     
         $.ajax({
             method: "DELETE",
-            url: 'http://localhost:8080/socialPage/delete/user/' + currentUserName, // Incluir el nombre de usuario en la URL
+            url: 'http://'+ip+'/socialPage/delete/user/' + currentUserName, // Incluir el nombre de usuario en la URL
             headers: { "Authorization": "Bearer " + passwordUserToDelete }, // Pasar la contraseña como encabezado de autorización
             success: function (message) {
                 console.log(message);
