@@ -8,12 +8,14 @@ public class User implements Serializable {
     
     String name;
     String password;
+    int victories;
 
     public User(){}
     
     public User(String name, String password) {
         this.name = name;
         this.password = password;
+        victories=0;
     }
 
     public String getName() {
@@ -26,6 +28,14 @@ public class User implements Serializable {
 
     public String getPassword(){
         return password;
+    }
+
+    public int getVictories(){
+        return victories;
+    }
+
+    public void hasWon(){
+        victories += 1;
     }
 
     @Override

@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     //Headers
     var usernameHeader = document.getElementById('username-header');
 
+    // Paragraphs
+    var victoriesCount = document.getElementById('victories-count');
+
     // Sign OUT
     signOutButton.addEventListener('click', () => {
         console.log("Signed out");
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('currentUser');
 
         usernameHeader.textContent = "Not signed up/in yet";
+        victoriesCount.textContent = "";
     });
 
     // Play game

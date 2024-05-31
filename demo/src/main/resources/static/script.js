@@ -11,7 +11,33 @@ $(document).ready(function () {
     // Headers
     var usernameHeader = $('#username-header');
 
+    // Paragraphs
+    var victoriesCount = $('#victories-count');
+
+    function enterAccount(user) {
+        // Toggles divisions
+        $('#user-actions').show();
+        $('#user-enter').hide();
+
+        // Saves current user
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        // Gets current user again
+        getCurrentUser();
+    }
+
+    function getCurrentUser(){
+        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        console.log("Current user: ");
+        console.log(currentUser);
+        // Shows current username
+        usernameHeader.text("@" + currentUser.name);
+        // Shows current victories
+        victoriesCount.text("Victories: " + currentUser.victories);
+    }
+
     // SIGN UP
+    // GET + POST
     $("#signUp-button").click(function () {
         var username = userNameInput.val();
         var password = passwordInput.val();
@@ -40,7 +66,8 @@ $(document).ready(function () {
                     console.log("User not found, signing up");
                     var newUser = {
                         "name": username,
-                        "password": password
+                        "password": password,
+                        "victories": 0
                     };
 
                     // Creates a new one
@@ -51,18 +78,7 @@ $(document).ready(function () {
                         processData: false,
                         contentType: "application/json",
                         success: function (message) {
-                            // Toggles divisions
-                            $('#user-actions').show();
-                            $('#user-enter').hide();
-                            // Saves current user
-                            localStorage.setItem('currentUser', JSON.stringify(newUser));
-                            
-                            // Gets current user again
-                            var currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                            console.log(currentUser);
-                            var currentUserName = currentUser.name;
-                            // Shows current username
-                            usernameHeader.text("@"+currentUserName);
+                            enterAccount(newUser);
                         },
                         error: function (xhr) {
                             alert("Error creating user:", xhr.responseText);
@@ -76,6 +92,7 @@ $(document).ready(function () {
     });
 
     // SIGN IN
+    // GET + _
     $("#signIn-button").click(function () {
         var username = userNameSignInInput.val();
         var password = passwordSignInInput.val();
@@ -98,18 +115,7 @@ $(document).ready(function () {
             success: function (user) {
                 // If password is correct
                 if (user.password === password) {
-                    // Toggles divisions
-                    $('#user-actions').show();
-                    $('#user-enter').hide();
-                    // Saves current user
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-
-                    // Gets current user again
-                    var currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                    console.log(currentUser);
-                    var currentUserName = currentUser.name;
-                    // Shows current username
-                    usernameHeader.text("@"+currentUserName);
+                    enterAccount(user);
                 } else {
                     alert("Incorrect password");
                 }
@@ -123,7 +129,8 @@ $(document).ready(function () {
         });
     });
 
-    // GETS USERS LIST
+    // PRINTS USERS LIST
+    // GET
     $('#getUsers-button').click(function () {
         $.ajax({
             method: "GET",
@@ -138,9 +145,9 @@ $(document).ready(function () {
     });
 
     // UPDATE USERNAME
+    // PUT
     $('#update-button').click(function(){
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        var currentUserName = currentUser.name;
         var newName = newUserNameInput.val();
 
         // Checks if a new username has been entered
@@ -151,35 +158,62 @@ $(document).ready(function () {
 
         $.ajax({
             method: "PUT",
-            url: 'http://localhost:8080/socialPage/update/user/' + currentUserName,
+            url: 'http://localhost:8080/socialPage/updateName/' + currentUser.name,
             data: newName,
             processData: false,
             contentType: "application/json"
         }).done(function (message) {
             console.log(message);
             if (message.includes("Error")) {
-                console.log("Error updating user");
+                console.log("Error updating user name");
             } else {
-                console.log("User updated successfully");
-
                 // Update the currentUser object with the new name
                 currentUser.name = newName;
                 
-                // Saves current user
+                // Updates current user
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
     
                 // Gets current user again
-                var updatedUser = JSON.parse(localStorage.getItem('currentUser'));
-                console.log(updatedUser);
-                var updatedUserName = updatedUser.name;
-                // Shows current username
-                usernameHeader.text("@" + updatedUserName);
+                getCurrentUser();
+
+                console.log("User name updated successfully");
             }
         }).fail(function (xhr) {
-            alert("Error updating user: "+ xhr.responseText);
+            alert("Error updating user name: " + xhr.responseText);
         });
     });
 
+    // UPDATES VICTORIES (One more)
+    // PUT
+    $('#addVictory-button').click(function(){
+        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+        $.ajax({
+            method: "PUT",
+            url: 'http://localhost:8080/socialPage/updateVictories/' + currentUser.name
+        }).done(function (message) {
+            console.log(message);
+            if (message.includes("Error")) {
+                console.log("Error updating user");
+            } else {
+                // Update the currentUser object adding a victory
+                currentUser.victories += 1;
+                
+                // Updates current user
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                // Gets current user again
+                getCurrentUser();
+
+                console.log("User victories updated successfully");
+            }
+        }).fail(function (xhr) {
+            alert("Error updating user victories: " + xhr.responseText);
+        });
+    });
+
+    // DELETE USER
+    // DELETE
     $('#delete-button').click(function(){
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
         var currentUserName = currentUser.name;
@@ -204,8 +238,10 @@ $(document).ready(function () {
                     $('#user-actions').hide();
                     $('#user-enter').show();
 
-                    // Restores username header
+                    // Resets username header
                     usernameHeader.text("Not signed up/in yet");
+                    // Resetsvictories count
+                    victoriesCount.text("");
                 } else {
                     console.log("Error deleting user");
                 }

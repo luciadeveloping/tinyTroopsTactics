@@ -24,7 +24,10 @@ export default class FinalScene extends Phaser.Scene {
         if (winner == 'player1'){
             this.add.image(centerX, centerY-50, 'winP1');
 
-
+            // Loads add victory button
+            var addVictoryButton = document.getElementById("addVictory-button");
+            // Triggers click event to add a victory
+            addVictoryButton.click();
         }
         // Congrats to player 2
         else if(winner == 'player2'){

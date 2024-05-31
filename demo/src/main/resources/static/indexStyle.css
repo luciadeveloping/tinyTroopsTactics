@@ -18,6 +18,7 @@ main {
 h1{
     color: #2c662e;
     font-family: 'Libre Franklin';
+    font-weight: bolder;
     font-size: 60px;
     padding-top:30px;
     justify-content: center;
@@ -26,6 +27,7 @@ h1{
 h2{
     color: #2c662e;
     font-family: 'Libre Franklin';
+    font-weight: bolder;
     font-size: 50px;
     padding-top: 10px;
 }
@@ -33,6 +35,15 @@ h2{
 h3{
     color: #2b8d2e;
     font-family: 'Libre Franklin';
+    font-weight: bolder;
+    font-size: 30px;
+    padding-top: 10px;
+}
+
+h4{
+    color: #2b8d2e;
+    font-family: 'Libre Franklin';
+    font-weight: normal;
     font-size: 30px;
     padding-top: 10px;
 }
@@ -77,11 +88,46 @@ input[type="text"]:focus, input[type="password"]:focus {
     border-color: #2a602b;
 }
 
-hr{
-    border: 5px solid rgb(127, 182, 244);
+#title{
     margin: auto;
-    width: 1500px;
-    border-radius: 5px;
+    border: 10px solid rgb(255, 255, 255);
+    border-radius: 20px;
+    background-color: rgb(177, 217, 252);
+    width: 800px;
+    height:450px;
+}
+
+#cheats{
+    margin: auto; 
+    margin-top: 30px;
+    border: 5px solid red; 
+    width: 500px;
+}
+
+#play-button{
+    padding: 20px 140px;
+    margin: 40px;
+    font-family: 'Libre Franklin';
+    font-weight: bolder;
+    font-size: 35px;
+    background-color: #4CAF50;
+    color: white;
+    border: solid 5px #2b8d2e;
+    border-radius: 20px;
+    transition: background-color 0.5s;
+}
+
+#play-button:hover {
+    background-color: #35c93a;
+    border: solid 5px #64ed69;
+}
+
+#victories-count{
+    color: rgb(38, 69, 40);
+    font-family: 'Libre Franklin';
+    font-size: 30px;
+    font-weight: bolder;
+    justify-content: center;
 }
 
 #display{
@@ -90,21 +136,4 @@ hr{
     border-radius: 20px;
     width: 1280px;
     height: 960px;
-}
-
-#play-button{
-    padding: 20px 40px;
-    margin: 40px;
-    font-family: 'Libre Franklin';
-    font-size: 35px;
-    background-color: #21ab26;
-    color: white;
-    border: solid #2b8d2e;
-    border-radius: 20px;
-    transition: background-color 0.5s;
-}
-
-#play-button:hover {
-    background-color: #35c93a;
-    border: solid #64ed69;
 }

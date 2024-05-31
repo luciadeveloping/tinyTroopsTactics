@@ -30,18 +30,25 @@
 </head>
 
 <body>
-    <h1>TINY TROOPS TACTICS</h1>
-    <h3>Fase 3. Proyecto práctico de Juegos en Red</h3>
-    <p>Paula González Stradiotto</p>
-    <p>Álvaro Moreno García</p>
-    <p>Ana Ordoñez Gragera</p>
-    <p>Eduardo Sánchez Abril</p>
-
-    <hr>
-
-    <button id='getUsers-button'>Get users</button>
+    <div id="title">
+        <h1>TINY TROOPS TACTICS</h1>
+        <h4>Fase 3. Proyecto práctico de Juegos en Red</h4>
+        <p>Paula González Stradiotto</p>
+        <p>Álvaro Moreno García</p>
+        <p>Ana Ordoñez Gragera</p>
+        <p>Eduardo Sánchez Abril</p>
+    </div>
     
+    <!-- Cheat buttons -->
+    <div id="cheats" style="display:block;">
+        <p>Cheats!!!</p>
+        <button id='getUsers-button'>Get users</button>
+        <button id="addVictory-button">Add victory</button>
+    </div>
+    
+    <!-- Current user -->
     <h2 id="username-header">Not signed up/in yet</h2>
+    <p id="victories-count"></p>
 
     <!-- First step -->
     <div id="user-enter" style="display:block;">

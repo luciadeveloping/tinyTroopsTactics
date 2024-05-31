@@ -43,6 +43,11 @@ public class SocialPage {
         serializeUsers();
     }
 
+    public void UpdateVictories(User user){
+        user.hasWon();  
+        serializeUsers();
+    }
+
     public boolean CheckPasswordForUser(String n, String p){
         User user = GetUser(n);
         return user != null && user.getPassword().equals(p);

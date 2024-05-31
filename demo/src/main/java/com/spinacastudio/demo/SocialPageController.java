@@ -33,20 +33,25 @@ public class SocialPageController {
         return sp.getUsers();
     }
 
-    @PostMapping("/user/{name}")
-    public boolean SignIn(@PathVariable String name, @RequestBody String password) {
-        if(!sp.ContainsUserName(name)) return false;
-        return sp.CheckPasswordForUser(name, password);
-    }
-
-    @PutMapping("/update/user/{name}")
+    @PutMapping("/updateName/{name}")
     public ResponseEntity<String> ChangeUserName(@PathVariable String name, @RequestBody String newName) {
         User user = sp.GetUser(name);
         if (user == null) return new ResponseEntity<>("Current username not found", HttpStatus.NOT_FOUND);
         if (sp.ContainsUserName(newName)) return new ResponseEntity<>("New username already exists", HttpStatus.CONFLICT);
 
         sp.UpdateName(user, newName);
+
         return new ResponseEntity<>("Username updated successfully", HttpStatus.OK);
+    }
+
+    @PutMapping("/updateVictories/{name}")
+    public ResponseEntity<String> ChangeUserVictories(@PathVariable String name) {
+        User user = sp.GetUser(name);
+        if (user == null) return new ResponseEntity<>("Current username not found", HttpStatus.NOT_FOUND);
+        
+        sp.UpdateVictories(user);
+
+        return new ResponseEntity<>("User victories updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/user/{name}")
