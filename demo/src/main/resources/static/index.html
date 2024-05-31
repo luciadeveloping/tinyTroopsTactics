@@ -31,7 +31,12 @@
 
 <body>
     <h1>TINY TROOPS TACTICS</h1>
-    <p>Fase 3. Proyecto práctico de Juegos en Red</p>
+    <h3>Fase 3. Proyecto práctico de Juegos en Red</h3>
+    <p>Paula González Stradiotto</p>
+    <p>Álvaro Moreno García</p>
+    <p>Ana Ordoñez Gragera</p>
+    <p>Eduardo Sánchez Abril</p>
+
     <hr>
 
     <button id='getUsers-button'>Get users</button>
@@ -39,47 +44,37 @@
     <h2 id="username-header">Not signed up/in yet</h2>
 
     <!-- First step -->
-    <div id="user-enter">
+    <div id="user-enter" style="display:block;">
         <h3>Sign Up</h3>
         <p>Create a new account.</p>
-        <div>
-            <input id='userName-input' type='text' placeholder="New username...">
-            <input id='password-input' type='text' placeholder="New password...">
-            <button id='signUp-button'>Sign Up</button>
-        </div>
+        <input id='userName-input' type='text' placeholder="New username...">
+        <input id='password-input' type='text' placeholder="New password...">
+        <button id='signUp-button'>Sign Up</button>
 
         <h3>Sign In</h3>
         <p>Enter your existing account.</p>
-        <div>
-            <input id='userNameSignIn-input' type='text' placeholder="Your username...">
-            <input id='passwordSignIn-input' type='text' placeholder="Your password...">
-            <button id='signIn-button'>Sign In</button>
-        </div>
+        <input id='userNameSignIn-input' type='text' placeholder="Your username...">
+        <input id='passwordSignIn-input' type='text' placeholder="Your password...">
+        <button id='signIn-button'>Sign In</button>
     </div>
     
     <!-- Second step -->
     <div id="user-actions" style="display:none;">
         <h3>Update username</h3>
-        <div>
-            <p>Enter a new username for your account.</p>
-            <input id='newUserName-input' type='text' placeholder="New username...">
-            <button id='update-button'>Confirm</button>
-        </div>
+        <p>Enter a new username for your account.</p>
+        <input id='newUserName-input' type='text' placeholder="New username...">
+        <button id='update-button'>Confirm</button>
 
         <h3>Delete account</h3>
-        <div>
             <p>Enter your password to delete permanently your account.</p>
             <input id='passwordUserToDelete-input' type='text' placeholder="Your password...">
             <button id='delete-button'>Confirm</button>
-        </div>
 
         <div>
-            <button id='play-button'>Play</button>
+            <button id='play-button'>PLAY</button>
         </div>
 
-        <div>
-            <button id='signOut-button'>Sign out</button>
-        </div>
+        <button id='signOut-button'>Sign out</button>
     </div>
     
     <!-- Third step -->
