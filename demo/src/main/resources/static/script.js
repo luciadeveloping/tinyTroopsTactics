@@ -11,7 +11,6 @@ $(document).ready(function () {
     // Headers
     var usernameHeader = $('#username-header');
 
-
     // SIGN UP
     $("#signUp-button").click(function () {
         var username = userNameInput.val();
@@ -216,7 +215,4 @@ $(document).ready(function () {
             }
         });
     });
-    
-    
-
 });
