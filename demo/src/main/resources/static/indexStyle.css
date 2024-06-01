@@ -97,29 +97,53 @@ input[type="text"]:focus, input[type="password"]:focus {
     height:450px;
 }
 
-#cheats{
-    margin: auto; 
-    margin-top: 30px;
-    border: 5px solid red; 
-    width: 500px;
-}
-
-#play-button{
-    padding: 20px 140px;
-    margin: 40px;
-    font-family: 'Libre Franklin';
-    font-weight: bolder;
-    font-size: 35px;
-    background-color: #4CAF50;
+#cheats-button{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 7px 7px;
+    background-color: #bcdbff;
     color: white;
-    border: solid 5px #2b8d2e;
-    border-radius: 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 10px;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.5s;
 }
 
-#play-button:hover {
-    background-color: #35c93a;
-    border: solid 5px #64ed69;
+#cheats-button:hover {
+    background-color: #8ac1ff;
+}
+
+#getUsers-button{
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    padding: 10px 10px;
+    background-color: #ca2121;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s;
+}
+
+#addVictory-button{
+    position: fixed;
+    bottom: 50px;
+    right: 90px;
+    padding: 10px 10px;
+    background-color: #ca2121;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s;
 }
 
 #victories-count{
@@ -129,6 +153,7 @@ input[type="text"]:focus, input[type="password"]:focus {
     font-weight: bolder;
     justify-content: center;
 }
+
 
 #display{
     margin: auto;
