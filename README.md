@@ -182,7 +182,7 @@ En ella el movimiento de los jugadores está implementado como en el resto de es
 ![diagram](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/612624aa-2642-4673-a81e-2bd4dcadcf16)
 
 # RED Y WEBSOCKET
-Para la implementación del juego en red se utilizó la comunicación entre WebScokets a travése de un servidor.
+Para la implementación del juego en red se utilizó la comunicación entre WebScokets a través de un servidor.
 
 ![Captura de pantalla 2024-01-21 201204](https://github.com/edwardeveloping/tinyTroopsTactics/assets/138675155/6d4e0a96-4df8-4601-be7e-f427f0f0f921)
 
@@ -192,3 +192,17 @@ Utilizamos un "protocolo" propio para la comunicación entre diferentes clientes
 De esta manera el cliente es capaz de reconocer y almacenar su identificador dentro del juego (type=SesionID), leer la información del otro jugador (type=InputUpdate), etc.
 
 Así mismo, debido a la observada poca fiabilidad de los websockets se han implementado sistemas auxiliares que ayudan a sincronizar el juego entre dos sesiones diferentes: (type=GameState) codifica la información de la pantalla de juego y la envía al otro usuario o (type=SceneChange) que ejecuta una segunda instrucción para cambiar de escena.
+
+# API REST
+Se ha implementado la comunicación entre el cliente y el servidor utilizando un servicio REST, esto se ha incluido en una nueva escena donde se gestiona la información de los usuarios (nombre de usuario y contraseña).
+Dado que se han creado nuevas escenas, el diagrama de navegación ha sufrido una serie de cambios que se ven reflejados en el nuevo diagrama de flujo.
+(foto diagrama flujo con escena nueva)
+
+Se ha creado un diagrama de clases en el que se muestran las relaciones entre las diferentes clases y sus tipos.
+(foto diagrama de clases)
+
+Para ejecutar la aplicación se deben seguir estos pasos:
+- 
+- 
+-
+
