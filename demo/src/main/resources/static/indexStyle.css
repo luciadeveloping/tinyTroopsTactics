@@ -154,6 +154,23 @@ input[type="text"]:focus, input[type="password"]:focus {
     justify-content: center;
 }
 
+#play-button{
+    padding: 20px 140px;
+    margin: 40px;
+    font-family: 'Libre Franklin';
+    font-weight: bolder;
+    font-size: 35px;
+    background-color: #4CAF50;
+    color: white;
+    border: solid 5px #2b8d2e;
+    border-radius: 20px;
+    transition: background-color 0.5s;
+}
+
+#play-button:hover {
+    background-color: #35c93a;
+    border: solid 5px #64ed69;
+}
 
 #display{
     margin: auto;
