@@ -123,11 +123,10 @@ Será una melodía suave con instrumentos como el piano para crear una sensació
 
 https://www.youtube.com/watch?v=c0Hmvev5r7A 
 
-## Cambios y progreso.
+## Cambios y progreso
 
 A medida que el desarrollo avanza muchas ideas han tenido que adaptarse a la realidad del proyecto pero en general se ha implementado el núcleo jugable. 
 Si analizamos la matriz MoSCoW inicial la mayor parte de la columna del Must Have está incluída en el juego, la parte que no ha podido completarse es la de realizar varios niveles que era la que menos prioridad tenía para la entrega.
-
 
 ## Escenas
 
@@ -171,15 +170,39 @@ Es la escena final donde se muestra al ganador de la competición según la cond
 ![winP2](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/fc92b52f-647e-49ba-a569-d37a4bd844fa)
 ![gameOver](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/7b3012da-f3b2-4dd4-9d2e-532a1e8b3a84)
 
-
 ### CreditsScene
 En ella el movimiento de los jugadores está implementado como en el resto de escenas. Se asemeja la FinalScene ya que consta de un único botón con el que interactuar para retornar a la StartScene pero a diferencia de esta en la CreditsScene se muestra el logo del equipo y el nombre de cada uno de sus integrantes.
 
 ![credits](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/877f7852-8df8-4188-8614-49779108b49d)
 
-## Diagrama de flujo.
+## Diagrama de flujo
 
 ![diagram](https://github.com/edwardeveloping/tinyTroopsTactics/assets/131657047/612624aa-2642-4673-a81e-2bd4dcadcf16)
+
+# API REST
+Se ha implementado la comunicación entre el cliente y el servidor utilizando un servicio REST. En tal conexión se comparte una lista de usuarios, por lo que esta se serializa cada vez que se modifica, y se deseriliza al iniciar la conexión.  Cada miembro de esta lista (usuario) almacena un nombre de usuario, contraseña y número de victorias conseguidas en el juego. La lista de usuarios se gestiona en la página web, simulando una plataforma con cuentas de usuario, de manera que solo se puede jugar al juego una vez se entra a una cuenta. 
+
+Cabe mencionar que mientras se mantiene una cuenta iniciada, se guarda en la memoria local su información, y esa se actualiza tanto en el dispositivo como en el servidor. El espacio que ocupa en memoria solo se libera al salir del juego o de la cuenta.
+
+## Diagrama de flujo de una cuenta
+Este es el diagrama de flujo en la gestión de una cuenta.
+![diagramaFlujo](https://github.com/edwardeveloping/tinyTroopsTactics/assets/126405539/47c58522-c8de-491b-8309-f607047a9dc9)
+El juego mantiene su propio flujo.
+
+## Diagrama de clases
+En este se muestran las relaciones entre las diferentes clases y sus tipos.
+
+(foto diagrama de clases)
+
+Al crear una cuenta nueva se comprueba si el nombre de usuario ya existe, y si es que no, se crea correctamente con la contraseña introducida y se entra en su cuenta. Esto supone hacer @GET de ese nombre de usuario, y en caso de eror 404 (NOT FOUND) hacer @POST para crearlo.
+
+Al iniciar sesión en una cuenta se comprueba si el nombre de usuario ya existe, y si es que sí, se entra en su cuenta. Esto supone hacer @GET de ese nombre de usuario.
+
+Al actualizar el nombre de usuario se comprueba si el nuevo nombre ya existe, y si es que no, se actualiza correctamente. Esto supone relizar un @UPDATE de ese nombre de usuario.
+
+Al ganar una partida se añade una victoria al número de estas de la cuenta del usuario. Esto supone realizar un @UPDATE del contador de victorias.
+
+Al eliminar una cuenta se comprueba si la contraseña es correcta, y si es que sí, se elimina de la lista correctamente. Esto supone realizar un @DELETE de ese nombre de usuario, y por tanto de la cuenta.
 
 # RED Y WEBSOCKET
 Para la implementación del juego en red se utilizó la comunicación entre WebScokets a través de un servidor.
@@ -192,18 +215,3 @@ Utilizamos un "protocolo" propio para la comunicación entre diferentes clientes
 De esta manera el cliente es capaz de reconocer y almacenar su identificador dentro del juego (type=SesionID), leer la información del otro jugador (type=InputUpdate), etc.
 
 Así mismo, debido a la observada poca fiabilidad de los websockets se han implementado sistemas auxiliares que ayudan a sincronizar el juego entre dos sesiones diferentes: (type=GameState) codifica la información de la pantalla de juego y la envía al otro usuario o (type=SceneChange) que ejecuta una segunda instrucción para cambiar de escena.
-
-# API REST
-Se ha implementado la comunicación entre el cliente y el servidor utilizando un servicio REST, esto se ha incluido en una nueva escena donde se gestiona la información de los usuarios (nombre de usuario y contraseña).
-Dado que se han creado nuevas escenas, el diagrama de navegación ha sufrido una serie de cambios que se ven reflejados en el nuevo diagrama de flujo.
-
-![diagramaFlujo](https://github.com/edwardeveloping/tinyTroopsTactics/assets/126405539/47c58522-c8de-491b-8309-f607047a9dc9)
-
-Se ha creado un diagrama de clases en el que se muestran las relaciones entre las diferentes clases y sus tipos.
-(foto diagrama de clases)
-
-Para ejecutar la aplicación se deben seguir estos pasos:
-- 
-- 
--
-
