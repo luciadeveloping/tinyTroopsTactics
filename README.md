@@ -196,7 +196,8 @@ Así mismo, debido a la observada poca fiabilidad de los websockets se han imple
 # API REST
 Se ha implementado la comunicación entre el cliente y el servidor utilizando un servicio REST, esto se ha incluido en una nueva escena donde se gestiona la información de los usuarios (nombre de usuario y contraseña).
 Dado que se han creado nuevas escenas, el diagrama de navegación ha sufrido una serie de cambios que se ven reflejados en el nuevo diagrama de flujo.
-(foto diagrama flujo con escena nueva)
+
+![diagramaFlujo](https://github.com/edwardeveloping/tinyTroopsTactics/assets/126405539/47c58522-c8de-491b-8309-f607047a9dc9)
 
 Se ha creado un diagrama de clases en el que se muestran las relaciones entre las diferentes clases y sus tipos.
 (foto diagrama de clases)
