@@ -192,7 +192,7 @@ El juego mantiene su propio flujo.
 ## Diagrama de clases
 En este se muestran las relaciones entre las diferentes clases y sus tipos.
 
-(foto diagrama de clases)
+![Uploading Diagrama_de_clases_API_REST.jpg…]()
 
 Al crear una cuenta nueva se comprueba si el nombre de usuario ya existe, y si es que no, se crea correctamente con la contraseña introducida y se entra en su cuenta. Esto supone hacer @GET de ese nombre de usuario, y en caso de eror 404 (NOT FOUND) hacer @POST para crearlo.
 
