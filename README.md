@@ -4,7 +4,7 @@
 
 - Ana Ordóñez Gragera - a.ordonez.2021@alumnos.urjc.es - https://github.com/anaxrdonez 
 
-- Eduardo Sánchez Abril - e.sancheza.2021@alumnos.urjc.es  - https://github.com/edwardeveloping  
+- Lucía Sánchez Abril - l.sanchezab.2021@alumnos.urjc.es  - https://github.com/luciadeveloping
 
 - Álvaro Moreno García - a.morenog.2021@alumnos.ujrc.es - https://github.com/fkavaro 
 
